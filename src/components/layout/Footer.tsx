@@ -1,4 +1,4 @@
-import { Github, Twitter, Linkedin } from "lucide-react";
+import { GitBranch, Send, Globe } from "lucide-react";
 
 const COLS = [
   { title: "Modules", links: ["Threat Intelligence", "Neural Defense", "Asset Guard", "Prompt Library"] },
@@ -26,7 +26,7 @@ export function Footer() {
               Sovereign intelligence infrastructure for autonomous systems. Quiet power for the next era of computing.
             </p>
             <div className="mt-6 flex gap-3">
-              {[Twitter, Github, Linkedin].map((Icon, i) => (
+              {[Send, GitBranch, Globe].map((Icon, i) => (
                 <a key={i} href="#" className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary">
                   <Icon size={15} />
                 </a>
