@@ -78,6 +78,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#020408" },
+      { property: "og:title", content: "CyberAI — Autonomous Defense for the Synthetic Era" },
+      { name: "twitter:title", content: "CyberAI — Autonomous Defense for the Synthetic Era" },
+      { property: "og:description", content: "Sovereign AI cybersecurity platform for high-stakes infrastructure." },
+      { name: "twitter:description", content: "Sovereign AI cybersecurity platform for high-stakes infrastructure." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
