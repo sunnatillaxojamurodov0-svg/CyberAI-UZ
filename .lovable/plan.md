@@ -1,72 +1,82 @@
-## CyberAI — Build Plan
+## About Route — CyberAI Story & Cinematic Glass Sections
 
-**Stack reality:** This project runs on TanStack Start + Lovable Cloud (managed Supabase). I'll faithfully adapt the Next.js architecture you spec'd to TanStack equivalents — same features, idiomatic routing/server functions.
+### Goal
+Create a new `/about` route that tells the CyberAI origin story through immersive, cinematic glass-panel sections, staying fully consistent with the existing dark-luxury design system.
 
-**Design lock:** Command Center Bento. Tokens (deep black `#020408`, surface `#0a0e17`, electric cyan `#00f2ff`, violet `#7c3aed`, Inter + JetBrains Mono), glass panels, animated grid, magnetic CTAs, and the bento composition port verbatim into the React app.
+### Files to Create
 
----
+1. **`src/routes/about.tsx`** — The About route file with:
+   - `head()` metadata: title, description, og tags, canonical `/about`
+   - `errorComponent` and `notFoundComponent`
+   - Page wrapper: `CursorSpotlight`, `Navbar`, `<main>`, `Footer`
+   - Sections (all using existing design tokens + `framer-motion` `whileInView`):
 
-### Phase 1 — Foundation + Landing (this turn)
+   **Section: AboutHero**
+   - Cinematic headline: "Built for the moment after the alarm."
+   - Subtitle about the synthetic era and autonomous defense
+   - `StatusPill` with accent tone: "Origin Document // CLASSIFIED"
+   - `AnimatedGrid` background, gradient-text treatment
 
-1. **Design system** in `src/styles.css`: port the prototype's `@theme` tokens (background, surface, border, primary cyan, accent violet, muted), Inter + JetBrains Mono via Google Fonts, `.glass-panel`, `.glow-hover`, grid background, float / pulse-soft / scanline keyframes.
-2. **Layout shell** (`src/routes/__root.tsx` + components):
-   - `Navbar` — sticky, blur, animated logo mark, magnetic CTA, mobile sheet.
-   - `Footer` — bento footer with newsletter glass card + social links.
-   - Cursor-reactive radial spotlight overlay (light, GPU-only, no particle spam).
-3. **Landing route** (`src/routes/index.tsx`) with framer-motion sectioned reveals:
-   - Hero: status pill, gradient hero type, dual CTA with cyan glow.
-   - Command Center Bento (8/4 split, stats trio) — generated hero visualization images for the two placeholders (globe + neural topology).
-   - Trust strip.
-   - Capability grid (4 modules: Threat Intel, AI Assistant, Prompt Library, Projects).
-   - AI Assistant teaser panel (chat surface mock).
-   - Community/mission section.
-   - Footer.
-4. **Reusable primitives** in `src/components/shared/`: `MagneticButton`, `GlassPanel`, `SectionHeading`, `CursorSpotlight`, `AnimatedGrid`, `StatusPill`.
-5. **SEO**: route-level `head()` with title, description, OG tags; semantic h1, alt text on images.
+   **Section: OriginStory**
+   - Two-column layout (text left, visual right)
+   - Narrative copy: founding story — former intelligence operators + AI researchers who saw that legacy SOCs couldn't keep pace with synthetic threats
+   - Right side: a large `GlassPanel` with abstract visual (gradient orb or generated image placeholder)
+   - Scroll-triggered fade-up animation
 
-### Phase 2 — Content routes
+   **Section: Mission**
+   - Full-width `GlassPanel` with `glass-panel-strong`
+   - Three mission pillars inside a 3-column grid, each with a Lucide icon, label, and short statement
+   - Icons: `Target`, `BrainCircuit`, `GlobeLock` (or similar from existing icon set)
 
-- `src/routes/about.tsx`, `projects/index.tsx`, `projects/$slug.tsx`, `prompts/index.tsx`, `prompts/$slug.tsx` — each with own `head()` metadata, bento-aligned layouts, project cards, filterable prompt search (debounced).
-- Seed mock content (later swapped for DB-backed via server fns).
+   **Section: Timeline**
+   - Vertical timeline with 4 milestones (2023–2026)
+   - Each milestone is a `GlassPanel` card with year, title, and description
+   - Alternating left/right layout on desktop, stacked on mobile
+   - A thin glowing vertical line connecting milestones
+   - Scroll-triggered staggered entrance
 
-### Phase 3 — Lovable Cloud + Auth
+   **Section: Values**
+   - 2×2 bento grid of `GlassPanel` cards
+   - Four values: Sovereignty, Velocity, Silence, Certainty
+   - Each card has a mono label, headline, and one-sentence description
+   - `hoverGlow` enabled on all cards
 
-- Enable Lovable Cloud (managed Supabase).
-- DB schema: `profiles`, `user_roles` (enum: `admin`, `user`) + `has_role()` SECURITY DEFINER, `projects`, `prompts`, `conversations`, `messages`, `audit_log`, `feature_flags`. RLS on every table.
-- Trigger to auto-create `profiles` on signup.
-- Auth: email/password + Google. `src/routes/login.tsx`, `register.tsx`, `reset-password.tsx`. Cinematic auth modal/page with animated form.
-- Protected layout `src/routes/_authenticated.tsx` with `beforeLoad` redirect; admin layout `_authenticated/_admin.tsx` gated by `has_role('admin')`.
+   **Section: AboutCTA**
+   - Minimal section with headline + dual buttons
+   - "Join the defense grid" / "Read the docs"
+   - Reuses `MagneticButton` patterns
 
-### Phase 4 — AI Assistant + Dashboard
+2. **`src/components/features/about/AboutHero.tsx`**
+2. **`src/components/features/about/OriginStory.tsx`**
+2. **`src/components/features/about/Mission.tsx`**
+2. **`src/components/features/about/Timeline.tsx`**
+2. **`src/components/features/about/Values.tsx`**
+2. **`src/components/features/about/AboutCTA.tsx`**
 
-- `_authenticated/dashboard.tsx` — user bento home (recent convos, saved prompts, stats).
-- `_authenticated/ai-assistant/index.tsx` + `$id.tsx` — streaming chat against Lovable AI Gateway via a server route at `src/routes/api/ai/chat.ts` (SSE). Sidebar of conversations, message bubbles with markdown, chat input with command palette feel.
-- Server fns for conversations CRUD; rate-limiting middleware.
-- Profile route.
+### Files to Modify
 
-### Phase 5 — Admin
+1. **`src/routes/sitemap[.]xml.ts`** — Add `/about` entry (`changefreq: monthly`, `priority: 0.7`)
 
-- Admin sidebar layout.
-- Overview cards, users table, projects/prompts management, analytics charts, feature-flags toggle, audit-log viewer. All gated server-side via `has_role('admin')`.
+2. **`src/components/layout/Navbar.tsx`** — Change the "About" nav link `to: "/"` → `to: "/about"`
 
-### Phase 6 — Polish & launch
+### Design Constraints
+- All colors via CSS tokens (`--primary`, `--accent`, `--surface`, etc.)
+- Typography: `font-display` for headings, `font-mono` for labels/pills
+- Glass panels use existing `.glass-panel` / `.glass-panel-strong` utilities
+- Animations use `framer-motion` with `[0.16, 1, 0.3, 1]` ease (existing convention)
+- No new dependencies — `lucide-react` icons only
+- Responsive: works on mobile (663px viewport) through desktop
 
-- Page transitions, loading skeletons, error/404 polish, keyboard shortcuts (⌘K), accessibility pass, perf pass (lazy heavy panels, prefers-reduced-motion), `robots.txt`, OG images for each route.
+### Technical Details
+- Route file follows the exact same wrapper pattern as `src/routes/index.tsx`
+- All section components are purely presentational (no data fetching)
+- `head()` meta is unique to `/about` — not copied from home page
+- No `og:image` added (follows existing rule: only leaf routes with meaningful images)
 
----
-
-### Technical mapping (Next.js spec → TanStack)
-
-- `app/(public|auth|protected|admin)/` → `src/routes/` with `_authenticated.tsx` / `_authenticated/_admin.tsx` pathless layouts.
-- `app/api/**/route.ts` → `src/routes/api/**.ts` server routes (`createFileRoute` with `server.handlers`).
-- `createServerFn` for app-internal RPC (conversations, prompts, projects, admin queries).
-- Streaming AI: server route `src/routes/api/ai/chat.ts` returning SSE from Lovable AI Gateway (`LOVABLE_API_KEY` auto-provisioned). Default model `google/gemini-3-flash-preview`.
-- `lib/supabase/client.ts` (browser), `auth-middleware.ts` (user-scoped server fn), `client.server.ts` (service role) — already scaffolded in template.
-- Zod schemas in `src/lib/validations/`. Rate limiter in-memory per Worker (KV not on Cloudflare here).
-- `framer-motion`, `lucide-react`, `react-markdown` added as needed.
-
-### What I'll start building right now
-
-Phase 1 in one batch: tokens, fonts, primitives, navbar, footer, landing route with hero + bento (with generated images) + capability grid + AI teaser + community + trust strip. After it's live and looks right, we ship Phase 2 next turn, etc. — this keeps each milestone reviewable and avoids a 200-file dump that's hard to QA.
-
-Confirm and I'll switch to build mode.
+### Acceptance Criteria
+- `/about` renders correctly in the preview
+- Navbar "About" link navigates to `/about`
+- Sitemap includes `/about`
+- All sections animate in on scroll
+- Glass panels render with correct blur and border styling
+- Page passes visual QA on mobile and desktop viewports
