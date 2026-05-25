@@ -53,7 +53,7 @@
   --surface-2: oklch(0.20 0.022 254);
   --foreground: oklch(0.985 0 0);
   --muted: oklch(0.22 0.018 252);
-  --muted-foreground: oklch(0.62 0.025 250);
+  --muted-foreground: oklch(0.74 0.022 250);
   --border: oklch(1 0 0 / 0.08);
   --border-strong: oklch(1 0 0 / 0.14);
   --primary: oklch(0.86 0.18 200);         /* electric cyan #00f2ff */
