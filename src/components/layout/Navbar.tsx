@@ -9,7 +9,7 @@ const NAV = [
   { label: "Platform", to: "/" },
   { label: "Projects", to: "/" },
   { label: "Prompts", to: "/" },
-  { label: "About", to: "/" },
+  { label: "About", to: "/about" },
 ];
 
 export function Navbar() {
