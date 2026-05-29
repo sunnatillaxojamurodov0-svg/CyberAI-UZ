@@ -1,18 +1,21 @@
 import { Link } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, User } from "lucide-react";
 import { MagneticButton } from "@/components/shared/MagneticButton";
+import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { label: "Platform", to: "/" },
-  { label: "Projects", to: "/" },
-  { label: "Prompts", to: "/" },
+  { label: "Chat", to: "/chat" },
+  { label: "Projects", to: "/projects" },
+  { label: "Prompts", to: "/prompts" },
   { label: "About", to: "/about" },
 ];
 
 export function Navbar() {
+  const { user, signOut, openAuthModal } = useAuth();
   const { scrollY } = useScroll();
   const bg = useTransform(scrollY, [0, 80], ["rgba(2, 4, 8, 0.4)", "rgba(2, 4, 8, 0.82)"]);
   const blur = useTransform(scrollY, [0, 80], ["blur(6px)", "blur(16px)"]);
@@ -48,10 +51,37 @@ export function Navbar() {
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
-          <Link to="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            Sign in
-          </Link>
-          <MagneticButton className="!px-5 !py-2 !text-xs">Launch Console</MagneticButton>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-lg border border-border bg-surface/50 px-3 py-1.5">
+                <User size={13} className="text-accent" />
+                <span className="text-xs font-medium text-foreground/80">
+                  {user.user_metadata?.username || user.email?.split("@")[0] || "Operator"}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={signOut}
+                className="rounded-md p-2 text-muted-foreground transition-colors hover:text-foreground"
+                aria-label="Sign out"
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={openAuthModal}
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Sign in
+              </button>
+              <MagneticButton className="!px-5 !py-2 !text-xs" onClick={openAuthModal}>
+                Launch Console
+              </MagneticButton>
+            </>
+          )}
         </div>
 
         <button
@@ -75,12 +105,38 @@ export function Navbar() {
               {n.label}
             </Link>
           ))}
-          <Link to="/" className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground">
-            Sign in
-          </Link>
-          <button className="mt-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground">
-            Launch Console
-          </button>
+          {user ? (
+            <div className="mt-2 flex items-center justify-between rounded-lg border border-border bg-surface/50 px-3 py-2.5">
+              <div className="flex items-center gap-2 text-xs text-foreground/80">
+                <User size={13} className="text-accent" />
+                {user.user_metadata?.username || user.email?.split("@")[0] || "Operator"}
+              </div>
+              <button
+                type="button"
+                onClick={signOut}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <>
+              <button
+                type="button"
+                onClick={() => { openAuthModal(); setOpen(false); }}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground text-left"
+              >
+                Sign in
+              </button>
+              <button
+                type="button"
+                onClick={() => { openAuthModal(); setOpen(false); }}
+                className="mt-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
+              >
+                Launch Console
+              </button>
+            </>
+          )}
         </div>
       </div>
     </motion.nav>

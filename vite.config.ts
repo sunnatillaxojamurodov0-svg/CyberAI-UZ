@@ -12,4 +12,8 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    server: { allowedHosts: ["cyberai-uz.onrender.com"] },
+    preview: { allowedHosts: ["cyberai-uz.onrender.com"] },
+  },
 });

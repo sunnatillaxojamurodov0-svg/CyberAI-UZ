@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { MagneticButton } from "@/components/shared/MagneticButton";
@@ -12,6 +13,8 @@ const LINES: Array<{ from: "user" | "ai"; text: string }> = [
 ];
 
 export function AssistantTeaser() {
+  const navigate = useNavigate();
+
   return (
     <section className="px-6 py-28">
       <div className="mx-auto max-w-7xl">
@@ -38,7 +41,7 @@ export function AssistantTeaser() {
               ))}
             </ul>
             <div className="mt-10">
-              <MagneticButton>
+              <MagneticButton onClick={() => navigate({ to: "/chat" })}>
                 <Sparkles size={14} /> Open the Assistant
               </MagneticButton>
             </div>

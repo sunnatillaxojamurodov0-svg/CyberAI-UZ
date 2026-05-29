@@ -5,8 +5,9 @@ import { CursorSpotlight } from "@/components/shared/CursorSpotlight";
 import { Hero } from "@/components/features/landing/Hero";
 import { BentoCommand } from "@/components/features/landing/BentoCommand";
 import { TrustStrip } from "@/components/features/landing/TrustStrip";
-import { CapabilityGrid } from "@/components/features/landing/CapabilityGrid";
 import { AssistantTeaser } from "@/components/features/landing/AssistantTeaser";
+import { ProjectsShowcase } from "@/components/features/landing/ProjectsShowcase";
+import { PromptsShowcase } from "@/components/features/landing/PromptsShowcase";
 import { CommunitySection } from "@/components/features/landing/CommunitySection";
 
 export const Route = createFileRoute("/")({
@@ -34,7 +35,8 @@ function Landing() {
         <Hero />
         <BentoCommand />
         <TrustStrip />
-        <CapabilityGrid />
+        <ProjectsShowcase />
+        <PromptsShowcase />
         <AssistantTeaser />
         <CommunitySection />
       </main>
