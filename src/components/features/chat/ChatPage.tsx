@@ -10,6 +10,7 @@ import { MODELS, getModel, type AIModel } from "@/lib/models";
 import type { ToolStatus } from "./ToolUseCard";
 import type { Skill } from "@/lib/skills";
 import type { FileAttachment } from "./FilePreview";
+import { useAuth } from "@/lib/auth-context";
 
 interface ToolCall {
   id: string;
@@ -42,6 +43,7 @@ function uid() {
 }
 
 export function ChatPage() {
+  const { user, loading: authLoading } = useAuth();
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem("cyberai_chat_messages");
@@ -61,6 +63,20 @@ export function ChatPage() {
     }
     return MODELS[0];
   });
+  /* clear guest history on page leave / auth resolve */
+  useEffect(() => {
+    if (!user && !authLoading) {
+      localStorage.removeItem("cyberai_chat_messages");
+      setMessages([]);
+    }
+  }, [user, authLoading]);
+
+  useEffect(() => {
+    if (user) return;
+    const handler = () => localStorage.removeItem("cyberai_chat_messages");
+    window.addEventListener("beforeunload", handler);
+    return () => window.removeEventListener("beforeunload", handler);
+  }, [user]);
 
   const messagesRef = useRef(messages);
   useEffect(() => {
@@ -74,8 +90,10 @@ export function ChatPage() {
   const { containerRef, bottomRef } = useChatScroll(messages.length);
 
   useEffect(() => {
-    localStorage.setItem("cyberai_chat_messages", JSON.stringify(messages));
-  }, [messages]);
+    if (user) {
+      localStorage.setItem("cyberai_chat_messages", JSON.stringify(messages));
+    }
+  }, [messages, user]);
 
   const generateResponse = useCallback(
     async (

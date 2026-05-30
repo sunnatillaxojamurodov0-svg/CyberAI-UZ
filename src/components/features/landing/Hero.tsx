@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { MagneticButton } from "@/components/shared/MagneticButton";
 import { AnimatedGrid } from "@/components/shared/AnimatedGrid";
+import { AboutMe } from "./AboutMe";
 
 export function Hero() {
   return (
@@ -48,7 +49,7 @@ export function Hero() {
             Initialize Command
             <ArrowUpRight size={16} className="opacity-80" />
           </MagneticButton>
-          <MagneticButton variant="ghost">View Documentation</MagneticButton>
+          <AboutMe />
         </motion.div>
       </div>
     </section>
