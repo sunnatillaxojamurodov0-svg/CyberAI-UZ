@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "cyberai-uz",
+  "name": "cyberai",
   "compatibility_date": "2026-05-28",
   "compatibility_flags": [
     "nodejs_compat"
