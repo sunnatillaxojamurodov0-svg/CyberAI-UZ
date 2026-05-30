@@ -19,5 +19,12 @@
       "persist": true,
       "head_sampling_rate": 1
     }
-  }
+  },
+  "d1_databases": [
+    {
+      "binding": "cyberai_db",
+      "database_name": "cyberai-db",
+      "database_id": "636e7ef3-8cbe-4590-9d9c-f61875b9d749"
+    }
+  ]
 }
