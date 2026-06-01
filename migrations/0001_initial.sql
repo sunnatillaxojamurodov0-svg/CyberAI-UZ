@@ -16,17 +16,9 @@ create table if not exists chat_messages (
 
 create index if not exists idx_chat_messages_session on chat_messages(session_id);
 
-create table if not exists users (
-  id text primary key,
-  email text unique not null,
-  name text,
-  avatar_url text,
-  created_at integer not null default (unixepoch())
-);
-
 create table if not exists feedback (
   id text primary key,
-  user_id text references users(id),
+  user_id text,
   message text not null,
   page text,
   created_at integer not null default (unixepoch())

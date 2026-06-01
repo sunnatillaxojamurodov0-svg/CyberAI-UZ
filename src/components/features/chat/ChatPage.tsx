@@ -5,21 +5,11 @@ import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useChatScroll } from "@/hooks/useChatScroll";
 import { streamChat } from "@/lib/ai";
-import { TOOL_HANDLERS, TOOL_MAP, classifyIntent } from "@/lib/chat-tools";
 import { MODELS, getModel, type AIModel } from "@/lib/models";
-import type { ToolStatus } from "./ToolUseCard";
 import type { Skill } from "@/lib/skills";
 import type { FileAttachment } from "./FilePreview";
 import { useAuth } from "@/lib/auth-context";
-
-interface ToolCall {
-  id: string;
-  name: string;
-  status: ToolStatus;
-  result?: string;
-  error?: string;
-  duration?: number;
-}
+import { useProfile } from "@/hooks/useProfile";
 
 interface Message {
   id: string;
@@ -27,15 +17,14 @@ interface Message {
   content: string;
   skill?: Skill;
   attachment?: FileAttachment;
-  toolCalls?: ToolCall[];
 }
 
-const SUGGESTIONS = [
-  "Audit all SSH ingress from the last 24h",
-  "Scan for anomalies in EU-WEST-2",
-  "Show me the orbital node status",
-  "Run a threat intelligence sweep",
-];
+  const SUGGESTIONS = [
+    "What are the latest CVEs affecting Linux kernels?",
+    "Explain the OSCP privilege escalation methodology",
+    "Help me understand SQL injection prevention",
+    "Design a basic network security audit checklist",
+  ];
 
 let _id = 0;
 function uid() {
@@ -44,6 +33,8 @@ function uid() {
 
 export function ChatPage() {
   const { user, loading: authLoading } = useAuth();
+  const { profile } = useProfile();
+  const userName = profile?.name ?? user?.email?.split("@")[0] ?? "Operator";
   const [messages, setMessages] = useState<Message[]>(() => {
     try {
       const saved = localStorage.getItem("cyberai_chat_messages");
@@ -104,49 +95,14 @@ export function ChatPage() {
       setIsProcessing(true);
       setApiKeyMissing(false);
 
-      /* ---- intent + tools ---- */
-      const intent = classifyIntent(userInput);
-      const toolNames = TOOL_MAP[intent] || [];
-
-      const toolCalls: ToolCall[] = toolNames.map((name) => ({
-        id: uid(),
-        name,
-        status: "loading" as ToolStatus,
-      }));
-
       const aiId = uid();
-      const aiMessage: Message = { id: aiId, role: "ai", content: "", toolCalls };
+      const aiMessage: Message = { id: aiId, role: "ai", content: "" };
 
       const update = (fn: (prev: Message[]) => Message[]) => {
         setMessages((prev) => fn(prev));
       };
 
       update((prev) => [...prev, aiMessage]);
-
-      /* ---- execute simulated tools ---- */
-      let toolContext = "";
-
-      if (toolCalls.length > 0) {
-        const results = await Promise.all(
-          toolCalls.map(async (tc) => {
-            const handler = TOOL_HANDLERS[tc.name];
-            if (!handler) {
-              return { ...tc, status: "error" as ToolStatus, error: `Unknown tool: ${tc.name}` };
-            }
-            try {
-              const { result, duration } = await handler();
-              toolContext += `[Tool: ${tc.name}]\n${result}\n\n`;
-              return { ...tc, status: "success" as ToolStatus, result, duration };
-            } catch (err) {
-              return { ...tc, status: "error" as ToolStatus, error: String(err) };
-            }
-          }),
-        );
-
-        update((prev) =>
-          prev.map((m) => (m.id === aiId ? { ...m, toolCalls: results } : m)),
-        );
-      }
 
       /* ---- skill context prefix ---- */
       const skillPrefix = skill
@@ -164,9 +120,7 @@ export function ChatPage() {
           content: m.content,
         }));
 
-      const prompt = toolContext
-        ? `${skillPrefix} "${userInput}"\n\nTool execution results:\n${toolContext}\n\nBased on the tool results above, provide a comprehensive response to the user's query.`
-        : `${skillPrefix} "${userInput}"`;
+      const prompt = `${skillPrefix} "${userInput}"`;
 
       try {
         let accumulated = "";
@@ -202,11 +156,6 @@ export function ChatPage() {
               ? {
                   ...m,
                   content: `[${selectedModel.label}] ${message}`,
-                  toolCalls: (m.toolCalls ?? []).map((tc) =>
-                    tc.status === "loading"
-                      ? { ...tc, status: "error" as ToolStatus, error: message }
-                      : tc,
-                  ),
                 }
               : m,
           ),
@@ -266,10 +215,9 @@ export function ChatPage() {
             <AlertTriangle size={16} className="text-destructive shrink-0" />
             <div className="text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">
-                {selectedModel.apiKeyEnv} not configured.
+                AI service is not configured.
               </span>{" "}
-              Add <code className="rounded bg-surface-2 px-1 py-0.5 font-mono text-[10px]">{selectedModel.apiKeyEnv}</code>{" "}
-              to your .env file, then reload.
+              The server GEMINI_API_KEY is missing. Contact the administrator.
             </div>
           </div>
         )}
@@ -285,7 +233,6 @@ export function ChatPage() {
                   content={msg.content}
                   skill={msg.skill}
                   attachment={msg.attachment}
-                  toolCalls={msg.toolCalls}
                   isStreaming={msg.id === streamingId}
                 />
               ))}
@@ -298,12 +245,12 @@ export function ChatPage() {
               <MessageSquare size={28} className="text-accent" />
             </div>
             <div className="text-center">
-              <h2 className="font-display text-2xl font-bold tracking-tight">
-                VAEL <span className="text-accent">Assistant</span>
-              </h2>
-              <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-                Describe the posture you need. Scan, query, and command your infrastructure in natural language.
-              </p>
+                <h2 className="font-display text-2xl font-bold tracking-tight">
+                  VAEL <span className="text-accent">Assistant</span>
+                </h2>
+                <p className="mt-2 max-w-sm text-sm text-muted-foreground">
+                  Describe your scenario or ask a security question. VAEL will respond with expertise.
+                </p>
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {SUGGESTIONS.map((s) => (

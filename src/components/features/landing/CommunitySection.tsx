@@ -27,12 +27,12 @@ export function CommunitySection() {
 
             <div className="relative grid grid-cols-12 gap-10">
               <div className="col-span-12 lg:col-span-7">
-                <StatusPill>The Mission</StatusPill>
+                <StatusPill>Mission</StatusPill>
                 <h2 className="mt-6 font-display text-4xl font-bold tracking-[-0.03em] md:text-6xl text-balance">
-                  A network of operators defending the <span className="gradient-text">edge of intelligence.</span>
+                  The network of operators protecting the <span className="gradient-text">edge of intelligence.</span>
                 </h2>
                 <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
-                  CyberAI is built with — and for — the engineers, researchers and analysts shaping the next decade of autonomous systems. Join the community shaping how machines defend machines.
+                  CyberAI is built with — and for — the engineers, researchers, and analysts shaping the next decade of autonomous systems. Join a community that defines how machines defend machines.
                 </p>
                 <a href="#" className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary">
                   Apply for early access
@@ -52,7 +52,7 @@ export function CommunitySection() {
                 <div className="mt-4 rounded-xl border border-border bg-black/40 p-5">
                   <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">// Operator Log</div>
                   <p className="text-sm italic leading-relaxed text-foreground/80">
-                    "It feels like a calm cockpit. Everything I need is one keystroke away — nothing else asking for attention."
+                    "It reminds me of a quiet cockpit. Everything I need is one click away — nothing else demanding my attention."
                   </p>
                   <div className="mt-4 flex items-center gap-3">
                     <div className="size-8 rounded-full bg-gradient-to-br from-primary to-accent" />

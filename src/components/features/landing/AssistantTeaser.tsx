@@ -6,10 +6,10 @@ import { GlassPanel } from "@/components/shared/GlassPanel";
 import { MagneticButton } from "@/components/shared/MagneticButton";
 
 const LINES: Array<{ from: "user" | "ai"; text: string }> = [
-  { from: "user", text: "Audit all SSH ingress from the last 24 hours and isolate anomalies." },
-  { from: "ai", text: "Scanned 14,206 sessions. 3 anomalies in region EU-WEST-2 isolated to quarantine VPC. Drafting remediation diff." },
+  { from: "user", text: "Audit all SSH ingress in the last 24 hours and isolate anomalies." },
+  { from: "ai", text: "14,206 sessions scanned. 3 anomalies in EU-WEST-2 region isolated to quarantine VPC. Remediation diff being generated." },
   { from: "user", text: "Verify edge gateway certificate integrity." },
-  { from: "ai", text: "All 12 gateway signatures match expected CA pins. Gateway-03 expires in 4 days — schedule auto-renewal?" },
+  { from: "ai", text: "All 12 gateway signatures match expected CA pins. Gateway-03 expires in 4 days — schedule automatic renewal?" },
 ];
 
 export function AssistantTeaser() {
@@ -22,16 +22,16 @@ export function AssistantTeaser() {
           <div className="col-span-12 lg:col-span-5 flex flex-col justify-center">
             <StatusPill tone="accent">Cyber-Pilot · v2</StatusPill>
             <h2 className="mt-6 font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl text-balance">
-              Communicate with your <span className="gradient-text">infrastructure.</span>
+              Talk to your <span className="gradient-text">infrastructure.</span>
             </h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-              No more cryptic log grep or brittle runbooks. Describe the posture you need;
-              CyberAI translates intent into hardened, audit-ready policy in milliseconds.
+              No more cryptic log greps and fragile runbooks. Describe the state you need;
+              CyberAI translates your intent into hardened, audit-ready policy in milliseconds.
             </p>
             <ul className="mt-8 space-y-3 text-sm">
               {[
-                "Conversational threat hunting across petabyte log lakes.",
-                "Tool-use to query, write, deploy — never raw SQL again.",
+                "Conversational threat hunting across petabyte-scale log lakes.",
+                "Use tools to ask, write, and deploy — never raw SQL again.",
                 "Every action signed, diffed, and reversible.",
               ].map((l) => (
                 <li key={l} className="flex items-start gap-3 text-foreground/85">
@@ -42,7 +42,7 @@ export function AssistantTeaser() {
             </ul>
             <div className="mt-10">
               <MagneticButton onClick={() => navigate({ to: "/chat" })}>
-                <Sparkles size={14} /> Open the Assistant
+                <Sparkles size={14} /> Open Assistant
               </MagneticButton>
             </div>
           </div>

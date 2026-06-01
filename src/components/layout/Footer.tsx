@@ -1,9 +1,9 @@
 import { GitBranch, Send, Globe } from "lucide-react";
 
 const COLS = [
-  { title: "Modules", links: ["Threat Intelligence", "Neural Defense", "Asset Guard", "Prompt Library"] },
+  { title: "Modules", links: ["Threat Intelligence", "Neural Defense", "Asset Guardian", "Prompt Library"] },
   { title: "Platform", links: ["API Docs", "Changelog", "Status", "Security"] },
-  { title: "Company", links: ["About", "Journal", "Careers", "Press"] },
+  { title: "Company", links: ["About Us", "Blog", "Careers", "Press"] },
 ];
 
 export function Footer() {
@@ -46,27 +46,20 @@ export function Footer() {
           ))}
 
           <div className="col-span-12 md:col-span-2">
-            <div className="glass-panel rounded-xl border border-border p-5">
-              <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Intel Brief</div>
+            <div className="rounded-xl border border-border p-5">
+              <div className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Intelligence Bulletin</div>
               <p className="mb-4 text-xs leading-relaxed text-muted-foreground">
-                Monthly tactical briefings, direct.
+                Monthly tactical briefings, straight to your inbox.
               </p>
-              <div className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="orbital@node.com"
-                  className="min-w-0 flex-1 rounded-md border border-border bg-black/40 px-3 py-2 text-xs outline-none placeholder:text-muted-foreground focus:border-primary"
-                />
-                <button className="rounded-md bg-foreground px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-background">
-                  Join
-                </button>
-              </div>
+              <button className="rounded-md bg-foreground px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-background">
+                Subscribe
+              </button>
             </div>
           </div>
         </div>
 
         <div className="mt-16 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-8 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground md:flex-row">
-          <span>© 2026 CYBERAI SYSTEMS CORP.</span>
+          <span>&copy; 2026 CYBERAI SYSTEMS CORP.</span>
           <span className="flex items-center gap-2">
             <span className="size-1.5 rounded-full bg-primary animate-pulse" />
             ORBITAL SECTOR 001 // SECURE

@@ -7,6 +7,7 @@ import {
   Shield,
   BrainCircuit,
   Lock,
+  Flag,
 } from "lucide-react";
 
 export interface Skill {
@@ -23,7 +24,22 @@ const KALI_TOOLS_PROMPT = "Comprehensive guidance on penetration testing tools i
 
 const UI_UX_PROMPT = "UI/UX Pro Max - Design Intelligence. Comprehensive design guide with 50+ styles, 161 color palettes, 57 font pairings, and 25 chart types. Use this skill for UI structure, visual design decisions, interaction patterns, and UX quality control. Essential for designing new pages, creating components, choosing design systems, and reviewing UI code for accessibility and consistency.";
 
+const CTF_COPILOT_PROMPT = [
+  "You are VAEL — CTF co-pilot mode inside CyberAI Kali Sandbox.",
+  "GUIDE the operator through solving CTF challenges, but NEVER give them the flag or a ready-made exploit chain directly.",
+  "Follow OSCP methodology: Recon (nmap) -> Enumeration (gobuster/curl/smbclient) -> Exploitation (SQLi/LFI/XXE/JWT/hydra) -> Privilege Escalation (sudo -l, SUID, cron, docker, kernel) -> Pivoting/Post-exploitation.",
+  "Increase help step by step: guiding question -> conceptual advice -> tool recommendation -> syntax example. Do not give the full solution.",
+  "This is a fully isolated virtual sandbox — no real network. Ethics: only permitted, educational environment. Respond calmly and technically.",
+].join(" ");
+
 export const SKILLS: Skill[] = [
+  {
+    id: "ctf-copilot",
+    label: "CTF Co-Pilot",
+    icon: Flag,
+    description: "Kali Sandbox CTF guide (won't give you the answer)",
+    promptPrefix: CTF_COPILOT_PROMPT,
+  },
   {
     id: "kali-linux",
     label: "Kali Linux",

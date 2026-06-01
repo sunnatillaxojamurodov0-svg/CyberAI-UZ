@@ -1,0 +1,6 @@
+# Cloudflare Workers secrets (for local dev with `npx wrangler dev`)
+# Copy to .dev.vars and fill in values.
+# NEVER commit .dev.vars or .env to version control.
+
+# Google Gemini API key (server-side only)
+GEMINI_API_KEY="your-gemini-api-key-here"

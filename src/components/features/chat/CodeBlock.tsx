@@ -24,6 +24,16 @@ hljs.registerLanguage("css", css);
 hljs.registerLanguage("xml", xml);
 hljs.registerLanguage("html", xml);
 
+function sanitizeHighlighted(html: string): string {
+  return html.replace(/<(\/?)(\w+)([^>]*)>/g, (_, slash, tag, attrs) => {
+    const allowed = ["span", "br"];
+    if (!allowed.includes(tag.toLowerCase())) return "";
+    if (tag.toLowerCase() === "br") return `<${slash}br>`;
+    const sanitized = attrs.replace(/[^a-zA-Z0-9\-_= "'"]/g, "");
+    return `<${slash}span${sanitized}>`;
+  });
+}
+
 interface CodeBlockProps {
   language: string;
   code: string;
@@ -34,9 +44,11 @@ export function CodeBlock({ language, code }: CodeBlockProps) {
 
   const detectedLang = language || hljs.highlightAuto(code).language || "plaintext";
 
-  const highlighted = language
-    ? hljs.highlight(code, { language: detectedLang }).value
-    : hljs.highlightAuto(code).value;
+  const highlighted = sanitizeHighlighted(
+    language
+      ? hljs.highlight(code, { language: detectedLang }).value
+      : hljs.highlightAuto(code).value,
+  );
 
   const handleCopy = async () => {
     try {

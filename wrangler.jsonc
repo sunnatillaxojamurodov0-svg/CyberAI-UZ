@@ -3,15 +3,19 @@
   "name": "cyberai",
   "main": ".output/server/index.mjs",
   "compatibility_date": "2026-05-28",
+<<<<<<< HEAD
   "compatibility_flags": [
     "nodejs_compat"
   ],
+=======
+  "compatibility_flags": ["nodejs_compat"],
+>>>>>>> 091ada5 (fix: full update)
   "assets": {
     "directory": "dist/client",
     "binding": "ASSETS"
   },
   "observability": {
-    "enabled": false,
+    "enabled": true,
     "head_sampling_rate": 1,
     "logs": {
       "enabled": true,
@@ -31,5 +35,11 @@
       "database_name": "cyberai-db",
       "database_id": "636e7ef3-8cbe-4590-9d9c-f61875b9d749"
     }
+  ],
+  "vars": {
+    "ENVIRONMENT": "production"
+  },
+  "routes": [
+    { "pattern": "cyberaiuz.lovable.app", "zone_id": "YOUR_ZONE_ID" }
   ]
 }

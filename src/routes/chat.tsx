@@ -11,13 +11,13 @@ export const Route = createFileRoute("/chat")({
       {
         name: "description",
         content:
-          "Communicate with your infrastructure through CyberAI's intelligent assistant. Scan, query, and command in natural language.",
+          "Interact with your infrastructure through CyberAI's intelligent assistant. Scan, ask, and command in natural language.",
       },
       { property: "og:title", content: "CyberAI — Assistant" },
       {
         property: "og:description",
         content:
-          "Autonomous infrastructure defense through natural language commands. Real-time threat scanning, query, and remediation.",
+          "Autonomous infrastructure defense through natural language commands. Real-time threat scanning, querying, and remediation.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/chat" },

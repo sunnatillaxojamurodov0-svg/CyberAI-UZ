@@ -69,7 +69,7 @@ export function AboutMe() {
             <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center">
               <div className="group/avatar relative shrink-0">
                 <div
-                  className="relative size-28 overflow-hidden border-2 border-accent/20 shadow-[0_0_30px_-8px] shadow-accent/20 select-none"
+                  className="relative size-32 overflow-hidden border-2 border-accent/20 shadow-[0_0_30px_-8px] shadow-accent/20 select-none"
                   style={{ borderRadius: 0 }}
                   onContextMenu={(e) => e.preventDefault()}
                 >
@@ -100,13 +100,13 @@ export function AboutMe() {
 
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground/60">
                   <span className="flex items-center gap-1.5">
-                    <Calendar size={12} /> Born 2009
+                    <Calendar size={12} /> Born: 2009
                   </span>
                   <span className="flex items-center gap-1.5">
                     <MapPin size={12} /> Ohangaron, Uzbekistan
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <User size={12} /> He/Him
+                    <User size={12} /> Male
                   </span>
                 </div>
               </div>
@@ -139,18 +139,17 @@ export function AboutMe() {
           <div className="space-y-8 px-8 py-6">
             {/* Bio */}
             <div>
-              <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">About</h4>
+              <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">About Me</h4>
               <p className="text-sm leading-relaxed text-foreground/85">
                 Sunnatilla is a self-taught technologist, cybersecurity researcher, and AI architect from
-                Ohangaron, Uzbekistan. His passion for technology, artificial intelligence, and
-                cybersecurity led him to found CyberAI — a sovereign platform designed to make
-                advanced technical knowledge accessible to everyone.
+                Ohangaron, Uzbekistan. His passion for technology, artificial intelligence, and cybersecurity
+                led to the creation of CyberAI — a sovereign platform that makes advanced technical
+                knowledge accessible to everyone.
               </p>
               <p className="mt-3 text-sm leading-relaxed text-foreground/85">
                 His work focuses on building practical, real-world systems that bridge the gap between
-                complex AI research and everyday usability. CyberAI and its intelligent assistant VAEL
-                are the culmination of years of self-directed study in programming, security, and
-                machine learning systems.
+                complex AI research and everyday utility. CyberAI and its intelligent assistant VAEL
+                are the result of years of independent study in programming, security, and machine learning.
               </p>
             </div>
 
@@ -161,9 +160,8 @@ export function AboutMe() {
                 <div>
                   <h4 className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Mission</h4>
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    To equip people with practical AI, cybersecurity, and programming knowledge —
-                    breaking down complex technology into accessible, actionable skills for the
-                    digital age.
+                    Empowering people with practical AI, cybersecurity, and programming knowledge —
+                    turning complex technologies into accessible and applicable skills for the digital age.
                   </p>
                 </div>
               </div>
@@ -210,11 +208,11 @@ export function AboutMe() {
                 <div>
                   <h4 className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">About CyberAI</h4>
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    CyberAI is a modern educational platform designed for learning AI, cybersecurity,
-                    and programming. It provides tools, courses, and hands-on projects to help users
-                    understand technology, build practical skills, and stay informed about the latest
-                    developments in the field. At its core is VAEL — an intelligent assistant that
-                    answers questions, explains concepts, and supports the learning journey.
+                    CyberAI is a modern educational platform designed for learning AI, cybersecurity, and programming.
+                    It provides users with tools, courses, and hands-on projects to understand technology,
+                    build practical skills, and stay informed about the latest industry developments.
+                    At the heart of the platform is VAEL — an intelligent assistant that answers questions,
+                    explains concepts, and supports the learning journey.
                   </p>
                 </div>
               </div>
@@ -227,9 +225,9 @@ export function AboutMe() {
                 {[
                   "Advanced AI services",
                   "Interactive learning systems",
-                  "Cybersecurity laboratories",
+                  "Cybersecurity labs",
                   "Programming courses",
-                  "Technology community building",
+                  "Building a tech community",
                   "Digital literacy initiatives",
                 ].map((item) => (
                   <div key={item} className="flex items-center gap-2.5 rounded-lg border border-border bg-surface/30 px-3.5 py-2.5">
@@ -247,11 +245,10 @@ export function AboutMe() {
                 <div>
                   <h4 className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Current Project — VAEL</h4>
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    VAEL is the AI assistant being developed for the CyberAI ecosystem. It is
-                    designed for rapid response to queries, educational support, clear
-                    explanation of technical concepts, natural conversation, and serves as the
-                    foundation for a future expanded AI platform. VAEL is currently in active
-                    development.
+                    VAEL is an AI assistant being developed for the CyberAI ecosystem. It
+                    provides rapid responses to queries, educational support, clear explanations of technical
+                    concepts, natural conversation, and serves as the foundation for a future
+                    expanded AI platform. VAEL is currently in active development.
                   </p>
                 </div>
               </div>
@@ -261,8 +258,8 @@ export function AboutMe() {
             <div className="relative border-l-2 border-accent/40 pl-5 py-3">
               <Quote size={14} className="absolute -left-2 -top-1 text-accent/30" />
               <p className="text-sm leading-relaxed italic text-foreground/70">
-                Technology is not just a tool. When used correctly, it becomes a force that
-                expands human potential.
+                Technology is not just a tool. When used correctly, it becomes a force
+                that amplifies human potential.
               </p>
               <p className="mt-2 text-[11px] text-muted-foreground/50">
                 — Sunnatilla Xo'jamurodov, Founder of CyberAI
@@ -271,7 +268,7 @@ export function AboutMe() {
 
             {/* Watermark footer */}
             <div className="select-none text-center text-[10px] font-mono text-muted-foreground/20 tracking-[0.15em] uppercase">
-              CyberAI · Sovereign Intelligence
+              CyberAI · Sovereign intelligence
             </div>
           </div>
         </DialogContent>

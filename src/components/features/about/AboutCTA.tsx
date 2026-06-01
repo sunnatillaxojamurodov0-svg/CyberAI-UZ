@@ -18,15 +18,15 @@ export function AboutCTA() {
       >
         <h2 className="font-display text-4xl font-extrabold leading-[1.05] tracking-[-0.03em] md:text-6xl">
           Join the{" "}
-          <span className="gradient-text">defense grid.</span>
+          <span className="gradient-text">defense network.</span>
         </h2>
         <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
           Operators, researchers, and infrastructure teams shaping the next
-          decade of autonomous defense. Quiet work. Loud consequences.
+          decade of autonomous defense. Silent work. High stakes.
         </p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
           <MagneticButton>
-            Request Clearance
+            Request Access
             <ArrowUpRight size={16} className="opacity-80" />
           </MagneticButton>
           <MagneticButton variant="ghost">Read the Docs</MagneticButton>
