@@ -7,23 +7,23 @@ const EASE = [0.16, 1, 0.3, 1] as const;
 const MILESTONES = [
   {
     year: "2023",
-    title: "Genesis Cell",
-    body: "Four founders, one whiteboard, and a thesis: cognition will outpace credentials. Seed funded by sovereign infrastructure operators.",
+    title: "Origin Cell",
+    body: "Four founders, one whiteboard, and one thesis: cognition outpaces credentials. Funded by sovereign infrastructure operators.",
   },
   {
     year: "2024",
-    title: "First Autonomous Verdict",
-    body: "Our reasoning agent contained a live ransomware detonation across 12,000 endpoints — 47 seconds, zero analyst involvement.",
+    title: "First Autonomous Judgment",
+    body: "Our reasoning agent contained a live ransomware outbreak across 12,000 endpoints — 47 seconds, zero analyst involvement.",
   },
   {
     year: "2025",
     title: "Orbital Mesh",
-    body: "Deployed across three continents and one low-earth-orbit constellation. Pattern matching across 400+ distinct threat actors in real time.",
+    body: "Deployed across three continents and one low-earth-orbit constellation. Real-time pattern matching across 400+ distinct threat actors.",
   },
   {
     year: "2026",
     title: "Sovereign Era",
-    body: "CyberAI becomes the default cognition layer for high-stakes infrastructure. The perimeter no longer needs to be defended. It defends itself.",
+    body: "CyberAI becomes the standard cognition layer for high-stakes infrastructure. The perimeter no longer needs to be defended. It defends itself.",
   },
 ];
 
@@ -38,10 +38,10 @@ export function Timeline() {
           transition={{ duration: 0.7, ease: EASE }}
           className="mb-16 flex flex-col items-start gap-6"
         >
-          <StatusPill>Operational Timeline</StatusPill>
+          <StatusPill>Operational Chronology</StatusPill>
           <h2 className="max-w-3xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
             Four years.{" "}
-            <span className="text-muted-foreground">A different theatre of war.</span>
+            <span className="text-muted-foreground">A different theater of war.</span>
           </h2>
         </motion.div>
 

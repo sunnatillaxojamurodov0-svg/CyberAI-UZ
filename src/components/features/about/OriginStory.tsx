@@ -14,28 +14,27 @@ export function OriginStory() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.8, ease: EASE }}
         >
-          <StatusPill>Chapter 01 // Genesis</StatusPill>
+          <StatusPill>01-Chapter // Origin</StatusPill>
           <h2 className="mt-6 font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
             We watched the perimeter{" "}
-            <span className="text-muted-foreground">dissolve in real time.</span>
+            <span className="text-muted-foreground">melt in real time.</span>
           </h2>
           <div className="mt-8 space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              CyberAI was founded in 2023 by a small cell of former
-              intelligence operators, ML researchers, and infrastructure
-              engineers who shared one frustration: the SOC stack had become a
-              museum of dashboards that nobody had time to read.
+              CyberAI was founded in 2023 by a small group of former intelligence operators, ML researchers,
+              and infrastructure engineers. They were united by one frustration: the SOC stack
+              had become a museum of dashboards no one had time to read.
             </p>
             <p>
-              Adversaries were already deploying generative agents. Defenders
-              were still triaging tickets. The asymmetry was no longer about
-              budget — it was about
-              <span className="text-foreground"> speed of cognition.</span>
+              Adversaries were already deploying generative agents.
+              Defenders were still triaging tickets.
+              The asymmetry was no longer about budget —
+              <span className="text-foreground"> it was about cognition speed.</span>
             </p>
             <p>
-              We didn't set out to build another scanner. We set out to build a
-              mind for the perimeter — one that thinks in milliseconds, speaks
-              in plain English, and never asks permission to defend.
+              We didn't set out to build another scanner. We set out to build
+              an intelligence for the perimeter — one that thinks in milliseconds,
+              speaks in plain language, and never asks permission to defend.
             </p>
           </div>
         </motion.div>

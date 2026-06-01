@@ -1,26 +1,15 @@
 import { useMemo } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { ToolUseCard, type ToolStatus } from "./ToolUseCard";
 import { CodeBlock } from "./CodeBlock";
 import type { Skill } from "@/lib/skills";
 import type { FileAttachment } from "./FilePreview";
-
-interface ToolCall {
-  id: string;
-  name: string;
-  status: ToolStatus;
-  result?: string;
-  error?: string;
-  duration?: number;
-}
 
 interface ChatMessageProps {
   role: "user" | "ai";
   content: string;
   skill?: Skill;
   attachment?: FileAttachment;
-  toolCalls?: ToolCall[];
   isStreaming?: boolean;
 }
 
@@ -79,7 +68,7 @@ function renderTextPart(text: string) {
 
 /* ── Component ─────────────────────────────────────────── */
 
-export function ChatMessage({ role, content, skill, attachment, toolCalls, isStreaming }: ChatMessageProps) {
+export function ChatMessage({ role, content, skill, attachment, isStreaming }: ChatMessageProps) {
   const parts = useMemo(() => (isStreaming || !content ? null : parseContent(content)), [content, isStreaming]);
 
   return (
@@ -164,18 +153,6 @@ export function ChatMessage({ role, content, skill, attachment, toolCalls, isStr
             )}
           </div>
         )}
-
-        {/* Tool calls */}
-        {toolCalls?.map((tc) => (
-          <ToolUseCard
-            key={tc.id}
-            name={tc.name}
-            status={tc.status}
-            result={tc.result}
-            error={tc.error}
-            duration={tc.duration}
-          />
-        ))}
       </div>
     </motion.div>
   );

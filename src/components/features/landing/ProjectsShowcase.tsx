@@ -56,9 +56,9 @@ const PROJECTS: Project[] = [
     title: "Orbital Sentinel",
     tagline: "Autonomous threat detection mesh",
     description:
-      "A distributed AI mesh that monitors deep-space relays, orbital assets, and edge infrastructure in real-time — correlating threat signals across 400+ actor profiles with sub-40ms latency.",
+      "A distributed AI mesh correlating threat signals across 400+ actor profiles in sub-40ms, providing real-time surveillance for deep space relays, orbital assets, and edge infrastructure.",
     details:
-      "Orbital Sentinel is CyberAI's flagship real-time threat detection platform. It deploys as a lightweight agent mesh across your entire infrastructure surface — from orbital relays to on-premise edge nodes. Each node runs a local inference engine that correlates behavior patterns against a continuously updated threat graph, enabling sub-second detection of zero-day exploits, lateral movement, and data exfiltration attempts. The mesh self-heals: if a node is compromised, neighboring nodes instantly redistribute its coverage and flag the anomaly.",
+      "Orbital Sentinel is CyberAI's flagship real-time threat detection platform. It deploys as a lightweight agent mesh across the entire infrastructure surface — from orbital relays to on-premise edge nodes. Each node runs a local inference engine correlating behavioral patterns against a continuously updated threat graph, enabling sub-second detection of zero-day exploits, lateral movement, and data exfiltration attempts. The mesh is self-healing: if a node is compromised, neighboring nodes immediately redistribute its coverage and flag the anomaly.",
     status: "Active",
     statusTone: "primary",
     category: "Defense",
@@ -74,7 +74,7 @@ const PROJECTS: Project[] = [
       "400+ threat actor profile correlation",
       "Self-healing node architecture",
       "Zero-day exploit pattern matching",
-      "Automated incident scoring and prioritization",
+      "Automated incident assessment and prioritization",
     ],
     gradient: "from-violet-500/15 via-transparent to-cyan-500/10",
     accent: true,
@@ -85,21 +85,21 @@ const PROJECTS: Project[] = [
     title: "Cyber-Pilot",
     tagline: "AI-powered infrastructure assistant",
     description:
-      "A conversational AI that translates natural language into hardened infrastructure actions — query logs, write firewall policy, audit compliance, and deploy remediations without a terminal.",
+      "A conversational AI that translates natural language into hardened infrastructure actions — query logs, write firewall policies, run compliance audits, and deploy remediations without a terminal.",
     details:
-      "Cyber-Pilot is VAEL's operational interface to your entire stack. Built on a fine-tuned language model with tool-calling capabilities, it translates human intent into precise, audit-ready actions. Every command is diffed, signed, and reversible. The assistant integrates with your SIEM, IAM, cloud providers, and on-premise infrastructure through a pluggable tool registry. It maintains a full session log with cryptographic attestation for compliance auditing.",
+      "Cyber-Pilot is VAEL's operational interface for your entire stack. Built on a fine-tuned language model with tool-calling capability, it translates human intent into precise, audit-ready actions. Every command is diffed, signed, and reversible. The assistant integrates with your SIEM, IAM, cloud providers, and on-premise infrastructure through a pluggable tool registry. It maintains a full session log with cryptographic attestation for compliance audit.",
     status: "Beta",
     statusTone: "accent",
     category: "AI",
     tech: ["TypeScript", "React", "Python", "FastAPI", "Postgres"],
     metrics: [
       { label: "Accuracy", value: "97.3%", accent: true },
-      { label: "Avg. Response", value: "1.2s" },
+      { label: "Avg Response", value: "1.2s" },
       { label: "Integrations", value: "40+" },
     ],
     features: [
-      "Natural-language infrastructure control",
-      "Diff-every-command safety model",
+      "Natural language infrastructure management",
+      "Per-command diff security model",
       "Pluggable tool registry (40+ integrations)",
       "Cryptographically signed session logs",
       "One-click rollback for every action",
@@ -115,7 +115,7 @@ const PROJECTS: Project[] = [
     description:
       "Translate high-level business intent into low-level firewall rules, IAM policies, and network segmentation — with machine-verified diffs and dry-run previews.",
     details:
-      "Policy Mesh bridges the gap between business intent and infrastructure reality. Engineers describe the desired posture in a declarative policy language — 'segment EU-WEST-2 production from staging' — and Policy Mesh computes the minimal set of firewall rules, IAM bindings, and network policies required to achieve it. Every change is presented as a machine-verified diff with blast-radius analysis before deployment.",
+      "Policy Mesh bridges the gap between business intent and infrastructure reality. Engineers describe the desired state in a declarative policy language — 'isolate EU-WEST-2 production from staging' — and Policy Mesh calculates the minimal set of firewall rules, IAM bindings, and network policies required to achieve it. Every change is presented as a machine-verified diff with blast radius analysis before deployment.",
     status: "Stable",
     statusTone: "primary",
     category: "Infrastructure",
@@ -127,7 +127,7 @@ const PROJECTS: Project[] = [
     ],
     features: [
       "Declarative policy language (DPL)",
-      "Machine-verified diff with blast-radius analysis",
+      "Machine-verified diffs with blast radius analysis",
       "Dry-run and preview before any deployment",
       "Multi-cloud and on-premise support",
       "Audit trail with cryptographic attestation",
@@ -143,7 +143,7 @@ const PROJECTS: Project[] = [
     description:
       "A cinematic 3D visualization of your entire infrastructure graph — traffic flows, threat heatmaps, anomaly clusters, and dependency chains — rendered at 60 FPS.",
     details:
-      "Neural Topology transforms complex infrastructure telemetry into an intuitive, explorable graph. Every node, connection, and data flow is rendered in real-time using a GPU-accelerated WebGL engine. It supports drill-down from global topology to individual packet flows, with heatmap overlays for threat levels, latency, and error rates. The engine processes 47M+ signals per day, clustering anomalies and surfacing patterns that static dashboards miss.",
+      "Neural Topology transforms complex infrastructure telemetry into an intuitive, explorable graph. Every node, connection, and data flow is rendered in real-time using a GPU-accelerated WebGL engine. It supports drill-down from global topology to individual packet flows, heatmap overlays for threat levels, latency, and error rates. The engine processes 47M+ signals per day, clustering anomalies and surfacing patterns that static dashboards miss.",
     status: "Active",
     statusTone: "primary",
     category: "Visualization",
@@ -169,20 +169,20 @@ const PROJECTS: Project[] = [
     title: "Incident Playbooks",
     tagline: "Version-controlled response library",
     description:
-      "A living library of validated, version-controlled response playbooks — covering forensic acquisition, compliance auditing, and automated remediation sequences.",
+      "A living library of validated, version-controlled response playbooks covering forensic acquisition, compliance audit, and automated remediation sequences.",
     details:
-      "Incident Playbooks is CyberAI's open-core library of battle-tested response procedures. Each playbook is a version-controlled, machine-readable document that codifies the exact steps for incident response scenarios — from ransomware containment to insider threat investigation. Playbooks integrate directly with Cyber-Pilot for one-command execution and produce cryptographic evidence logs suitable for post-incident review and regulatory compliance.",
+      "Incident Playbooks is CyberAI's open-core library of battle-tested response procedures. Each playbook is a version-controlled, machine-readable document encoding precise steps for incident response scenarios — from ransomware containment to insider threat investigation. Playbooks integrate directly with Cyber-Pilot for one-command execution and produce cryptographically verifiable evidence logs suitable for post-incident review and regulatory compliance.",
     status: "Active",
     category: "Security",
     tech: ["YAML", "TypeScript", "React", "Git", "Markdown"],
     metrics: [
       { label: "Playbooks", value: "240+", accent: true },
-      { label: "Avg. Resolution", value: "4.2m" },
+      { label: "Avg Resolution", value: "4.2m" },
       { label: "CEF Compliant", value: "Yes" },
     ],
     features: [
       "240+ validated response playbooks",
-      "Version-controlled with semantic diffing",
+      "Version control with semantic diffing",
       "One-command execution via Cyber-Pilot",
       "Cryptographic evidence logging",
       "Regulatory compliance mapping",
@@ -300,7 +300,7 @@ function ProjectCard({
                 : "text-primary/70 group-hover:text-primary",
             )}
           >
-            Explore{" "}
+            Learn{" "}
             <ArrowUpRight
               size={12}
               className="ml-0.5 inline-block transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -529,8 +529,7 @@ export function ProjectsShowcase() {
             <span className="text-muted-foreground">for the autonomous era.</span>
           </h2>
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
-            Every CyberAI project is built to a single specification: quiet power at machine speed.
-            Click any card to explore the architecture, metrics, and capabilities.
+            Every CyberAI project is built to one spec: silent strength at machine speed. Click any card to explore architecture, metrics, and capabilities.
           </p>
         </motion.div>
 

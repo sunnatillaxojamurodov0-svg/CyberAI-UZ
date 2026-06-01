@@ -9,17 +9,17 @@ import { PromptsShowcase } from "@/components/features/landing/PromptsShowcase";
 export const Route = createFileRoute("/prompts")({
   head: () => ({
     meta: [
-      { title: "CyberAI — Prompt Library" },
+      { title: "CyberAI — Prompts Library" },
       {
         name: "description",
         content:
-          "Browse CyberAI's library of battle-tested prompt templates for security audit, incident response, threat hunting, code analysis, infrastructure hardening, and compliance.",
+          "Browse CyberAI's battle-tested prompt template library for security audit, incident response, threat hunting, code analysis, infrastructure hardening, and compliance.",
       },
-      { property: "og:title", content: "CyberAI — Prompt Library" },
+      { property: "og:title", content: "CyberAI — Prompts Library" },
       {
         property: "og:description",
         content:
-          "Pre-validated prompt templates crafted by CyberAI operators. Search, filter, and copy for your environment.",
+          "Pre-approved prompt templates developed by CyberAI operators. Search, filter, and copy for your environment.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/prompts" },
@@ -40,15 +40,14 @@ function PromptsRoute() {
           <AnimatedGrid />
           <div className="relative z-10 mx-auto max-w-5xl text-center">
             <div className="flex justify-center">
-              <StatusPill tone="accent">Prompt Library</StatusPill>
+              <StatusPill tone="accent">Prompts Library</StatusPill>
             </div>
             <h1 className="mt-7 font-display text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance">
-              Speak to your infrastructure{" "}
-              <span className="gradient-text">with precision.</span>
+              Speak to your infrastructure with{" "}
+              <span className="gradient-text">precision.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Every prompt is battle-tested by CyberAI operators. Filter by category, search by
-              keyword, and copy any template directly to your clipboard.
+              Every prompt is battle-tested by CyberAI operators. Filter by category, search by keyword, and copy any template directly to your clipboard.
             </p>
           </div>
         </section>

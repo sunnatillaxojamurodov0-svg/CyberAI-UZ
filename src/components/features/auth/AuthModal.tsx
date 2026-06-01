@@ -1,6 +1,6 @@
 import { useState, useCallback, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User, ArrowLeft, Loader2, Sparkles, CheckCircle2, Globe } from "lucide-react";
+import { X, Mail, Lock, User, ArrowLeft, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -67,7 +67,7 @@ function LoginForm({
 }: {
   onModeChange: (mode: AuthMode) => void;
 }) {
-  const { signIn, signInWithGoogle, authError, clearError } = useAuth();
+  const { signIn, authError, clearError } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -107,24 +107,6 @@ function LoginForm({
         </button>
       </div>
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-[10px] uppercase font-mono tracking-[0.15em]">
-          <span className="bg-background px-3 text-muted-foreground/50">or continue with</span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={signInWithGoogle}
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface py-3 text-sm font-medium text-foreground/80 transition-all hover:border-accent/30 hover:bg-accent/5 hover:text-foreground"
-      >
-        <Globe size={16} className="text-accent" />
-        Sign in with Google
-      </button>
-
       {authError && (
         <motion.p
           initial={{ opacity: 0, y: -4 }}
@@ -141,11 +123,11 @@ function LoginForm({
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-semibold text-white shadow-[0_0_30px_-8px] shadow-accent/40 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
-        {submitting ? "Authenticating..." : "Sign In"}
+        {submitting ? "Verifying..." : "Sign In"}
       </button>
 
       <p className="text-center font-mono text-[10px] text-muted-foreground">
-        Don&apos;t have an account?{" "}
+        Don't have an account?{" "}
         <button
           type="button"
           onClick={() => onModeChange("signup")}
@@ -165,7 +147,7 @@ function SignupForm({
 }: {
   onModeChange: (mode: AuthMode) => void;
 }) {
-  const { signUp, signInWithGoogle, authError, clearError } = useAuth();
+  const { signUp, authError, clearError } = useAuth();
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -197,24 +179,6 @@ function SignupForm({
       <Field icon={Mail} label="Email" type="email" value={email} onChange={setEmail} placeholder="operator@cyberai.dev" />
       <Field icon={Lock} label="Password" type="password" value={password} onChange={setPassword} placeholder="••••••••" />
 
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-border" />
-        </div>
-        <div className="relative flex justify-center text-[10px] uppercase font-mono tracking-[0.15em]">
-          <span className="bg-background px-3 text-muted-foreground/50">or sign up with</span>
-        </div>
-      </div>
-
-      <button
-        type="button"
-        onClick={signInWithGoogle}
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface py-3 text-sm font-medium text-foreground/80 transition-all hover:border-accent/30 hover:bg-accent/5 hover:text-foreground"
-      >
-        <Globe size={16} className="text-accent" />
-        Sign up with Google
-      </button>
-
       {authError && (
         <motion.p
           initial={{ opacity: 0, y: -4 }}
@@ -231,7 +195,7 @@ function SignupForm({
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-semibold text-white shadow-[0_0_30px_-8px] shadow-accent/40 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
-        {submitting ? "Creating account..." : "Create Account"}
+        {submitting ? "Creating..." : "Create Account"}
       </button>
 
       <p className="text-center font-mono text-[10px] text-muted-foreground">
@@ -283,7 +247,7 @@ function ResetForm({
       className="space-y-5"
     >
       <p className="text-sm leading-relaxed text-muted-foreground">
-        Enter your email and we&apos;ll send you a link to reset your password.
+        Enter your email address and we'll send you a reset link.
       </p>
 
       <Field icon={Mail} label="Email" type="email" value={email} onChange={setEmail} placeholder="operator@cyberai.dev" autoFocus />
@@ -340,7 +304,7 @@ function ResetSent({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       <div>
         <h3 className="font-display text-lg font-bold tracking-tight text-foreground">Check your inbox</h3>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          If an account exists with that email, we&apos;ve sent a password reset link.
+          If an account exists with that email, we've sent a reset link.
         </p>
       </div>
       <button

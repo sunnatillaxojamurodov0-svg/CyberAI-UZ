@@ -16,8 +16,8 @@ dist-ssr
 .nitro
 *.local
 
-# Wrangler / Cloudflare
-.wrangler/
+# Environment files (contain secrets)
+.env
 .dev.vars
 
 # Editor directories and files

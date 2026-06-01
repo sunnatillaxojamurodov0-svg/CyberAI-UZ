@@ -30,15 +30,15 @@ const PILLARS: PillarData[] = [
     id: "precision",
     icon: Target,
     label: "Precision",
-    title: "Zero false positives at orbital scale.",
-    body: "Every alert is a verdict. We optimize for signal density, not telemetry volume.",
+    title: "Zero false signals at orbital scale.",
+    body: "Every signal is a judgment. We optimize for signal density, not telemetry volume.",
     details:
-      "Precision is our core engineering mandate. Every detection pipeline is subjected to adversarial validation, statistical fuzzing, and real-world red-team campaigns before deployment. False positives are treated as critical bugs — root-caused, patched, and added to the regression suite. Our multi-stage correlation engine cross-references signals across 400+ threat profiles, network telemetry, and behavioral baselines before surfacing an alert. The result: alerts that demand action, not triage.",
+      "Precision is our core engineering mandate. Every detection pipeline undergoes adversarial testing, statistical fuzzing, and real-world red-team campaigns before deployment. False signals are treated as critical bugs — root-caused, fixed, and added to the regression suite. Our multi-stage correlation engine cross-validates signals across 400+ threat profiles, network telemetry, and behavioral baselines before any alert is raised. The result: signals that demand action, not triage.",
     features: [
       "Multi-stage signal correlation before any alert is raised",
-      "Adversarial validation and red-team testing on every pipeline",
-      "False-positive regression suite with automated root-cause analysis",
-      "Sub-40ms inference with 99.97% precision at orbital scale",
+      "Adversarial testing and red-team testing on every pipeline",
+      "False-signal regression suite with automated root-cause analysis",
+      "Sub-40ms inference at 99.97% accuracy at orbital scale",
       "Continuous statistical fuzzing against detection thresholds",
     ],
     gradient: "from-cyan-500/15 via-transparent to-blue-500/10",
@@ -47,15 +47,15 @@ const PILLARS: PillarData[] = [
     id: "autonomy",
     icon: BrainCircuit,
     label: "Autonomy",
-    title: "Decisions made before humans wake up.",
+    title: "Decisions are made before humans wake up.",
     body: "Closed-loop reasoning agents that detect, decide, and remediate without escalation.",
     details:
-      "Autonomy is not about removing humans — it's about absorbing machine-speed threats that no human could react to. CyberAI's autonomous agents operate as a closed-loop reasoning system: they observe infrastructure state, classify the nature and severity of anomalies, select an appropriate remediation strategy from a verifiable policy graph, execute the response within blast-radius constraints, and log every decision with cryptographic attestation for post-mortem review. Human operators define the policy envelope; agents operate within it at machine velocity.",
+      "Autonomy is not about removing humans — it is about absorbing machine-speed threats that no human can react to. CyberAI's autonomous agents operate as a closed-loop reasoning system: they observe infrastructure state, classify the nature and severity of anomalies, select the appropriate remediation strategy from a verifiable policy graph, execute the response within blast-radius constraints, and record every decision with cryptographic attestation for post-mortem review. Human operators define the policy envelope; agents operate within it at machine speed.",
     features: [
       "Closed-loop observe-classify-act-verify reasoning pipeline",
-      "Policy-graph constrained remediation with blast-radius limits",
+      "Policy-graph bounded remediation with blast-radius constraints",
       "Cryptographically attested decision logs for compliance",
-      "Automatic escalation to human-in-the-loop for boundary cases",
+      "Automatic escalation to human-in-the-loop for edge cases",
       "Sub-second detection-to-remediation cycle time",
     ],
     gradient: "from-purple-500/15 via-transparent to-pink-500/10",
@@ -68,10 +68,10 @@ const PILLARS: PillarData[] = [
     title: "Your data never leaves the perimeter.",
     body: "Models train, infer, and reason inside your enclave. No telemetry exfiltration. Ever.",
     details:
-      "Sovereignty is the architectural foundation of CyberAI. Every model, pipeline, and inference engine is designed to run entirely within your infrastructure perimeter. There is no telemetry exfiltration, no beaconing to external services, no dependency on cloud-based inference APIs. Models are delivered as hardened enclave images, updated through air-gapped channels, and cryptographically verified before execution. Training, fine-tuning, and inference all occur on your hardware, under your key material. Your data — your rules.",
+      "Sovereignty is CyberAI's architectural foundation. Every model, pipeline, and inference engine is designed to run entirely inside your infrastructure perimeter. No telemetry exfiltration, no beaconing to external services, no dependency on cloud-based inference APIs. Models are delivered as hardened enclave images, updated through air-gapped channels, and cryptographically verified before execution. Training, fine-tuning, and inference — all happen on your hardware, under your key material. Your data — your rules.",
     features: [
       "All inference runs inside your perimeter — no external API calls",
-      "Hardened enclave images with cryptographic boot verification",
+      "Hardened enclave images with cryptographic load verification",
       "Air-gapped model update pipeline with signed manifests",
       "On-premise fine-tuning under your key material",
       "Zero telemetry exfiltration — no beaconing, no callbacks, no phoning home",
@@ -190,8 +190,8 @@ export function Mission() {
         >
           <StatusPill tone="accent">Mission Directive</StatusPill>
           <h2 className="max-w-3xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
-            Three principles{" "}
-            <span className="text-muted-foreground">non-negotiable since day one.</span>
+            Three principles never{" "}
+            <span className="text-muted-foreground">negotiated from day one.</span>
           </h2>
         </motion.div>
 

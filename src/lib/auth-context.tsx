@@ -6,12 +6,17 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import type { User, Session } from "@supabase/supabase-js";
-import { getSupabase } from "./supabase";
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  name: string | null;
+  avatar_url: string | null;
+}
 
 interface AuthContextValue {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser | null;
+  session: null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string, username?: string) => Promise<string | null>;
@@ -27,43 +32,52 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
+async function apiFetch(path: string, options?: RequestInit): Promise<Response> {
+  return fetch(path, {
+    credentials: "include",
+    headers: { "Content-Type": "application/json" },
+    ...options,
+  });
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  const supabase = getSupabase();
-
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      setLoading(false);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    apiFetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data: { ok: boolean; user: AuthUser | null }) => {
+        if (data.ok && data.user) {
+          setUser(data.user);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const signIn = useCallback(
     async (email: string, password: string): Promise<string | null> => {
       setAuthError(null);
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        setAuthError(error.message);
-        return error.message;
+      try {
+        const res = await apiFetch("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          setAuthError(data.error ?? "Login failed.");
+          return data.error ?? "Login failed.";
+        }
+        setUser(data.user);
+        setAuthModalOpen(false);
+        return null;
+      } catch {
+        setAuthError("Network error. Please try again.");
+        return "Network error. Please try again.";
       }
-      setAuthModalOpen(false);
-      return null;
     },
     [],
   );
@@ -71,45 +85,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signUp = useCallback(
     async (email: string, password: string, username?: string): Promise<string | null> => {
       setAuthError(null);
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: username ? { data: { username } } : undefined,
-      });
-      if (error) {
-        setAuthError(error.message);
-        return error.message;
+      try {
+        const res = await apiFetch("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify({ email, password, name: username }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          setAuthError(data.error ?? "Registration failed.");
+          return data.error ?? "Registration failed.";
+        }
+        setUser(data.user);
+        setAuthModalOpen(false);
+        return null;
+      } catch {
+        setAuthError("Network error. Please try again.");
+        return "Network error. Please try again.";
       }
-      setAuthModalOpen(false);
-      return null;
     },
     [],
   );
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    try {
+      await apiFetch("/api/auth/logout", { method: "POST" });
+    } catch {
+      // ignore
+    }
+    setUser(null);
   }, []);
 
   const signInWithGoogle = useCallback(async () => {
-    await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
+    setAuthError("Google sign-in is not available. Use email and password instead.");
   }, []);
 
   const resetPassword = useCallback(
-    async (email: string): Promise<string | null> => {
-      setAuthError(null);
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      });
-      if (error) {
-        setAuthError(error.message);
-        return error.message;
-      }
-      return null;
+    async (_email: string): Promise<string | null> => {
+      setAuthError("Password reset is not available yet.");
+      return "Password reset is not available yet.";
     },
     [],
   );
@@ -120,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <AuthContext.Provider
       value={{
         user,
-        session,
+        session: null,
         loading,
         signIn,
         signUp,

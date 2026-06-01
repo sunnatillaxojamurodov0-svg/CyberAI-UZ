@@ -53,13 +53,13 @@ export function BentoCommand() {
             </div>
             <div className="rounded-xl border border-border bg-black/40 p-4 text-sm leading-relaxed">
               <span className="text-accent">CyberAI: </span>
-              Analyzing perimeter activity in Sector 7G. Recommending bandwidth re-route through isolation filters.
+              Sector 7G perimeter activity being analyzed. Rerouting network traffic through isolation filters recommended.
             </div>
             <div className="flex items-center gap-3 rounded-lg border border-border bg-white/[0.03] px-4 py-2.5">
               <div className="h-1 w-24 overflow-hidden rounded-full bg-primary/15">
                 <div className="h-full w-2/3 bg-primary" />
               </div>
-              <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Threat: Low</span>
+              <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">Threat: Past</span>
             </div>
             <div className="relative aspect-square overflow-hidden rounded-xl border border-border bg-black/40">
               <img

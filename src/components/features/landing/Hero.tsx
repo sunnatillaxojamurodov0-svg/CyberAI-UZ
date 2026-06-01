@@ -1,11 +1,24 @@
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { useNavigate } from "@tanstack/react-router";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { MagneticButton } from "@/components/shared/MagneticButton";
 import { AnimatedGrid } from "@/components/shared/AnimatedGrid";
+import { useAuth } from "@/lib/auth-context";
 import { AboutMe } from "./AboutMe";
 
 export function Hero() {
+  const navigate = useNavigate();
+  const { user, openAuthModal } = useAuth();
+
+  const launchCtfLab = () => {
+    if (user) {
+      navigate({ to: "/console" });
+    } else {
+      openAuthModal();
+    }
+  };
+
   return (
     <section className="relative px-6 pt-32 pb-16 overflow-hidden">
       <AnimatedGrid />
@@ -35,8 +48,8 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto mt-7 max-w-2xl text-lg leading-relaxed text-muted-foreground text-pretty"
         >
-          The first sovereign intelligence platform designed for high-stakes infrastructure
-          and orbital asset protection. Quiet power. Cinematic clarity. Autonomous defense.
+          The first sovereign intelligence platform designed to protect
+          high-stakes infrastructure and orbital assets. Silent strength. Kinematic clarity. Autonomous defense.
         </motion.p>
 
         <motion.div
@@ -45,8 +58,8 @@ export function Hero() {
           transition={{ duration: 0.7, delay: 0.28, ease: [0.16, 1, 0.3, 1] }}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <MagneticButton>
-            Initialize Command
+          <MagneticButton onClick={launchCtfLab}>
+            CTF LAB
             <ArrowUpRight size={16} className="opacity-80" />
           </MagneticButton>
           <AboutMe />

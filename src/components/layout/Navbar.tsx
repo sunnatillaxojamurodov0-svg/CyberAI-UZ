@@ -1,13 +1,15 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState } from "react";
-import { Menu, X, LogOut, User } from "lucide-react";
-import { MagneticButton } from "@/components/shared/MagneticButton";
+import { Menu, X, LogOut } from "lucide-react";
+import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useAuth } from "@/lib/auth-context";
+import { useProfile } from "@/hooks/useProfile";
 import { cn } from "@/lib/utils";
 
 const NAV = [
   { label: "Platform", to: "/" },
+  { label: "Console", to: "/console" },
   { label: "Chat", to: "/chat" },
   { label: "Projects", to: "/projects" },
   { label: "Prompts", to: "/prompts" },
@@ -16,6 +18,10 @@ const NAV = [
 
 export function Navbar() {
   const { user, signOut, openAuthModal } = useAuth();
+  const { profile } = useProfile();
+  const navigate = useNavigate();
+
+  const goProfile = () => navigate({ to: "/profile" });
   const { scrollY } = useScroll();
   const bg = useTransform(scrollY, [0, 80], ["rgba(2, 4, 8, 0.4)", "rgba(2, 4, 8, 0.82)"]);
   const blur = useTransform(scrollY, [0, 80], ["blur(6px)", "blur(16px)"]);
@@ -52,13 +58,17 @@ export function Navbar() {
 
         <div className="hidden items-center gap-3 md:flex">
           {user ? (
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 rounded-lg border border-border bg-surface/50 px-3 py-1.5">
-                <User size={13} className="text-accent" />
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={goProfile}
+                className="flex items-center gap-2.5 rounded-lg border border-border bg-surface/50 px-2.5 py-1.5 transition-all hover:border-accent/30 hover:bg-accent/5"
+              >
+                <UserAvatar profile={profile} size="xs" />
                 <span className="text-xs font-medium text-foreground/80">
-                  {user.user_metadata?.username || user.email?.split("@")[0] || "Operator"}
+                  {profile?.name ?? user.email?.split("@")[0] ?? "Operator"}
                 </span>
-              </div>
+              </button>
               <button
                 type="button"
                 onClick={signOut}
@@ -77,9 +87,7 @@ export function Navbar() {
               >
                 Sign in
               </button>
-              <MagneticButton className="!px-5 !py-2 !text-xs" onClick={openAuthModal}>
-                Launch Console
-              </MagneticButton>
+
             </>
           )}
         </div>
@@ -106,36 +114,36 @@ export function Navbar() {
             </Link>
           ))}
           {user ? (
-            <div className="mt-2 flex items-center justify-between rounded-lg border border-border bg-surface/50 px-3 py-2.5">
-              <div className="flex items-center gap-2 text-xs text-foreground/80">
-                <User size={13} className="text-accent" />
-                {user.user_metadata?.username || user.email?.split("@")[0] || "Operator"}
-              </div>
+            <div className="mt-2 flex flex-col gap-2">
+              <button
+                type="button"
+                onClick={() => { goProfile(); setOpen(false); }}
+                className="flex items-center gap-3 rounded-lg border border-border bg-surface/50 px-3 py-2.5 text-left transition-colors hover:border-accent/30"
+              >
+                <UserAvatar profile={profile} size="sm" />
+                <div>
+                  <div className="text-sm font-medium text-foreground">
+                    {profile?.name ?? user.email?.split("@")[0] ?? "Operator"}
+                  </div>
+                  <div className="text-xs text-muted-foreground">View Profile</div>
+                </div>
+              </button>
               <button
                 type="button"
                 onClick={signOut}
-                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+                className="rounded-lg border border-border px-4 py-2.5 text-sm text-muted-foreground hover:text-foreground"
               >
-                Sign out
+                Sign Out
               </button>
             </div>
           ) : (
-            <>
-              <button
-                type="button"
-                onClick={() => { openAuthModal(); setOpen(false); }}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground text-left"
-              >
-                Sign in
-              </button>
-              <button
-                type="button"
-                onClick={() => { openAuthModal(); setOpen(false); }}
-                className="mt-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
-              >
-                Launch Console
-              </button>
-            </>
+            <button
+              type="button"
+              onClick={() => { openAuthModal(); setOpen(false); }}
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground text-left"
+            >
+              Sign in
+            </button>
           )}
         </div>
       </div>

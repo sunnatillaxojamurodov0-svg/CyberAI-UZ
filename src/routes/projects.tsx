@@ -19,7 +19,7 @@ export const Route = createFileRoute("/projects")({
       {
         property: "og:description",
         content:
-          "Sovereign infrastructure for the autonomous era. Explore every CyberAI project — built to deliver quiet power at machine speed.",
+          "Sovereign infrastructure for the autonomous era. Explore every CyberAI project — built for silent strength at machine speed.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/projects" },
@@ -43,12 +43,11 @@ function ProjectsRoute() {
               <StatusPill tone="accent">Project Portfolio</StatusPill>
             </div>
             <h1 className="mt-7 font-display text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance">
-              Infrastructure you can{" "}
-              <span className="gradient-text">trust at machine speed.</span>
+              Infrastructure you can trust{" "}
+              <span className="gradient-text">at machine speed.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Every project here is built, tested, and operating in production. Click any card for
-              architecture deep-dives, metrics, and capability breakdowns.
+              Every project here is built, tested, and running in production. Click any card for deep architecture breakdowns, metrics, and capability distribution.
             </p>
           </div>
         </section>

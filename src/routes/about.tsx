@@ -12,17 +12,17 @@ import { AboutCTA } from "@/components/features/about/AboutCTA";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About CyberAI — Origin Document for Sovereign Defense" },
+      { title: "About CyberAI — Sovereign Defense Foundation Document" },
       {
         name: "description",
         content:
           "The CyberAI story: founded by intelligence operators and AI researchers to build autonomous, sovereign defense for high-stakes infrastructure.",
       },
-      { property: "og:title", content: "About CyberAI — Origin Document for Sovereign Defense" },
+      { property: "og:title", content: "About CyberAI — Sovereign Defense Foundation Document" },
       {
         property: "og:description",
         content:
-          "Built for the moment after the alarm. The mission, timeline, and operating doctrine behind CyberAI.",
+          "Built for when the alert sounds. The mission, timeline, and operational doctrine behind CyberAI.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/about" },

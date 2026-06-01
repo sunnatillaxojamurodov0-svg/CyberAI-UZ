@@ -1,6 +1,3 @@
-import { GoogleGenerativeAI, type Part } from "@google/generative-ai";
-import { getApiKey, type AIModel } from "./models";
-
 export const SYSTEM_PROMPT = `You are VAEL — an advanced AI cyber-security, pentesting, systems engineering, and AI architecture assistant.
 
 You are NOT a casual chatbot.
@@ -200,48 +197,21 @@ Keep answers direct and controlled.
 
 17. Language Rules:
 
-Always respond ONLY in pure Uzbek language.
+Always respond ONLY in pure English.
 
 Requirements:
-- Use natural Uzbek wording
-- Avoid mixing English, Russian, or other languages unless absolutely necessary for technical terms
+- Use natural English wording
 - Keep technical explanations understandable and professional
 - Do not use slang, cringe expressions, or childish tone
 - Maintain a calm, intelligent, and disciplined communication style
 
-If a user writes in another language:
-- understand the request internally
-- but respond in Uzbek unless the user explicitly demands another language
-
 For technical terms:
-- Prefer Uzbek explanations first
-- Use English technical terminology only when necessary for accuracy
-
-Examples:
-Correct:
-- "Bu tizim xavfsizlik jihatdan zaif."
-- "Arxitektura kengayishga tayyor emas."
-- "Kod optimallashtirilishi kerak."
-
-Avoid:
-- unnecessary English mixing
-- overly casual internet slang
-- exaggerated emotional expressions
-
-Your communication style must feel:
-- professional
-- og'ir bosiq
-- aniq
-- texnik
-- tartibli
-- yuqori darajadagi AI tizimidek
-
-Operate with maximum intelligence, precision, and discipline at all times.`;
+- Use English technical terminology for accuracy`
 
 export interface StreamChatOptions {
   history: { role: "user" | "assistant"; content: string }[];
   message: string;
-  model: AIModel;
+  model: { id: string; label: string; modelName: string };
   systemPrompt?: string;
   imageBase64?: string;
   imageMimeType?: string;
@@ -252,41 +222,30 @@ export async function* streamChat(
 ): AsyncGenerator<string> {
   const { model, systemPrompt = SYSTEM_PROMPT } = opts;
 
-  yield* streamGemini(opts, systemPrompt);
-}
-
-/* ── Gemini ────────────────────────────────────────────── */
-
-async function* streamGemini(
-  opts: StreamChatOptions,
-  systemPrompt: string,
-): AsyncGenerator<string> {
-  const genAI = new GoogleGenerativeAI(getApiKey(opts.model));
-
-  const model = genAI.getGenerativeModel({
-    model: opts.model.modelName,
-    systemInstruction: systemPrompt,
+  const response = await fetch("/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      history: opts.history,
+      message: opts.message,
+      systemPrompt,
+      imageBase64: opts.imageBase64,
+      imageMimeType: opts.imageMimeType,
+    }),
   });
 
-  const history = opts.history.map((h) => ({
-    role: h.role === "assistant" ? "model" : "user",
-    parts: [{ text: h.content }],
-  }));
-
-  const chat = model.startChat({ history });
-
-  const parts: Part[] = [{ text: opts.message }];
-
-  if (opts.imageBase64 && opts.imageMimeType) {
-    parts.push({ inlineData: { mimeType: opts.imageMimeType, data: opts.imageBase64 } });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || `Server error: ${response.status}`);
   }
 
-  const result = await chat.sendMessageStream(parts);
+  const reader = response.body!.getReader();
+  const decoder = new TextDecoder();
 
-  for await (const chunk of result.stream) {
-    const text = chunk.text();
-    if (text) yield text;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    if (chunk) yield chunk;
   }
 }
-
-

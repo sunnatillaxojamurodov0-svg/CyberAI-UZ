@@ -293,8 +293,8 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
                   <Image size={14} className="text-accent" />
                 </div>
                 <div>
-                  <div className="font-medium leading-tight">Add Photo</div>
-                  <div className="text-[11px] text-muted-foreground/60 leading-tight">Gallery / Camera</div>
+                  <div className="font-medium leading-tight">Add image</div>
+                  <div className="text-[11px] text-muted-foreground/60 leading-tight">Galereya / Kamera</div>
                 </div>
               </button>
               <div className="mx-3 h-px bg-border" />
