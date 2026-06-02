@@ -19,10 +19,13 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiConsoleHintRouteImport } from './routes/api/console/hint'
 import { Route as ApiAuthRegisterRouteImport } from './routes/api/auth/register'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
+import { Route as ApiAuthGithubRouteImport } from './routes/api/auth/github'
+import { Route as ApiAuthGithubCallbackRouteImport } from './routes/api/auth/github/callback'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -74,6 +77,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConsoleHintRoute = ApiConsoleHintRouteImport.update({
+  id: '/api/console/hint',
+  path: '/api/console/hint',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthRegisterRoute = ApiAuthRegisterRouteImport.update({
   id: '/api/auth/register',
   path: '/api/auth/register',
@@ -94,6 +102,16 @@ const ApiAuthLoginRoute = ApiAuthLoginRouteImport.update({
   path: '/api/auth/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthGithubRoute = ApiAuthGithubRouteImport.update({
+  id: '/api/auth/github',
+  path: '/api/auth/github',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthGithubCallbackRoute = ApiAuthGithubCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => ApiAuthGithubRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -106,10 +124,13 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -122,10 +143,13 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -139,10 +163,13 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -157,10 +184,13 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/auth/callback'
+    | '/api/auth/github'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/console/hint'
+    | '/api/auth/github/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -173,10 +203,13 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/auth/callback'
+    | '/api/auth/github'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/console/hint'
+    | '/api/auth/github/callback'
   id:
     | '__root__'
     | '/'
@@ -189,10 +222,13 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/auth/callback'
+    | '/api/auth/github'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/console/hint'
+    | '/api/auth/github/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -206,10 +242,12 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  ApiAuthGithubRoute: typeof ApiAuthGithubRouteWithChildren
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthRegisterRoute: typeof ApiAuthRegisterRoute
+  ApiConsoleHintRoute: typeof ApiConsoleHintRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -284,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/console/hint': {
+      id: '/api/console/hint'
+      path: '/api/console/hint'
+      fullPath: '/api/console/hint'
+      preLoaderRoute: typeof ApiConsoleHintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/register': {
       id: '/api/auth/register'
       path: '/api/auth/register'
@@ -312,8 +357,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/github': {
+      id: '/api/auth/github'
+      path: '/api/auth/github'
+      fullPath: '/api/auth/github'
+      preLoaderRoute: typeof ApiAuthGithubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/github/callback': {
+      id: '/api/auth/github/callback'
+      path: '/callback'
+      fullPath: '/api/auth/github/callback'
+      preLoaderRoute: typeof ApiAuthGithubCallbackRouteImport
+      parentRoute: typeof ApiAuthGithubRoute
+    }
   }
 }
+
+interface ApiAuthGithubRouteChildren {
+  ApiAuthGithubCallbackRoute: typeof ApiAuthGithubCallbackRoute
+}
+
+const ApiAuthGithubRouteChildren: ApiAuthGithubRouteChildren = {
+  ApiAuthGithubCallbackRoute: ApiAuthGithubCallbackRoute,
+}
+
+const ApiAuthGithubRouteWithChildren = ApiAuthGithubRoute._addFileChildren(
+  ApiAuthGithubRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -326,10 +397,12 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  ApiAuthGithubRoute: ApiAuthGithubRouteWithChildren,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthRegisterRoute: ApiAuthRegisterRoute,
+  ApiConsoleHintRoute: ApiConsoleHintRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,0 +1,42 @@
+import { createFileRoute } from "@tanstack/react-router";
+import type {} from "@tanstack/react-start";
+import { signInWithGithub, setSessionCookie } from "@/lib/auth/auth-server";
+
+export const Route = createFileRoute("/api/auth/github/callback")({
+  server: {
+    handlers: {
+      POST: async ({ request }) => {
+        try {
+          const { code } = await request.json() as { code?: string };
+          if (!code) {
+            return new Response(JSON.stringify({ ok: false, error: "No code provided." }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const result = await signInWithGithub(code);
+          if (!result.ok || !result.token) {
+            return new Response(JSON.stringify({ ok: false, error: result.error ?? "GitHub sign-in failed." }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          return new Response(JSON.stringify({ ok: true, user: result.user }), {
+            status: 200,
+            headers: {
+              "Content-Type": "application/json",
+              "Set-Cookie": setSessionCookie(result.token),
+            },
+          });
+        } catch {
+          return new Response(JSON.stringify({ ok: false, error: "GitHub authentication error." }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+      },
+    },
+  },
+});

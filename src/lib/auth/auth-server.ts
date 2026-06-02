@@ -234,3 +234,96 @@ export function setSessionCookie(token: string): string {
 export function clearSessionCookie(): string {
   return `cyberai_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
 }
+
+/* ── GitHub OAuth ──────────────────────────────────────────── */
+
+interface GitHubUser {
+  id: number;
+  login: string;
+  email: string;
+  name: string;
+  avatar_url: string;
+}
+
+async function exchangeGithubCode(code: string): Promise<string> {
+  const env = (await import("../db")).getEnv();
+  const clientId = env.GITHUB_CLIENT_ID as string;
+  const clientSecret = env.GITHUB_CLIENT_SECRET as string;
+
+  const res = await fetch("https://github.com/login/oauth/access_token", {
+    method: "POST",
+    headers: { "Accept": "application/json", "Content-Type": "application/json" },
+    body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code }),
+  });
+  const data = await res.json() as { access_token?: string; error?: string };
+  if (!data.access_token) throw new Error(data.error ?? "Failed to exchange GitHub code");
+  return data.access_token;
+}
+
+async function fetchGithubUser(accessToken: string): Promise<GitHubUser> {
+  const res = await fetch("https://api.github.com/user", {
+    headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
+  });
+  const user = await res.json() as GitHubUser;
+  if (!user.email) {
+    const emailsRes = await fetch("https://api.github.com/user/emails", {
+      headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
+    });
+    const emails = await emailsRes.json() as { email: string; primary: boolean; verified: boolean }[];
+    const primary = emails.find((e) => e.primary && e.verified);
+    user.email = primary?.email ?? emails[0]?.email ?? `${user.login}@github.local`;
+  }
+  return user;
+}
+
+export async function signInWithGithub(code: string): Promise<AuthResult> {
+  try {
+    const db = requireDb<D1Database>();
+    const accessToken = await exchangeGithubCode(code);
+    const githubUser = await fetchGithubUser(accessToken);
+    const githubId = String(githubUser.id);
+
+    const existing = await db
+      .prepare("SELECT id, email, name, avatar_url FROM users WHERE github_id = ?")
+      .bind(githubId)
+      .first<{ id: string; email: string; name: string | null; avatar_url: string | null }>();
+
+    let user: { id: string; email: string; name: string | null; avatar_url: string | null };
+    const now = Math.floor(Date.now() / 1000);
+
+    if (existing) {
+      user = existing;
+      await db
+        .prepare("UPDATE users SET name = ?, avatar_url = ?, updated_at = ? WHERE id = ?")
+        .bind(githubUser.name || githubUser.login, githubUser.avatar_url, now, user.id)
+        .run();
+    } else {
+      const id = crypto.randomUUID();
+      await db
+        .prepare(
+          "INSERT INTO users (id, email, github_id, name, avatar_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(id, githubUser.email, githubId, githubUser.name || githubUser.login, githubUser.avatar_url, now, now)
+        .run();
+      user = { id, email: githubUser.email, name: githubUser.name || githubUser.login, avatar_url: githubUser.avatar_url };
+    }
+
+    await db
+      .prepare("DELETE FROM sessions WHERE user_id = ? AND expires_at < ?")
+      .bind(user.id, now)
+      .run();
+
+    const token = generateToken();
+    const tokenHash = await sha256(token);
+    const expiresAt = now + SESSION_TTL;
+
+    await db
+      .prepare("INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)")
+      .bind(tokenHash, user.id, now, expiresAt)
+      .run();
+
+    return { ok: true, user, token };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "GitHub sign-in failed." };
+  }
+}

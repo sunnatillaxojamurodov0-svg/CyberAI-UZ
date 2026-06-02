@@ -9,11 +9,8 @@ import {
 import type { CTFChallenge, TerminalLine } from "@/lib/console/types";
 
 export interface TerminalHandle {
-  /** Current engine state (telemetry, shells, etc.). */
   getState: () => EngineState;
-  /** Reset the terminal for a fresh attempt. */
   reset: () => void;
-  /** Programmatically run a command (e.g. from a hint button). */
   run: (cmd: string) => void;
 }
 
@@ -34,7 +31,7 @@ const BANNER = (c: CTFChallenge) =>
 [*] Target    : ${c.targetIp}
 [*] Format    : ${c.flagFormat}
 
-'help' — list of tools. Good luck, operator.
+Type 'help' for tools, 'ask-ai <question>' for guidance.
 `;
 
 export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Terminal(
@@ -51,14 +48,17 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
   const [histIdx, setHistIdx] = useState(-1);
+  const [aiStreaming, setAiStreaming] = useState(false);
+  const [aiStreamText, setAiStreamText] = useState("");
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const aiLineId = useRef<string | null>(null);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (el) el.scrollTop = el.scrollHeight;
-  }, [lines]);
+  }, [lines, aiStreamText]);
 
   /* Re-init when challenge changes */
   useEffect(() => {
@@ -68,7 +68,68 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
     setLines([{ id: lid(), kind: "system", text: BANNER(challenge) }]);
     setHistory([]);
     setHistIdx(-1);
+    setAiStreaming(false);
+    setAiStreamText("");
+    aiLineId.current = null;
   }, [challenge]);
+
+  const fetchAiHint = useCallback(async (userMessage: string, state: EngineState) => {
+    const lineId = lid();
+    aiLineId.current = lineId;
+    setAiStreaming(true);
+    setAiStreamText("");
+
+    setLines((prev) => [
+      ...prev,
+      { id: lineId, kind: "ai-hint", text: "" },
+    ]);
+
+    try {
+      const res = await fetch("/api/console/hint", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          challengeId: challenge.id,
+          challengeTitle: challenge.title,
+          challengeLevel: challenge.level,
+          challengeCategory: challenge.category,
+          scenario: challenge.scenario,
+          objectives: challenge.objectives,
+          targetIp: challenge.targetIp,
+          commandHistory: history.slice(-30),
+          toolsUsed: state.telemetry.toolsUsed,
+          userMessage,
+        }),
+      });
+
+      if (!res.ok) {
+        const text = await res.text();
+        setAiStreamText(text || "AI Mentor unavailable.");
+        return;
+      }
+
+      const reader = res.body?.getReader();
+      if (!reader) {
+        setAiStreamText("Failed to connect to AI Mentor.");
+        return;
+      }
+
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        setAiStreamText(buffer);
+      }
+    } catch {
+      setAiStreamText("Network error while contacting AI Mentor.");
+    } finally {
+      setAiStreaming(false);
+    }
+  }, [challenge, history]);
 
   const runCommand = useCallback((cmd: string) => {
     const state = engineRef.current;
@@ -88,14 +149,24 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
       return;
     }
 
+    if (result.kind === "ai-hint") {
+      const question = result.output;
+      setLines((prev) => [
+        ...prev,
+        { id: lid(), kind: "output", text: "\u2514 Consulting CyberAI Mentor..." },
+      ]);
+      setEngine({ ...state });
+      fetchAiHint(question, state);
+      return;
+    }
+
     setLines((prev) => [
       ...prev,
       { id: lid(), kind: result.kind === "error" ? "error" : result.kind === "system" ? "system" : "output", text: result.output },
     ]);
 
-    // force state object identity change so consumers re-read telemetry
     setEngine({ ...state });
-  }, []);
+  }, [fetchAiHint]);
 
   const handleSubmit = useCallback(() => {
     const cmd = input;
@@ -140,75 +211,77 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
         setLines([]);
       }
     },
-    [handleSubmit, history, histIdx],
+    [history, histIdx, handleSubmit],
   );
 
-  useImperativeHandle(
-    ref,
-    () => ({
-      getState: () => engineRef.current,
-      reset: () => {
-        const fresh = createEngineState(challenge);
-        setEngine(fresh);
-        engineRef.current = fresh;
-        setLines([{ id: lid(), kind: "system", text: BANNER(challenge) }]);
-        setHistory([]);
-        setHistIdx(-1);
-      },
-      run: (cmd: string) => runCommand(cmd),
-    }),
-    [challenge, runCommand],
-  );
-
-  const prompt = promptString(engine);
+  useImperativeHandle(ref, () => ({
+    getState: () => engineRef.current,
+    reset: () => {
+      const fresh = createEngineState(challenge);
+      setEngine(fresh);
+      engineRef.current = fresh;
+      setLines([{ id: lid(), kind: "system", text: BANNER(challenge) }]);
+      setHistory([]);
+      setHistIdx(-1);
+      setAiStreaming(false);
+      setAiStreamText("");
+      aiLineId.current = null;
+    },
+    run: (cmd: string) => runCommand(cmd),
+  }));
 
   return (
-    <div
-      className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-black/80 font-mono"
-      onClick={() => inputRef.current?.focus()}
-    >
-      {/* Terminal chrome */}
-      <div className="flex shrink-0 items-center gap-2 border-b border-border bg-surface/60 px-4 py-2.5">
-        <span className="size-3 rounded-full bg-red-500/80" />
-        <span className="size-3 rounded-full bg-yellow-500/80" />
-        <span className="size-3 rounded-full bg-green-500/80" />
-        <span className="ml-3 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-          root@kali: ~ (sandbox)
-        </span>
-      </div>
-
-      {/* Scroll area */}
-      <div ref={scrollRef} className="scrollbar-thin flex-1 overflow-y-auto px-4 py-3 text-[13px] leading-relaxed">
-        {lines.map((ln) => (
-          <pre
-            key={ln.id}
-            className={cn(
-              "whitespace-pre-wrap break-words font-mono",
-              ln.kind === "input" && "text-foreground",
-              ln.kind === "output" && "text-foreground/80",
-              ln.kind === "error" && "text-red-400",
-              ln.kind === "system" && "text-primary/90",
-            )}
-          >
-            {ln.text}
-          </pre>
-        ))}
-
-        {/* Active prompt line */}
-        <div className="flex items-start gap-0">
-          <pre className="shrink-0 whitespace-pre-wrap font-mono text-primary/90">{prompt}</pre>
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            spellCheck={false}
-            autoComplete="off"
-            autoCapitalize="off"
-            className="flex-1 bg-transparent font-mono text-[13px] text-foreground caret-primary outline-none"
-            aria-label="Terminal input"
-          />
-        </div>
+    <div className="flex flex-col h-full rounded-xl border border-border bg-[#0a0e17] overflow-hidden font-mono text-[13px]">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto p-4 scrollbar-thin"
+        onClick={() => inputRef.current?.focus()}
+      >
+        {lines.map((line) => {
+          if (line.id === aiLineId.current && aiStreamText) {
+            return (
+              <div key={line.id} className="mb-1">
+                <span className={cn(
+                  "whitespace-pre-wrap break-all",
+                  "text-emerald-400",
+                )}>
+                  {aiStreamText}
+                </span>
+                {aiStreaming && (
+                  <span className="inline-block w-2 h-4 ml-0.5 bg-emerald-400/70 animate-blink align-text-bottom" />
+                )}
+              </div>
+            );
+          }
+          return (
+            <div key={line.id} className="mb-1">
+              {line.kind === "input" ? (
+                <span className="text-foreground">{line.text}</span>
+              ) : line.kind === "error" ? (
+                <span className="text-red-400 whitespace-pre-wrap break-all">{line.text}</span>
+              ) : line.kind === "ai-hint" ? (
+                <span className="text-emerald-400 whitespace-pre-wrap break-all">{line.text || ""}</span>
+              ) : (
+                <span className="text-muted-foreground whitespace-pre-wrap break-all">{line.text}</span>
+              )}
+            </div>
+          );
+        })}
+        {!aiStreaming && (
+          <div className="flex items-center">
+            <span className="text-green-400/80 shrink-0">{promptString(engine)}</span>
+            <input
+              ref={inputRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              className="flex-1 bg-transparent text-foreground outline-none ml-1"
+              spellCheck={false}
+              autoComplete="off"
+              autoFocus
+            />
+          </div>
+        )}
       </div>
     </div>
   );
