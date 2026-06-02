@@ -33,7 +33,5 @@
   "vars": {
     "ENVIRONMENT": "production"
   },
-  "routes": [
-    { "pattern": "cyberaiuz.lovable.app", "zone_id": "YOUR_ZONE_ID" }
-  ]
+  "routes": []
 }

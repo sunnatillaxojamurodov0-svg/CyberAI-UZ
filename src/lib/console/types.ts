@@ -117,7 +117,7 @@ export interface CTFChallenge {
 export interface TerminalLine {
   id: string;
   /** "input" = user command echoed, "output" = result, "system" = banner. */
-  kind: "input" | "output" | "system" | "error";
+  kind: "input" | "output" | "system" | "error" | "ai-hint";
   text: string;
 }
 

@@ -4,3 +4,8 @@
 
 # Google Gemini API key (server-side only)
 GEMINI_API_KEY="your-gemini-api-key-here"
+
+# GitHub OAuth (create an OAuth App: https://github.com/settings/developers)
+# Callback URL: http://localhost:8080/auth/callback
+GITHUB_CLIENT_ID="your-github-client-id"
+GITHUB_CLIENT_SECRET="your-github-client-secret"

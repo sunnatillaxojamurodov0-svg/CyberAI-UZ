@@ -237,6 +237,12 @@ export function execute(state: EngineState, raw: string): CommandResult {
       return ok(
         "msfconsole is limited in simulation mode. Use nmap, curl, nc, hydra, ssh and other tools in this sandbox.",
       );
+    case "ask-ai":
+    case "hint":
+      return {
+        kind: "ai-hint",
+        output: args.join(" ") || "I'm stuck. Give me a hint.",
+      } as CommandResult;
     default:
       if (cmd.startsWith("./") || cmd.startsWith("/")) {
         return cmdExec(state, cmd, args);
@@ -276,8 +282,8 @@ function cmdHelp(): CommandResult {
   FORENSICS   strings, steghide, binwalk, exiftool
   FILES       ls, cd, pwd, cat, chmod
   SHELL       whoami, id, clear, exit
+  AI         ask-ai, hint — get contextual guidance from CyberAI Mentor
 
-  Click the circle icon below to ask VAEL for help.
   Once you find the flag, use the "Submit Flag" button.`,
   };
 }

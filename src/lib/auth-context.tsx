@@ -21,7 +21,7 @@ interface AuthContextValue {
   signIn: (email: string, password: string) => Promise<string | null>;
   signUp: (email: string, password: string, username?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
-  signInWithGoogle: () => Promise<void>;
+  signInWithGithub: () => void;
   resetPassword: (email: string) => Promise<string | null>;
   openAuthModal: () => void;
   closeAuthModal: () => void;
@@ -115,8 +115,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
-  const signInWithGoogle = useCallback(async () => {
-    setAuthError("Google sign-in is not available. Use email and password instead.");
+  const signInWithGithub = useCallback(() => {
+    window.location.href = "/api/auth/github";
   }, []);
 
   const resetPassword = useCallback(
@@ -138,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signIn,
         signUp,
         signOut,
-        signInWithGoogle,
+        signInWithGithub,
         resetPassword,
         openAuthModal: () => setAuthModalOpen(true),
         closeAuthModal: () => {
