@@ -72,13 +72,6 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          if (body.imageBase64) {
-            return new Response("Image upload is not supported by this AI model. Send text only.", {
-              status: 400,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
-
           await incrementAiUsage(userId);
 
           const genAI = new GoogleGenerativeAI(apiKey);
@@ -103,21 +96,7 @@ export const Route = createFileRoute("/api/chat")({
             parts.push({ inlineData: { mimeType: body.imageMimeType, data: body.imageBase64 } });
           }
 
-          let result;
-          try {
-            result = await chat.sendMessageStream(parts);
-          } catch (err) {
-            if (String(err).includes("does not support image")) {
-              return new Response(
-                "Image upload is not supported by this AI model. Send text only.",
-                {
-                  status: 400,
-                  headers: { "Content-Type": "text/plain" },
-                },
-              );
-            }
-            throw err;
-          }
+          let result = await chat.sendMessageStream(parts);
 
           const stream = new ReadableStream({
             async start(controller) {

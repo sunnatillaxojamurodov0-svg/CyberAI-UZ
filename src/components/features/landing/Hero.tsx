@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { ArrowUpRight, Play } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { MagneticButton } from "@/components/shared/MagneticButton";
@@ -11,7 +11,6 @@ import { AboutMe } from "./AboutMe";
 export function Hero() {
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuth();
-  const [demoOpen, setDemoOpen] = useState(false);
 
   const launchCtfLab = () => {
     if (user) {
@@ -54,13 +53,7 @@ export function Hero() {
                 Start for Free
                 <ArrowUpRight size={16} className="opacity-80" />
               </MagneticButton>
-              <button
-                onClick={() => setDemoOpen(true)}
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-border bg-surface/40 px-8 py-4 text-lg font-semibold text-foreground/80 transition-all hover:border-primary/30 hover:bg-primary/5"
-              >
-                <span className="material-symbols-outlined text-primary">play_circle</span>
-                Watch Demo
-              </button>
+              <AboutMe />
             </div>
 
             <div className="flex items-center gap-4 mt-4">
@@ -91,34 +84,6 @@ export function Hero() {
         </div>
       </div>
 
-      {demoOpen && (
-        <div
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-          onClick={() => setDemoOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-4xl overflow-hidden rounded-2xl border border-primary/20 bg-surface shadow-[0_0_80px_-20px] shadow-primary/20"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              onClick={() => setDemoOpen(false)}
-              className="absolute right-4 top-4 z-10 grid size-9 place-items-center rounded-full bg-black/60 text-foreground/60 hover:text-foreground transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
-            </button>
-            <div className="aspect-video bg-gradient-to-br from-primary/5 via-surface to-accent/5 flex items-center justify-center">
-              <div className="text-center">
-                <Play size={48} className="mx-auto text-primary/40 mb-4" />
-                <p className="font-mono text-sm text-muted-foreground">
-                  Demo video placeholder — embed your platform walkthrough here.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
@@ -134,17 +99,20 @@ function TerminalVisual() {
 
   useEffect(() => {
     let i = 0;
+    let t: ReturnType<typeof setTimeout>;
+    let cancelled = false;
     const addLine = () => {
+      if (cancelled) return;
       if (i < fullLines.length) {
         setLines((prev) => [...prev, fullLines[i]]);
         i++;
-        setTimeout(addLine, 800);
+        t = setTimeout(addLine, 800);
       } else {
-        setTimeout(() => setShowAi(true), 600);
+        t = setTimeout(() => setShowAi(true), 600);
       }
     };
-    const t = setTimeout(addLine, 1000);
-    return () => clearTimeout(t);
+    t = setTimeout(addLine, 1000);
+    return () => { cancelled = true; clearTimeout(t); };
   }, []);
 
   return (
@@ -167,7 +135,7 @@ function TerminalVisual() {
         </div>
         <div className="flex-grow text-muted-foreground space-y-3">
           {lines.map((l, i) => (
-            <p key={i} className={l.includes("detected") ? "text-primary" : ""}>
+            <p key={i} className={l?.includes("detected") ? "text-primary" : ""}>
               {l}
             </p>
           ))}
