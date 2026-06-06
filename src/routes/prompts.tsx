@@ -43,11 +43,11 @@ function PromptsRoute() {
               <StatusPill tone="accent">Prompts Library</StatusPill>
             </div>
             <h1 className="mt-7 font-display text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance">
-              Speak to your infrastructure with{" "}
-              <span className="gradient-text">precision.</span>
+              Speak to your infrastructure with <span className="gradient-text">precision.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Every prompt is battle-tested by CyberAI operators. Filter by category, search by keyword, and copy any template directly to your clipboard.
+              Every prompt is battle-tested by CyberAI operators. Filter by category, search by
+              keyword, and copy any template directly to your clipboard.
             </p>
           </div>
         </section>

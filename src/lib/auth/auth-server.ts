@@ -1,4 +1,4 @@
-import { requireDb } from "../db";
+import { requireDb, getEnv } from "../db";
 
 interface D1Result<T = unknown> {
   results: T[];
@@ -39,13 +39,9 @@ const PBKDF2_ITERATIONS = 100_000;
 
 async function hashPassword(password: string, salt: string): Promise<string> {
   const enc = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    enc.encode(password),
-    "PBKDF2",
-    false,
-    ["deriveBits"],
-  );
+  const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
+    "deriveBits",
+  ]);
   const bits = await crypto.subtle.deriveBits(
     {
       name: "PBKDF2",
@@ -99,10 +95,7 @@ export async function registerUser(
   try {
     const db = requireDb<D1Database>();
 
-    const existing = await db
-      .prepare("SELECT id FROM users WHERE email = ?")
-      .bind(email)
-      .first();
+    const existing = await db.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
     if (existing) {
       return { ok: false, error: "This email is already registered." };
     }
@@ -149,7 +142,13 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
     const row = await db
       .prepare("SELECT id, email, password_hash, name, avatar_url FROM users WHERE email = ?")
       .bind(email)
-      .first<{ id: string; email: string; password_hash: string; name: string | null; avatar_url: string | null }>();
+      .first<{
+        id: string;
+        email: string;
+        password_hash: string;
+        name: string | null;
+        avatar_url: string | null;
+      }>();
     if (!row) {
       return { ok: false, error: "Invalid email or password." };
     }
@@ -205,7 +204,10 @@ export async function verifySession(token: string): Promise<AuthResult> {
 
     return { ok: true, user: row, token };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Session verification failed." };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Session verification failed.",
+    };
   }
 }
 
@@ -235,6 +237,99 @@ export function clearSessionCookie(): string {
   return `cyberai_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
 }
 
+/* ── Google OAuth ──────────────────────────────────────────── */
+
+interface GoogleUser {
+  id: string;
+  email: string;
+  name: string;
+  picture: string;
+}
+
+async function exchangeGoogleCode(code: string, redirectUri?: string): Promise<string> {
+  const env = getEnv();
+  const clientId = env.GOOGLE_CLIENT_ID as string;
+  const clientSecret = env.GOOGLE_CLIENT_SECRET as string;
+
+  const res = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      code,
+      client_id: clientId,
+      client_secret: clientSecret,
+      redirect_uri:
+        redirectUri ||
+        `${new URL(String(env.REDIRECT_URI || "http://localhost:8080")).origin}/auth/callback`,
+      grant_type: "authorization_code",
+    }),
+  });
+  const data = (await res.json()) as { access_token?: string; error?: string };
+  if (!data.access_token) throw new Error(data.error ?? "Failed to exchange Google code");
+  return data.access_token;
+}
+
+async function fetchGoogleUser(accessToken: string): Promise<GoogleUser> {
+  const res = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+  const user = (await res.json()) as GoogleUser;
+  if (!user.email) throw new Error("Google account has no email");
+  return user;
+}
+
+export async function signInWithGoogle(code: string, redirectUri?: string): Promise<AuthResult> {
+  try {
+    const db = requireDb<D1Database>();
+    const accessToken = await exchangeGoogleCode(code, redirectUri);
+    const googleUser = await fetchGoogleUser(accessToken);
+    const googleId = googleUser.id;
+
+    const existing = await db
+      .prepare("SELECT id, email, name, avatar_url FROM users WHERE google_id = ?")
+      .bind(googleId)
+      .first<{ id: string; email: string; name: string | null; avatar_url: string | null }>();
+
+    let user: { id: string; email: string; name: string | null; avatar_url: string | null };
+    const now = Math.floor(Date.now() / 1000);
+
+    if (existing) {
+      user = existing;
+      await db
+        .prepare("UPDATE users SET name = ?, avatar_url = ?, updated_at = ? WHERE id = ?")
+        .bind(googleUser.name, googleUser.picture, now, user.id)
+        .run();
+    } else {
+      const id = crypto.randomUUID();
+      await db
+        .prepare(
+          "INSERT INTO users (id, email, google_id, name, avatar_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(id, googleUser.email, googleId, googleUser.name, googleUser.picture, now, now)
+        .run();
+      user = { id, email: googleUser.email, name: googleUser.name, avatar_url: googleUser.picture };
+    }
+
+    await db
+      .prepare("DELETE FROM sessions WHERE user_id = ? AND expires_at < ?")
+      .bind(user.id, now)
+      .run();
+
+    const token = generateToken();
+    const tokenHash = await sha256(token);
+    const expiresAt = now + SESSION_TTL;
+
+    await db
+      .prepare("INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)")
+      .bind(tokenHash, user.id, now, expiresAt)
+      .run();
+
+    return { ok: true, user, token };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Google sign-in failed." };
+  }
+}
+
 /* ── GitHub OAuth ──────────────────────────────────────────── */
 
 interface GitHubUser {
@@ -246,16 +341,16 @@ interface GitHubUser {
 }
 
 async function exchangeGithubCode(code: string): Promise<string> {
-  const env = (await import("../db")).getEnv();
+  const env = getEnv();
   const clientId = env.GITHUB_CLIENT_ID as string;
   const clientSecret = env.GITHUB_CLIENT_SECRET as string;
 
   const res = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
-    headers: { "Accept": "application/json", "Content-Type": "application/json" },
+    headers: { Accept: "application/json", "Content-Type": "application/json" },
     body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code }),
   });
-  const data = await res.json() as { access_token?: string; error?: string };
+  const data = (await res.json()) as { access_token?: string; error?: string };
   if (!data.access_token) throw new Error(data.error ?? "Failed to exchange GitHub code");
   return data.access_token;
 }
@@ -264,12 +359,16 @@ async function fetchGithubUser(accessToken: string): Promise<GitHubUser> {
   const res = await fetch("https://api.github.com/user", {
     headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
   });
-  const user = await res.json() as GitHubUser;
+  const user = (await res.json()) as GitHubUser;
   if (!user.email) {
     const emailsRes = await fetch("https://api.github.com/user/emails", {
       headers: { Authorization: `Bearer ${accessToken}`, Accept: "application/json" },
     });
-    const emails = await emailsRes.json() as { email: string; primary: boolean; verified: boolean }[];
+    const emails = (await emailsRes.json()) as {
+      email: string;
+      primary: boolean;
+      verified: boolean;
+    }[];
     const primary = emails.find((e) => e.primary && e.verified);
     user.email = primary?.email ?? emails[0]?.email ?? `${user.login}@github.local`;
   }
@@ -303,9 +402,22 @@ export async function signInWithGithub(code: string): Promise<AuthResult> {
         .prepare(
           "INSERT INTO users (id, email, github_id, name, avatar_url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
         )
-        .bind(id, githubUser.email, githubId, githubUser.name || githubUser.login, githubUser.avatar_url, now, now)
+        .bind(
+          id,
+          githubUser.email,
+          githubId,
+          githubUser.name || githubUser.login,
+          githubUser.avatar_url,
+          now,
+          now,
+        )
         .run();
-      user = { id, email: githubUser.email, name: githubUser.name || githubUser.login, avatar_url: githubUser.avatar_url };
+      user = {
+        id,
+        email: githubUser.email,
+        name: githubUser.name || githubUser.login,
+        avatar_url: githubUser.avatar_url,
+      };
     }
 
     await db

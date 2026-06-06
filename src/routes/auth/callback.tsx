@@ -8,14 +8,22 @@ export const Route = createFileRoute("/auth/callback")({
 
 function AuthCallback() {
   const router = useRouter();
-  const search = useSearch<{ code?: string; error?: string }>() as { code?: string; error?: string };
+  const search = useSearch({ from: "/auth/callback" }) as {
+    code?: string;
+    error?: string;
+    state?: string;
+  };
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
   const [message, setMessage] = useState("");
+
+  const provider = search.state?.startsWith("google") ? "google" : "github";
+  const providerLabel = provider === "google" ? "Google" : "GitHub";
+  const callbackUrl = `/api/auth/${provider}/callback`;
 
   useEffect(() => {
     if (search.error) {
       setStatus("error");
-      setMessage("GitHub authorization was denied.");
+      setMessage(`${providerLabel} authorization was denied.`);
       return;
     }
 
@@ -25,10 +33,15 @@ function AuthCallback() {
       return;
     }
 
-    fetch("/api/auth/github/callback", {
+    const body: Record<string, string> = { code: search.code };
+    if (provider === "google") {
+      body.redirectUri = window.location.origin + "/auth/callback";
+    }
+
+    fetch(callbackUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: search.code }),
+      body: JSON.stringify(body),
       credentials: "include",
     })
       .then((res) => res.json())
@@ -46,7 +59,7 @@ function AuthCallback() {
         setStatus("error");
         setMessage("Network error during authentication.");
       });
-  }, [search.code, search.error, router]);
+  }, [search.code, search.error, search.state, router, provider, providerLabel, callbackUrl]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -54,7 +67,9 @@ function AuthCallback() {
         {status === "loading" && (
           <>
             <Loader2 size={32} className="animate-spin text-accent" />
-            <p className="font-mono text-sm text-muted-foreground">Authenticating with GitHub...</p>
+            <p className="font-mono text-sm text-muted-foreground">
+              Authenticating with {providerLabel}...
+            </p>
           </>
         )}
         {status === "success" && (

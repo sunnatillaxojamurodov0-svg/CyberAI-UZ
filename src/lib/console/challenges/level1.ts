@@ -105,13 +105,21 @@ export const LEVEL1: CTFChallenge[] = [
           hostname: "fileserver.corp.local",
           os: "Linux (Debian 11)",
           ports: [
-            { port: 21, service: "ftp", version: "vsftpd 3.0.3", state: "open", banner: "220 (vsFTPd 3.0.3)" },
+            {
+              port: 21,
+              service: "ftp",
+              version: "vsftpd 3.0.3",
+              state: "open",
+              banner: "220 (vsFTPd 3.0.3)",
+            },
             { port: 22, service: "ssh", version: "OpenSSH 8.4p1", state: "open" },
           ],
           credentials: [{ service: "ftp", username: "anonymous", password: "" }],
           fs: {
-            "/ftp/readme.txt": "This is a public file sharing area.\nDo not place confidential files here!",
-            "/ftp/notes.txt": "Don't forget to change the backup password.\nFLAG: CYBERAI{4n0nym0us_ftp_l3ak}",
+            "/ftp/readme.txt":
+              "This is a public file sharing area.\nDo not place confidential files here!",
+            "/ftp/notes.txt":
+              "Don't forget to change the backup password.\nFLAG: CYBERAI{4n0nym0us_ftp_l3ak}",
           },
         },
       ],
@@ -125,11 +133,7 @@ export const LEVEL1: CTFChallenge[] = [
     summary: "The page contains Base64-encoded data.",
     scenario:
       "The source code of the web page (10.10.10.12) contains a jumble of characters. This is often Base64 encoding — not encryption, just simple encoding. Decoding it is easy.",
-    objectives: [
-      "View the page source",
-      "Find the Base64 string",
-      "Decode it to reveal the flag",
-    ],
+    objectives: ["View the page source", "Find the Base64 string", "Decode it to reveal the flag"],
     hints: [
       "Use curl http://10.10.10.12/ to get the full HTML.",
       "The long string in the comment (<!-- -->) might be Base64.",
@@ -173,11 +177,7 @@ export const LEVEL1: CTFChallenge[] = [
     summary: "Admin panel is open with default login/password.",
     scenario:
       "A router management panel (10.10.10.15) was discovered. Many devices ship with factory default credentials (like admin/admin) that are never changed.",
-    objectives: [
-      "Locate the web panel",
-      "Try default credentials",
-      "Log in and retrieve the flag",
-    ],
+    objectives: ["Locate the web panel", "Try default credentials", "Log in and retrieve the flag"],
     hints: [
       "Check the /login page on port 80.",
       "The most common default: admin / admin.",
@@ -310,12 +310,18 @@ export const LEVEL1: CTFChallenge[] = [
             routes: {
               "/": { status: 200, body: "<html><body><h1>It works!</h1></body></html>" },
               "/admin/": { status: 403, body: "Forbidden" },
-              "/config/": { status: 200, body: "<html><body>Index of /config/<br><a href='settings.bak'>settings.bak</a></body></html>" },
+              "/config/": {
+                status: 200,
+                body: "<html><body>Index of /config/<br><a href='settings.bak'>settings.bak</a></body></html>",
+              },
               "/config/settings.bak": {
                 status: 200,
                 body: "DB_HOST=localhost\nDB_USER=root\nDB_PASS=s3cr3t\n# FLAG: CYBERAI{d1r3ct0ry_brut3_f0rc3}",
               },
-              "/uploads/": { status: 200, body: "<html><body>Index of /uploads/ (empty)</body></html>" },
+              "/uploads/": {
+                status: 200,
+                body: "<html><body>Index of /uploads/ (empty)</body></html>",
+              },
             },
             discoverablePaths: ["/admin/", "/config/", "/uploads/", "/config/settings.bak"],
           },
@@ -331,11 +337,7 @@ export const LEVEL1: CTFChallenge[] = [
     summary: "Decode a message encrypted with ROT13.",
     scenario:
       "A found note contains strange-looking text. This is ROT13 — each letter is shifted by 13 positions. It's a very weak 'encryption' that is easily reversed.",
-    objectives: [
-      "Read the local file",
-      "Identify the ROT13 text",
-      "Decode it to reveal the flag",
-    ],
+    objectives: ["Read the local file", "Identify the ROT13 text", "Decode it to reveal the flag"],
     hints: [
       "cat note.txt — the file is on your Kali box.",
       "ROT13 — decode with tr 'A-Za-z' 'N-ZA-Mn-za-m'",
@@ -398,7 +400,8 @@ export const LEVEL1: CTFChallenge[] = [
               port: 1337,
               service: "custom",
               state: "open",
-              banner: "==== CORP DEBUG SERVICE v0.1 ====\nWARNING: debug mode active\nFLAG: CYBERAI{b4nn3r_gr4bb1ng_101}\n>",
+              banner:
+                "==== CORP DEBUG SERVICE v0.1 ====\nWARNING: debug mode active\nFLAG: CYBERAI{b4nn3r_gr4bb1ng_101}\n>",
             },
           ],
         },

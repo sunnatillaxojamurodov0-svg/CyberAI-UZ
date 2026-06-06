@@ -39,43 +39,34 @@ export function useConsoleProgress() {
     }
   }, [progress]);
 
-  const recordSolve = useCallback(
-    (challengeId: string, score: ScoreBreakdown, points: number) => {
-      setProgress((prev) => {
-        const existing = prev[challengeId];
-        const bestScore = Math.max(existing?.bestScore ?? 0, score.total);
-        const bestPoints = Math.max(existing?.pointsEarned ?? 0, points);
-        return {
-          ...prev,
-          [challengeId]: {
-            challengeId,
-            solved: true,
-            bestScore,
-            grade: score.grade,
-            pointsEarned: bestPoints,
-            solvedAt: existing?.solvedAt ?? Date.now(),
-          },
-        };
-      });
-    },
-    [],
-  );
+  const recordSolve = useCallback((challengeId: string, score: ScoreBreakdown, points: number) => {
+    setProgress((prev) => {
+      const existing = prev[challengeId];
+      const bestScore = Math.max(existing?.bestScore ?? 0, score.total);
+      const bestPoints = Math.max(existing?.pointsEarned ?? 0, points);
+      return {
+        ...prev,
+        [challengeId]: {
+          challengeId,
+          solved: true,
+          bestScore,
+          grade: score.grade,
+          pointsEarned: bestPoints,
+          solvedAt: existing?.solvedAt ?? Date.now(),
+        },
+      };
+    });
+  }, []);
 
   const reset = useCallback(() => setProgress({}), []);
 
-  const isSolved = useCallback(
-    (id: string) => Boolean(progress[id]?.solved),
-    [progress],
-  );
+  const isSolved = useCallback((id: string) => Boolean(progress[id]?.solved), [progress]);
 
-  const totalPoints = Object.values(progress).reduce(
-    (sum, r) => sum + (r.pointsEarned ?? 0),
-    0,
-  );
+  const totalPoints = Object.values(progress).reduce((sum, r) => sum + (r.pointsEarned ?? 0), 0);
   const solvedCount = Object.values(progress).filter((r) => r.solved).length;
-  /** Only the base 30 challenges count toward Elite unlock. */
+  /** Only the base 60 challenges count toward Master unlock. */
   const base30Solved = Object.values(progress).filter(
-    (r) => r.solved && !r.challengeId.startsWith("oscp-"),
+    (r) => r.solved && !r.challengeId.startsWith("master-"),
   ).length;
 
   return { progress, recordSolve, reset, isSolved, totalPoints, solvedCount, base30Solved };

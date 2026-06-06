@@ -5,6 +5,7 @@ import { Menu, X, LogOut } from "lucide-react";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useProfile";
+import brandLogo from "@/assets/brand-logo.png";
 import { cn } from "@/lib/utils";
 
 const NAV = [
@@ -29,15 +30,17 @@ export function Navbar() {
 
   return (
     <motion.nav
-      style={{ backgroundColor: bg, backdropFilter: blur, WebkitBackdropFilter: blur as unknown as string }}
+      style={{
+        backgroundColor: bg,
+        backdropFilter: blur,
+        WebkitBackdropFilter: blur as unknown as string,
+      }}
       className="fixed inset-x-0 top-0 z-50 border-b border-border"
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link to="/" className="group flex items-center gap-2.5">
-          <span className="relative grid size-7 place-items-center rounded-md">
-            <span className="absolute inset-0 rotate-45 rounded-[5px] bg-primary transition-transform duration-500 group-hover:rotate-[225deg]" />
-            <span className="absolute inset-[5px] rotate-45 rounded-[3px] bg-background" />
-            <span className="absolute size-1.5 rounded-full bg-primary" />
+          <span className="grid size-7 place-items-center">
+            <img src={brandLogo} alt="CyberAI" className="size-7 object-contain" />
           </span>
           <span className="font-display text-lg font-extrabold tracking-tight">
             CYBER<span className="text-primary">AI</span>
@@ -87,7 +90,6 @@ export function Navbar() {
               >
                 Sign in
               </button>
-
             </>
           )}
         </div>
@@ -109,7 +111,11 @@ export function Navbar() {
       >
         <div className="flex flex-col gap-1 p-4">
           {NAV.map((n) => (
-            <Link key={n.label} to={n.to} className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground">
+            <Link
+              key={n.label}
+              to={n.to}
+              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground"
+            >
               {n.label}
             </Link>
           ))}
@@ -117,7 +123,10 @@ export function Navbar() {
             <div className="mt-2 flex flex-col gap-2">
               <button
                 type="button"
-                onClick={() => { goProfile(); setOpen(false); }}
+                onClick={() => {
+                  goProfile();
+                  setOpen(false);
+                }}
                 className="flex items-center gap-3 rounded-lg border border-border bg-surface/50 px-3 py-2.5 text-left transition-colors hover:border-accent/30"
               >
                 <UserAvatar profile={profile} size="sm" />
@@ -139,7 +148,10 @@ export function Navbar() {
           ) : (
             <button
               type="button"
-              onClick={() => { openAuthModal(); setOpen(false); }}
+              onClick={() => {
+                openAuthModal();
+                setOpen(false);
+              }}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground text-left"
             >
               Sign in

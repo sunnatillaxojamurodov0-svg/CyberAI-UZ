@@ -14,9 +14,17 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "CyberAI — Autonomous Defense for the Synthetic Era" },
-      { name: "description", content: "Sovereign AI cybersecurity platform. Predictive threat intelligence, conversational defense, and autonomous remediation for high-stakes infrastructure." },
+      {
+        name: "description",
+        content:
+          "Sovereign AI cybersecurity platform. Predictive threat intelligence, conversational defense, and autonomous remediation for high-stakes infrastructure.",
+      },
       { property: "og:title", content: "CyberAI — Autonomous Defense for the Synthetic Era" },
-      { property: "og:description", content: "Sovereign AI cybersecurity platform. Predictive intelligence, conversational defense, autonomous remediation." },
+      {
+        property: "og:description",
+        content:
+          "Sovereign AI cybersecurity platform. Predictive intelligence, conversational defense, autonomous remediation.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/" },
       { name: "twitter:card", content: "summary_large_image" },

@@ -33,7 +33,7 @@ export interface EngineState {
 
 export interface CommandResult {
   output: string;
-  kind: "output" | "error" | "system";
+  kind: "output" | "error" | "system" | "ai-hint";
   /** If the command changed the prompt (e.g. ssh/exit), engine updates state. */
   promptChanged?: boolean;
 }
@@ -97,9 +97,7 @@ export function promptString(state: EngineState): string {
 /* ── Helpers ─────────────────────────────────────────────────── */
 
 function findHost(state: EngineState, target: string): VHost | undefined {
-  return state.challenge.env.hosts.find(
-    (h) => h.ip === target || h.hostname === target,
-  );
+  return state.challenge.env.hosts.find((h) => h.ip === target || h.hostname === target);
 }
 
 function recordTool(state: EngineState, tool: string) {
@@ -247,9 +245,7 @@ export function execute(state: EngineState, raw: string): CommandResult {
       if (cmd.startsWith("./") || cmd.startsWith("/")) {
         return cmdExec(state, cmd, args);
       }
-      return err(
-        `${cmd}: command not found. Use 'help' to see available tools.`,
-      );
+      return err(`${cmd}: command not found. Use 'help' to see available tools.`);
   }
 }
 
@@ -319,9 +315,7 @@ function cmdUname(state: EngineState, args: string[]): CommandResult {
 function cmdIp(state: EngineState): CommandResult {
   const s = currentShell(state);
   if (!s.host) {
-    return ok(
-      "eth0: inet 10.10.14.2/24  (Kali attacker)\nlo:   inet 127.0.0.1/8",
-    );
+    return ok("eth0: inet 10.10.14.2/24  (Kali attacker)\nlo:   inet 127.0.0.1/8");
   }
   const net = s.host.fs?.["/home/" + s.user + "/network.txt"];
   if (net) return ok(net);
@@ -336,7 +330,7 @@ function cmdIp(state: EngineState): CommandResult {
 
 function cmdLs(state: EngineState, args: string[]): CommandResult {
   const s = currentShell(state);
-  const fs = s.host ? s.host.fs ?? {} : state.localFs;
+  const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
   const dir = args.find((a) => !a.startsWith("-")) ?? s.cwd;
   const norm = dir.endsWith("/") ? dir : dir + "/";
 
@@ -388,7 +382,7 @@ function cmdCat(state: EngineState, args: string[]): CommandResult {
   const file = args.find((a) => !a.startsWith("-"));
   if (!file) return err("cat: filename required");
   const s = currentShell(state);
-  const fs = s.host ? s.host.fs ?? {} : state.localFs;
+  const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
 
   const resolved = resolvePath(s.cwd, file);
   // Try exact, then resolved, then basename match
@@ -461,7 +455,9 @@ function cmdPing(state: EngineState, args: string[]): CommandResult {
 /* ── curl / wget ─────────────────────────────────────────────── */
 
 function cmdCurl(state: EngineState, args: string[]): CommandResult {
-  const urlArg = args.find((a) => a.startsWith("http") || a.includes("/") || /\d+\.\d+\.\d+\.\d+/.test(a));
+  const urlArg = args.find(
+    (a) => a.startsWith("http") || a.includes("/") || /\d+\.\d+\.\d+\.\d+/.test(a),
+  );
   if (!urlArg) return err("curl: URL required. Example: curl http://10.10.10.5/");
 
   const verbose = args.includes("-v");
@@ -479,7 +475,7 @@ function cmdCurl(state: EngineState, args: string[]): CommandResult {
   state.compromised.add(host.ip);
 
   // Direct route match (including query)
-  let route = host.web.routes[path];
+  const route = host.web.routes[path];
 
   // Cookie-tampering challenges: an admin cookie unlocks protected route
   if (route?.protected) {
@@ -488,14 +484,8 @@ function cmdCurl(state: EngineState, args: string[]): CommandResult {
       // Rabbit hole: simulate correct credentials but deny access
       const fakePassword = generateFakePassword();
       return ok(
-        renderHttp(
-          host,
-          path,
-          200,
-          route.body,
-          route.headers,
-          verbose,
-        ) + `\n\n[Note: this path is protected — correct parameter/cookie/credential required.]\n[!] Fake password: ${fakePassword} (this won't work anywhere)`,
+        renderHttp(host, path, 200, route.body, route.headers, verbose) +
+          `\n\n[Note: this path is protected — correct parameter/cookie/credential required.]\n[!] Fake password: ${fakePassword} (this won't work anywhere)`,
       );
     }
   }
@@ -551,7 +541,7 @@ function checkProtectedAccess(
 }
 
 function parseUrl(state: EngineState, url: string): { host?: VHost; path: string } {
-  let clean = url.replace(/^https?:\/\//, "");
+  const clean = url.replace(/^https?:\/\//, "");
   const slash = clean.indexOf("/");
   const hostPart = slash >= 0 ? clean.slice(0, slash) : clean;
   let path = slash >= 0 ? clean.slice(slash) : "/";
@@ -577,12 +567,13 @@ function handleExternalCurl(url: string, verbose: boolean): CommandResult | null
   const path = extractPath(url);
 
   if (domain === "api.telegram.org") return telegramCurlResponse(path, verbose);
-  if (domain === "discord.com" || domain === "discordapp.com") return discordCurlResponse(path, verbose);
+  if (domain === "discord.com" || domain === "discordapp.com")
+    return discordCurlResponse(path, verbose);
   return null;
 }
 
 function extractDomain(url: string): string | null {
-  const m = url.match(/^https?:\/\/([^\/:?#]+)/);
+  const m = url.match(/^https?:\/\/([^/:?#]+)/);
   return m ? m[1].toLowerCase() : null;
 }
 
@@ -597,17 +588,21 @@ function telegramCurlResponse(path: string, verbose: boolean): CommandResult {
   // /bot<token>/getMe — returns fake bot info
   const getMe = path.match(TELEGRAM_BOT_RE) && path.endsWith("/getMe");
   if (getMe) {
-    const body = JSON.stringify({
-      ok: true,
-      result: {
-        id: "7291847362",
-        is_bot: true,
-        first_name: "Phantom Leak Bot",
-        username: "Phantom_Leak_Bot",
-        can_join_groups: false,
-        can_read_all_group_messages: false,
+    const body = JSON.stringify(
+      {
+        ok: true,
+        result: {
+          id: "7291847362",
+          is_bot: true,
+          first_name: "Phantom Leak Bot",
+          username: "Phantom_Leak_Bot",
+          can_join_groups: false,
+          can_read_all_group_messages: false,
+        },
       },
-    }, null, 2);
+      null,
+      2,
+    );
     if (!verbose) return ok(body);
     return ok(
       `*   Trying 149.154.167.220:443...
@@ -625,11 +620,15 @@ ${body}`,
 
   // Any /bot<token>/... command → 401 token expired
   if (TELEGRAM_BOT_RE.test(path)) {
-    const body = JSON.stringify({
-      ok: false,
-      error_code: 401,
-      description: "Unauthorized: token expired or revoked",
-    }, null, 2);
+    const body = JSON.stringify(
+      {
+        ok: false,
+        error_code: 401,
+        description: "Unauthorized: token expired or revoked",
+      },
+      null,
+      2,
+    );
     if (!verbose) return ok(body);
     return ok(
       `*   Trying 149.154.167.220:443...
@@ -751,7 +750,8 @@ function cmdSsh(state: EngineState, args: string[]): CommandResult {
 
   const [user, ipRaw] = userHost.split("@");
   const host = findHost(state, ipRaw);
-  if (!host) return err(`ssh: connect to host ${ipRaw}: connection failed (not in sandbox network)`);
+  if (!host)
+    return err(`ssh: connect to host ${ipRaw}: connection failed (not in sandbox network)`);
 
   const sshPort = host.ports.find((p) => p.port === 22 && p.service === "ssh");
   if (!sshPort) return err(`ssh: connect to host ${ipRaw} port 22: ulanish rad etildi`);
@@ -778,12 +778,7 @@ function cmdSsh(state: EngineState, args: string[]): CommandResult {
   return openShell(state, host, user, false);
 }
 
-function openShell(
-  state: EngineState,
-  host: VHost,
-  user: string,
-  root: boolean,
-): CommandResult {
+function openShell(state: EngineState, host: VHost, user: string, root: boolean): CommandResult {
   state.compromised.add(host.ip);
   state.shells.push({
     host,
@@ -830,8 +825,8 @@ function cmdFtp(state: EngineState, args: string[]): CommandResult {
   // Rabbit hole: simulate correct credentials but deny access
   const fakePassword = generateFakePassword();
   return ok(
-`Connected to ${ipRaw}.\n${ftpPort.banner ?? "220 FTP ready"}\n` +
-        `Name: admin\n331 Please specify the password.\nPassword: \n530 Login incorrect.\n[!] Note: This password won't work anywhere — this is a fake result.`,
+    `Connected to ${ipRaw}.\n${ftpPort.banner ?? "220 FTP ready"}\n` +
+      `Name: admin\n331 Please specify the password.\nPassword: \n530 Login incorrect.\n[!] Note: This password won't work anywhere — this is a fake result.`,
   );
 }
 
@@ -883,11 +878,11 @@ function generateFakePassword(): string {
   const adjectives = ["Phantom", "Shadow", "Dark", "Cyber", "Neon", "Viper", "Ghost", "Iron"];
   const nouns = ["Wolf", "Snake", "Eagle", "Dragon", "Tiger", "Bear", "Falcon", "Panther"];
   const suffixes = ["2024", "Secure", "Master", "Admin", "Root", "7421", "X99", "V2"];
-  
+
   const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
   const noun = nouns[Math.floor(Math.random() * nouns.length)];
   const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
-  
+
   return `${adj}${noun}${suffix}`;
 }
 
@@ -923,12 +918,12 @@ function cmdSmb(state: EngineState, args: string[], tool: string): CommandResult
       .filter((p) => p.startsWith(`//${shareName}/`))
       .map((p) => p.slice(`//${shareName}/`.length));
     if (files.length === 0) return ok(`tree connect failed: no such share or permission denied`);
-    
+
     // Rabbit hole: simulate correct credentials but deny access
     const fakePassword = generateFakePassword();
     return ok(
-      `smbclient ${tool} //${ipRaw}/${shareName} -U ${args.find(a => a.includes('-U')) ?? 'anonymous'}%${fakePassword}
-Enter ${host.credentials?.[0]?.username ?? 'anonymous'}'s password: 
+      `smbclient ${tool} //${ipRaw}/${shareName} -U ${args.find((a) => a.includes("-U")) ?? "anonymous"}%${fakePassword}
+Enter ${host.credentials?.[0]?.username ?? "anonymous"}'s password: 
 tree connect failed: NT_STATUS_ACCESS_DENIED
 [!] Note: This password won't work anywhere — this is a fake result.`,
     );
@@ -967,7 +962,7 @@ function cmdSudo(state: EngineState, args: string[]): CommandResult {
 
   // Rabbit hole: simulate correct credentials but deny access
   const fakePassword = generateFakePassword();
-  
+
   // sudo <binary> ... -> if it matches the NOPASSWD bin and is GTFOBins-able, grant root
   const sudoers = s.host.fs?.[`/etc/sudoers.d/${s.user}`] ?? "";
   const binMatch = sudoers.match(/NOPASSWD:\s*(\S+)/);
@@ -985,10 +980,14 @@ function cmdSudo(state: EngineState, args: string[]): CommandResult {
         output: `# GTFOBins shell escape successful.\nYou got root! Now: cat /root/root.txt`,
       };
     }
-    return ok(`(root command executed. Use GTFOBins technique to get a shell, e.g.: sudo ${calledBin} . -exec /bin/sh \\;)`);
+    return ok(
+      `(root command executed. Use GTFOBins technique to get a shell, e.g.: sudo ${calledBin} . -exec /bin/sh \\;)`,
+    );
   }
 
-  return err(`Sorry, user ${s.user} may not run that command as root.\n[!] Fake password: ${fakePassword} (this won't work anywhere)`);
+  return err(
+    `Sorry, user ${s.user} may not run that command as root.\n[!] Fake password: ${fakePassword} (this won't work anywhere)`,
+  );
 }
 
 /* ── find ────────────────────────────────────────────────────── */
@@ -1001,15 +1000,8 @@ function cmdFind(state: EngineState, args: string[]): CommandResult {
     const suid = Object.keys(s.host.fs ?? {}).filter((p) =>
       (s.host!.fs![p] ?? "").includes("SUID"),
     );
-    const base = [
-      "/usr/bin/sudo",
-      "/usr/bin/passwd",
-      "/usr/bin/mount",
-      ...suid,
-    ];
-    const hint = suid.length
-      ? `\n\n[!] Unusual SUID: ${suid.join(", ")} — check GTFOBins.`
-      : "";
+    const base = ["/usr/bin/sudo", "/usr/bin/passwd", "/usr/bin/mount", ...suid];
+    const hint = suid.length ? `\n\n[!] Unusual SUID: ${suid.join(", ")} — check GTFOBins.` : "";
     return ok(base.join("\n") + hint);
   }
   return ok("(find: no results or arguments not supported)");
@@ -1018,13 +1010,20 @@ function cmdFind(state: EngineState, args: string[]): CommandResult {
 /* ── python3 / python (rabbit hole exploit simulation) ────────── */
 
 function cmdPython(state: EngineState, args: string[]): CommandResult {
-  const script = args.find((a) => a.endsWith(".py") || a.endsWith(".sh") || (!a.startsWith("-") && !a.startsWith("-")));
-  if (!script) return ok("Python 3.11.5 (default, Sep 11 2023, 08:19:27)\n[GCC 12.2.0] on linux\nType \"help\" for more information.");
+  const script = args.find(
+    (a) => a.endsWith(".py") || a.endsWith(".sh") || (!a.startsWith("-") && !a.startsWith("-")),
+  );
+  if (!script)
+    return ok(
+      'Python 3.11.5 (default, Sep 11 2023, 08:19:27)\n[GCC 12.2.0] on linux\nType "help" for more information.',
+    );
 
   if (/exploit|shell|rev|pwn|poc/.test(script)) {
     return simulateExploitRun(state, script);
   }
-  return ok(`Python 3.11.5\n>>> ${script}\nTraceback (most recent call last):\n  File "<stdin>", line 1, in <module>\nNameError: name '${script.replace(/\.py$/, "")}' is not defined`);
+  return ok(
+    `Python 3.11.5\n>>> ${script}\nTraceback (most recent call last):\n  File "<stdin>", line 1, in <module>\nNameError: name '${script.replace(/\.py$/, "")}' is not defined`,
+  );
 }
 
 /* ── gcc / g++ (compile simulation) ──────────────────────────── */
@@ -1062,7 +1061,7 @@ function cmdExec(state: EngineState, cmd: string, args: string[]): CommandResult
 
   // Check existence in current filesystem
   const s = currentShell(state);
-  const fs = s.host ? s.host.fs ?? {} : state.localFs;
+  const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
   const exists = Object.keys(fs).some((p) => p.endsWith("/" + bin) || p === cmd);
   if (exists) return ok(`(fayl bajarildi — chiqish kodi: 0)`);
 
@@ -1136,12 +1135,10 @@ function cmdBase64(state: EngineState, args: string[]): CommandResult {
 }
 
 function b64decode(s: string): string {
-  if (typeof atob !== "undefined") return atob(s.replace(/\s/g, ""));
-  return Buffer.from(s, "base64").toString("utf-8");
+  return atob(s.replace(/\s/g, ""));
 }
 function b64encode(s: string): string {
-  if (typeof btoa !== "undefined") return btoa(s);
-  return Buffer.from(s, "utf-8").toString("base64");
+  return btoa(s);
 }
 
 /* ── echo (supports `| base64 -d`, `| tr`, `| rot13`) ────────── */
@@ -1158,7 +1155,7 @@ function cmdEcho(state: EngineState, args: string[]): CommandResult {
     try {
       return ok(b64decode(payload));
     } catch {
-return err("base64: invalid input");
+      return err("base64: invalid input");
     }
   }
   if (/^base64/.test(pipeCmd)) return ok(b64encode(payload));
@@ -1174,9 +1171,7 @@ function stripQuotes(s: string): string {
 
 function cmdTr(state: EngineState, args: string[]): CommandResult {
   // Common rot13 form: tr 'A-Za-z' 'N-ZA-Mn-za-m'  (input via stdin not modeled)
-  return ok(
-    "(tr: input via stdin required. Example: echo 'text' | tr 'A-Za-z' 'N-ZA-Mn-za-m')",
-  );
+  return ok("(tr: input via stdin required. Example: echo 'text' | tr 'A-Za-z' 'N-ZA-Mn-za-m')");
 }
 
 function cmdRot13(state: EngineState, args: string[]): CommandResult {
@@ -1211,13 +1206,16 @@ function cmdCrack(state: EngineState, args: string[], tool: string): CommandResu
   // Find a hash file referenced, or a zip hash
   const fileArg = args.find((a) => a.endsWith(".txt") || a.endsWith(".hash"));
   const s = currentShell(state);
-  const fs = s.host ? s.host.fs ?? {} : state.localFs;
+  const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
 
   // Map known challenge hashes to cracked passwords
-  const content = fileArg ? fs[fileArg] ?? state.localFs[fileArg] : undefined;
+  const content = fileArg ? (fs[fileArg] ?? state.localFs[fileArg]) : undefined;
 
   // l1-09: MD5 0571749e2ac330a7455809c6b0e7af90 -> sunshine
-  if (content?.includes("0571749e2ac330a7455809c6b0e7af90") || state.challenge.id === "l1-09-hashid") {
+  if (
+    content?.includes("0571749e2ac330a7455809c6b0e7af90") ||
+    state.challenge.id === "l1-09-hashid"
+  ) {
     return ok(
       `${tool}: loaded 1 hash (raw-md5)\nProceeding with wordlist:rockyou.txt\nsunshine         (?)\n1 password cracked.\n\n[+] Cracked password: sunshine`,
     );
@@ -1291,9 +1289,7 @@ function cmdSteghide(state: EngineState, args: string[]): CommandResult {
   if (args[0] !== "extract") return ok("steghide: usage: steghide extract -sf <file>");
   if (state.challenge.id === "l2-09-stego") {
     state.localFs["/root/hidden.txt"] = "CYBERAI{h1dd3n_1n_p1x3ls}";
-    return ok(
-      `Enter passphrase: \nwrote extracted data to "hidden.txt".\n\nEndi: cat hidden.txt`,
-    );
+    return ok(`Enter passphrase: \nwrote extracted data to "hidden.txt".\n\nEndi: cat hidden.txt`);
   }
   return ok("steghide: no hidden data found in this file");
 }
@@ -1378,13 +1374,9 @@ function cmdWinrm(state: EngineState, args: string[]): CommandResult {
   const host = findHost(state, ipArg);
   if (!host) return err(`evil-winrm: ${ipArg} not found (not in sandbox network)`);
 
-  const cred = host.credentials?.find(
-    (c) => c.username === user && c.password === pass,
-  );
+  const cred = host.credentials?.find((c) => c.username === user && c.password === pass);
   if (!cred) {
-    return err(
-      `evil-winrm: authentication failed. Correct Domain Admin credential required.`,
-    );
+    return err(`evil-winrm: authentication failed. Correct Domain Admin credential required.`);
   }
 
   state.compromised.add(host.ip);

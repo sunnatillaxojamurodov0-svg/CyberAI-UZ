@@ -43,11 +43,11 @@ function ProjectsRoute() {
               <StatusPill tone="accent">Project Portfolio</StatusPill>
             </div>
             <h1 className="mt-7 font-display text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance">
-              Infrastructure you can trust{" "}
-              <span className="gradient-text">at machine speed.</span>
+              Infrastructure you can trust <span className="gradient-text">at machine speed.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Every project here is built, tested, and running in production. Click any card for deep architecture breakdowns, metrics, and capability distribution.
+              Every project here is built, tested, and running in production. Click any card for
+              deep architecture breakdowns, metrics, and capability distribution.
             </p>
           </div>
         </section>

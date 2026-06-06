@@ -14,12 +14,7 @@ import {
   X,
   CheckCircle2,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { cn } from "@/lib/utils";
@@ -275,9 +270,7 @@ function ProjectCard({
               key={t}
               className={cn(
                 "rounded-md px-2 py-0.5 font-mono text-[9px] font-medium",
-                accent
-                  ? "bg-accent/8 text-accent/80"
-                  : "bg-primary/8 text-primary/80",
+                accent ? "bg-accent/8 text-accent/80" : "bg-primary/8 text-primary/80",
               )}
             >
               {t}
@@ -428,9 +421,7 @@ function ProjectModal({
             <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Overview
             </h4>
-            <p className="text-sm leading-relaxed text-foreground/85">
-              {project.details}
-            </p>
+            <p className="text-sm leading-relaxed text-foreground/85">{project.details}</p>
           </div>
 
           {/* Metrics */}
@@ -467,10 +458,7 @@ function ProjectModal({
                 <li key={f} className="flex items-start gap-3 text-sm text-foreground/80">
                   <CheckCircle2
                     size={14}
-                    className={cn(
-                      "mt-0.5 shrink-0",
-                      accent ? "text-accent" : "text-primary",
-                    )}
+                    className={cn("mt-0.5 shrink-0", accent ? "text-accent" : "text-primary")}
                   />
                   {f}
                 </li>
@@ -529,19 +517,15 @@ export function ProjectsShowcase() {
             <span className="text-muted-foreground">for the autonomous era.</span>
           </h2>
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
-            Every CyberAI project is built to one spec: silent strength at machine speed. Click any card to explore architecture, metrics, and capabilities.
+            Every CyberAI project is built to one spec: silent strength at machine speed. Click any
+            card to explore architecture, metrics, and capabilities.
           </p>
         </motion.div>
 
         {/* Grid */}
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
           {PROJECTS.map((p, i) => (
-            <ProjectCard
-              key={p.id}
-              project={p}
-              index={i}
-              onSelect={() => setSelectedId(p.id)}
-            />
+            <ProjectCard key={p.id} project={p} index={i} onSelect={() => setSelectedId(p.id)} />
           ))}
         </div>
       </div>

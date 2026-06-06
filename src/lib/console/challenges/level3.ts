@@ -53,7 +53,10 @@ export const LEVEL3: CTFChallenge[] = [
           web: {
             server: "Apache/2.4.52",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>Aurora Portal</h1><a href='/upload'>Upload</a></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>Aurora Portal</h1><a href='/upload'>Upload</a></body></html>",
+              },
               "/upload": {
                 status: 200,
                 protected: true,
@@ -118,7 +121,10 @@ export const LEVEL3: CTFChallenge[] = [
           web: {
             server: "nginx/1.20.1",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>DMZ Web</h1><!-- ssh webadmin:Winter2024! --></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>DMZ Web</h1><!-- ssh webadmin:Winter2024! --></body></html>",
+              },
             },
           },
           fs: {
@@ -382,7 +388,10 @@ export const LEVEL3: CTFChallenge[] = [
           web: {
             server: "nginx/1.20.1",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>Image Proxy</h1><form>/fetch?url=...</form></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>Image Proxy</h1><form>/fetch?url=...</form></body></html>",
+              },
               "/fetch?url=http://169.254.169.254/latest/meta-data/": {
                 status: 200,
                 body: "iam/\nhostname\ninstance-id\nsecurity-credentials/",
@@ -485,9 +494,18 @@ export const LEVEL3: CTFChallenge[] = [
           web: {
             server: "Apache (ModSecurity)",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>CorpStore</h1><a href='/product?id=1'>Product</a></body></html>" },
-              "/product?id=1": { status: 200, body: "<html><body>Product: Widget. Price: $9.99</body></html>" },
-              "/product?id=1'": { status: 403, body: "[ModSecurity] Request blocked: SQL injection detected." },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>CorpStore</h1><a href='/product?id=1'>Product</a></body></html>",
+              },
+              "/product?id=1": {
+                status: 200,
+                body: "<html><body>Product: Widget. Price: $9.99</body></html>",
+              },
+              "/product?id=1'": {
+                status: 403,
+                body: "[ModSecurity] Request blocked: SQL injection detected.",
+              },
               "/product?id=1/*!50000UNION*/SELECT user,pass,3 FROM users": {
                 status: 200,
                 body: "admin | $1$xyz$cR4ck3dHash | 3  (when cracked: 'admin@123')",
@@ -553,7 +571,10 @@ export const LEVEL3: CTFChallenge[] = [
           web: {
             server: "nginx/1.20.1",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>Citadel Bank</h1><a href='/portal'>Portal</a></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>Citadel Bank</h1><a href='/portal'>Portal</a></body></html>",
+              },
               "/portal": {
                 status: 200,
                 protected: true,
@@ -591,7 +612,9 @@ export const LEVEL3: CTFChallenge[] = [
             { port: 445, service: "microsoft-ds", state: "open" },
             { port: 5985, service: "winrm", state: "open" },
           ],
-          credentials: [{ service: "smb", username: "Administrator", password: "Citadel$Admin2024" }],
+          credentials: [
+            { service: "smb", username: "Administrator", password: "Citadel$Admin2024" },
+          ],
           fs: {
             "C:/Users/Administrator/Desktop/final.txt": "CYBERAI{c1t4d3l_t0t4l_d0m41n_pwn3d}",
           },

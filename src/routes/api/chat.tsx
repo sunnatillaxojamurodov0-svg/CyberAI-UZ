@@ -31,7 +31,7 @@ export const Route = createFileRoute("/api/chat")({
 
           const token = getSessionToken(request);
           const session = token ? await verifySession(token) : null;
-          const userId = session?.ok ? session.user?.id ?? null : null;
+          const userId = session?.ok ? (session.user?.id ?? null) : null;
 
           const quota = await checkAiQuota(userId);
           if (!quota.allowed) {
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          const body = await request.json() as {
+          const body = (await request.json()) as {
             history?: { role: "user" | "assistant"; content: string }[];
             message?: string;
             systemPrompt?: string;
@@ -72,6 +72,13 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
+          if (body.imageBase64) {
+            return new Response("Image upload is not supported by this AI model. Send text only.", {
+              status: 400,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
+
           await incrementAiUsage(userId);
 
           const genAI = new GoogleGenerativeAI(apiKey);
@@ -82,19 +89,35 @@ export const Route = createFileRoute("/api/chat")({
           });
 
           const mappedHistory = history.map((h) => ({
-            role: h.role === "assistant" ? "model" : "user" as const,
+            role: h.role === "assistant" ? "model" : ("user" as const),
             parts: [{ text: h.content }],
           }));
 
           const chat = model.startChat({ history: mappedHistory });
 
-          const parts: ({ text: string } | { inlineData: { mimeType: string; data: string } })[] = [{ text: body.message }];
+          const parts: ({ text: string } | { inlineData: { mimeType: string; data: string } })[] = [
+            { text: body.message },
+          ];
 
           if (body.imageBase64 && body.imageMimeType) {
             parts.push({ inlineData: { mimeType: body.imageMimeType, data: body.imageBase64 } });
           }
 
-          const result = await chat.sendMessageStream(parts);
+          let result;
+          try {
+            result = await chat.sendMessageStream(parts);
+          } catch (err) {
+            if (String(err).includes("does not support image")) {
+              return new Response(
+                "Image upload is not supported by this AI model. Send text only.",
+                {
+                  status: 400,
+                  headers: { "Content-Type": "text/plain" },
+                },
+              );
+            }
+            throw err;
+          }
 
           const stream = new ReadableStream({
             async start(controller) {

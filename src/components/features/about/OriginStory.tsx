@@ -21,20 +21,19 @@ export function OriginStory() {
           </h2>
           <div className="mt-8 space-y-5 text-base leading-relaxed text-muted-foreground">
             <p>
-              CyberAI was founded in 2023 by a small group of former intelligence operators, ML researchers,
-              and infrastructure engineers. They were united by one frustration: the SOC stack
-              had become a museum of dashboards no one had time to read.
+              CyberAI was founded in 2023 by a small group of former intelligence operators, ML
+              researchers, and infrastructure engineers. They were united by one frustration: the
+              SOC stack had become a museum of dashboards no one had time to read.
             </p>
             <p>
-              Adversaries were already deploying generative agents.
-              Defenders were still triaging tickets.
-              The asymmetry was no longer about budget —
+              Adversaries were already deploying generative agents. Defenders were still triaging
+              tickets. The asymmetry was no longer about budget —
               <span className="text-foreground"> it was about cognition speed.</span>
             </p>
             <p>
-              We didn't set out to build another scanner. We set out to build
-              an intelligence for the perimeter — one that thinks in milliseconds,
-              speaks in plain language, and never asks permission to defend.
+              We didn't set out to build another scanner. We set out to build an intelligence for
+              the perimeter — one that thinks in milliseconds, speaks in plain language, and never
+              asks permission to defend.
             </p>
           </div>
         </motion.div>
@@ -58,7 +57,9 @@ export function OriginStory() {
             <div className="absolute inset-0 [mask-image:radial-gradient(circle_at_center,black_30%,transparent_75%)]">
               <div
                 className="absolute left-1/2 top-1/2 size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/40 animate-pulse-soft"
-                style={{ boxShadow: "0 0 80px -10px color-mix(in oklab, var(--primary) 60%, transparent)" }}
+                style={{
+                  boxShadow: "0 0 80px -10px color-mix(in oklab, var(--primary) 60%, transparent)",
+                }}
               />
               <div className="absolute left-1/2 top-1/2 size-[40%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-accent/30" />
               <div className="absolute left-1/2 top-1/2 size-[20%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/20 blur-2xl" />

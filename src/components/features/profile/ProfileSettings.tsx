@@ -44,11 +44,26 @@ export function ProfileSettings({ onSignOut }: Props) {
         </div>
         <div className="space-y-3">
           {[
-            { key: "email" as const, label: "Email Notifications", desc: "Important news and updates" },
-            { key: "security" as const, label: "Security Alerts", desc: "About sign-ins and activity" },
-            { key: "updates" as const, label: "Platform Updates", desc: "New features and changes" },
+            {
+              key: "email" as const,
+              label: "Email Notifications",
+              desc: "Important news and updates",
+            },
+            {
+              key: "security" as const,
+              label: "Security Alerts",
+              desc: "About sign-ins and activity",
+            },
+            {
+              key: "updates" as const,
+              label: "Platform Updates",
+              desc: "New features and changes",
+            },
           ].map((item) => (
-            <div key={item.key} className="flex items-center justify-between rounded-lg border border-border bg-surface/30 px-4 py-3">
+            <div
+              key={item.key}
+              className="flex items-center justify-between rounded-lg border border-border bg-surface/30 px-4 py-3"
+            >
               <div>
                 <div className="text-sm font-medium text-foreground">{item.label}</div>
                 <div className="text-xs text-muted-foreground">{item.desc}</div>
@@ -80,7 +95,10 @@ export function ProfileSettings({ onSignOut }: Props) {
           </span>
         </div>
         <div className="space-y-3 text-sm text-muted-foreground">
-          <p>Your profile is only visible to you. Other users cannot access your personal information.</p>
+          <p>
+            Your profile is only visible to you. Other users cannot access your personal
+            information.
+          </p>
           <div className="rounded-lg border border-primary/20 bg-primary/5 px-4 py-3 text-primary/80">
             All data is protected by Supabase Row Level Security (RLS).
           </div>
@@ -92,9 +110,7 @@ export function ProfileSettings({ onSignOut }: Props) {
         <div className="flex items-center justify-between">
           <div>
             <div className="font-medium text-foreground">Sign Out</div>
-            <div className="mt-0.5 text-sm text-muted-foreground">
-              End current session
-            </div>
+            <div className="mt-0.5 text-sm text-muted-foreground">End current session</div>
           </div>
           <button
             type="button"
@@ -116,8 +132,9 @@ export function ProfileSettings({ onSignOut }: Props) {
           </span>
         </div>
         <p className="mb-4 text-sm leading-relaxed text-muted-foreground">
-          Deleting an account is irreversible. All your data will be permanently erased.
-          Type <span className="font-mono font-bold text-destructive">DELETE</span> in the field below to confirm.
+          Deleting an account is irreversible. All your data will be permanently erased. Type{" "}
+          <span className="font-mono font-bold text-destructive">DELETE</span> in the field below to
+          confirm.
         </p>
         <div className="flex flex-col gap-3 sm:flex-row">
           <input

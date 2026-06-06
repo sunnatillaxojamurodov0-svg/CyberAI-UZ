@@ -1,11 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from "react";
 import { cn } from "@/lib/utils";
-import {
-  createEngineState,
-  execute,
-  promptString,
-  type EngineState,
-} from "@/lib/console/engine";
+import { createEngineState, execute, promptString, type EngineState } from "@/lib/console/engine";
 import type { CTFChallenge, TerminalLine } from "@/lib/console/types";
 
 export interface TerminalHandle {
@@ -73,100 +68,104 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
     aiLineId.current = null;
   }, [challenge]);
 
-  const fetchAiHint = useCallback(async (userMessage: string, state: EngineState) => {
-    const lineId = lid();
-    aiLineId.current = lineId;
-    setAiStreaming(true);
-    setAiStreamText("");
+  const fetchAiHint = useCallback(
+    async (userMessage: string, state: EngineState) => {
+      const lineId = lid();
+      aiLineId.current = lineId;
+      setAiStreaming(true);
+      setAiStreamText("");
 
-    setLines((prev) => [
-      ...prev,
-      { id: lineId, kind: "ai-hint", text: "" },
-    ]);
+      setLines((prev) => [...prev, { id: lineId, kind: "ai-hint", text: "" }]);
 
-    try {
-      const res = await fetch("/api/console/hint", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          challengeId: challenge.id,
-          challengeTitle: challenge.title,
-          challengeLevel: challenge.level,
-          challengeCategory: challenge.category,
-          scenario: challenge.scenario,
-          objectives: challenge.objectives,
-          targetIp: challenge.targetIp,
-          commandHistory: history.slice(-30),
-          toolsUsed: state.telemetry.toolsUsed,
-          userMessage,
-        }),
-      });
+      try {
+        const res = await fetch("/api/console/hint", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            challengeId: challenge.id,
+            challengeTitle: challenge.title,
+            challengeLevel: challenge.level,
+            challengeCategory: challenge.category,
+            scenario: challenge.scenario,
+            objectives: challenge.objectives,
+            targetIp: challenge.targetIp,
+            commandHistory: history.slice(-30),
+            toolsUsed: state.telemetry.toolsUsed,
+            userMessage,
+          }),
+        });
 
-      if (!res.ok) {
-        const text = await res.text();
-        setAiStreamText(text || "AI Mentor unavailable.");
+        if (!res.ok) {
+          const text = await res.text();
+          setAiStreamText(text || "AI Mentor unavailable.");
+          return;
+        }
+
+        const reader = res.body?.getReader();
+        if (!reader) {
+          setAiStreamText("Failed to connect to AI Mentor.");
+          return;
+        }
+
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          setAiStreamText(buffer);
+        }
+      } catch {
+        setAiStreamText("Network error while contacting AI Mentor.");
+      } finally {
+        setAiStreaming(false);
+      }
+    },
+    [challenge, history],
+  );
+
+  const runCommand = useCallback(
+    (cmd: string) => {
+      const state = engineRef.current;
+      const prompt = promptString(state);
+
+      setLines((prev) => [...prev, { id: lid(), kind: "input", text: `${prompt}${cmd}` }]);
+
+      if (!cmd.trim()) return;
+
+      const result = execute(state, cmd);
+
+      if (result.output === "__CLEAR__") {
+        setLines([]);
         return;
       }
 
-      const reader = res.body?.getReader();
-      if (!reader) {
-        setAiStreamText("Failed to connect to AI Mentor.");
+      if (result.kind === "ai-hint") {
+        const question = result.output;
+        setLines((prev) => [
+          ...prev,
+          { id: lid(), kind: "output", text: "\u2514 Consulting CyberAI Mentor..." },
+        ]);
+        setEngine({ ...state });
+        fetchAiHint(question, state);
         return;
       }
 
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        setAiStreamText(buffer);
-      }
-    } catch {
-      setAiStreamText("Network error while contacting AI Mentor.");
-    } finally {
-      setAiStreaming(false);
-    }
-  }, [challenge, history]);
-
-  const runCommand = useCallback((cmd: string) => {
-    const state = engineRef.current;
-    const prompt = promptString(state);
-
-    setLines((prev) => [
-      ...prev,
-      { id: lid(), kind: "input", text: `${prompt}${cmd}` },
-    ]);
-
-    if (!cmd.trim()) return;
-
-    const result = execute(state, cmd);
-
-    if (result.output === "__CLEAR__") {
-      setLines([]);
-      return;
-    }
-
-    if (result.kind === "ai-hint") {
-      const question = result.output;
       setLines((prev) => [
         ...prev,
-        { id: lid(), kind: "output", text: "\u2514 Consulting CyberAI Mentor..." },
+        {
+          id: lid(),
+          kind: result.kind === "error" ? "error" : result.kind === "system" ? "system" : "output",
+          text: result.output,
+        },
       ]);
+
       setEngine({ ...state });
-      fetchAiHint(question, state);
-      return;
-    }
-
-    setLines((prev) => [
-      ...prev,
-      { id: lid(), kind: result.kind === "error" ? "error" : result.kind === "system" ? "system" : "output", text: result.output },
-    ]);
-
-    setEngine({ ...state });
-  }, [fetchAiHint]);
+    },
+    [fetchAiHint],
+  );
 
   const handleSubmit = useCallback(() => {
     const cmd = input;
@@ -241,10 +240,7 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
           if (line.id === aiLineId.current && aiStreamText) {
             return (
               <div key={line.id} className="mb-1">
-                <span className={cn(
-                  "whitespace-pre-wrap break-all",
-                  "text-emerald-400",
-                )}>
+                <span className={cn("whitespace-pre-wrap break-all", "text-emerald-400")}>
                   {aiStreamText}
                 </span>
                 {aiStreaming && (
@@ -260,9 +256,13 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
               ) : line.kind === "error" ? (
                 <span className="text-red-400 whitespace-pre-wrap break-all">{line.text}</span>
               ) : line.kind === "ai-hint" ? (
-                <span className="text-emerald-400 whitespace-pre-wrap break-all">{line.text || ""}</span>
+                <span className="text-emerald-400 whitespace-pre-wrap break-all">
+                  {line.text || ""}
+                </span>
               ) : (
-                <span className="text-muted-foreground whitespace-pre-wrap break-all">{line.text}</span>
+                <span className="text-muted-foreground whitespace-pre-wrap break-all">
+                  {line.text}
+                </span>
               )}
             </div>
           );
