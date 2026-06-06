@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import heroGlobe from "@/assets/hero-globe.jpg";
@@ -12,160 +11,97 @@ const reveal = (i: number) => ({
 });
 
 export function BentoCommand() {
-  const [clock, setClock] = useState(new Date());
-  useEffect(() => {
-    const id = setInterval(() => setClock(new Date()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const hh = String(clock.getHours()).padStart(2, "0");
-  const mm = String(clock.getMinutes()).padStart(2, "0");
-  const ss = String(clock.getSeconds()).padStart(2, "0");
   return (
-    <section className="relative px-6 pb-24">
-      <div className="mx-auto grid max-w-7xl grid-cols-12 gap-4">
-        {/* Main instrument */}
-        <motion.div {...reveal(0)} className="col-span-12 md:col-span-8">
-          <GlassPanel hoverGlow className="h-full min-h-[440px] p-8">
-            <div className="absolute right-4 top-4 font-mono text-[10px] tracking-widest text-primary/60">
-              REF: 00-ALPHA-9
-            </div>
-            <div className="flex h-full flex-col">
-              <div className="mb-6">
-                <h3 className="font-display text-2xl font-bold tracking-tight">
-                  Global Threat Visualizer
-                </h3>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Real-time telemetry across deep-space relays.
+    <section className="py-24 px-6 bg-surface">
+      <div className="mx-auto max-w-7xl">
+        <div className="text-center mb-16">
+          <h2 className="font-display text-[clamp(2rem,5vw,3rem)] font-extrabold tracking-tight text-foreground mb-4">
+            Unfair Advantage, <span className="gradient-text">Built In</span>
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Accelerate your learning curve with tools previously only available to nation-state
+            actors and top-tier red teams.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+          <motion.div {...reveal(0)} className="md:col-span-2">
+            <GlassPanel hoverGlow className="h-full p-8 flex flex-col justify-between relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative z-10">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary mb-4">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                  <path d="M2 17l10 5 10-5" />
+                  <path d="M2 12l10 5 10-5" />
+                </svg>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Adaptive AI Mentor</h3>
+                <p className="text-muted-foreground max-w-md">
+                  Our LLM-powered mentor watches your keystrokes, offering context-aware hints just
+                  before you get stuck, without giving away the answer.
                 </p>
               </div>
-              <div className="relative flex-1 overflow-hidden rounded-xl border border-border bg-black/40">
+            </GlassPanel>
+          </motion.div>
+
+          <motion.div {...reveal(1)}>
+            <GlassPanel className="h-full p-8 flex flex-col justify-between relative overflow-hidden group hover:border-accent/50 transition-colors">
+              <div className="relative z-10">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent mb-4">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M2 12h20" />
+                  <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                </svg>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Live Cloud Targets</h3>
+                <p className="text-muted-foreground">Spin up isolated, realistic vulnerable networks in seconds. No local VMs required.</p>
+              </div>
+            </GlassPanel>
+          </motion.div>
+
+          <motion.div {...reveal(2)}>
+            <GlassPanel className="h-full p-8 flex flex-col justify-between relative overflow-hidden group hover:border-emerald/50 transition-colors">
+              <div className="relative z-10">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald mb-4">
+                  <path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z" />
+                  <path d="M12 22v-4" />
+                  <path d="M8 18l-2 4" />
+                  <path d="M16 18l2 4" />
+                </svg>
+                <h3 className="text-2xl font-bold text-foreground mb-2">Gamified CTFs</h3>
+                <p className="text-muted-foreground">Compete in global leaderboards. Earn zero-knowledge proofs for every vulnerability you exploit.</p>
+              </div>
+            </GlassPanel>
+          </motion.div>
+
+          <motion.div {...reveal(3)} className="md:col-span-2">
+            <GlassPanel className="h-full p-8 flex flex-col justify-between relative overflow-hidden group hover:border-amber/50 transition-colors">
+              <div className="absolute right-0 top-0 w-1/2 h-full opacity-20">
                 <img
-                  src={heroGlobe}
-                  alt="Holographic globe visualization of global threat telemetry"
-                  width={1600}
-                  height={896}
-                  className="absolute inset-0 h-full w-full object-cover opacity-90 animate-float"
+                  src={neuralTopology}
+                  alt="Code screen"
+                  className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-                <div
-                  className="absolute inset-0 opacity-[0.03]"
-                  style={{
-                    backgroundImage:
-                      "repeating-linear-gradient(0deg, transparent, transparent 2px, white 2px, white 4px)",
-                    animation: "scanline 4s linear infinite",
-                  }}
-                />
-                <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                  <span className="flex items-center gap-2">
-                    <span className="size-1.5 rounded-full bg-primary animate-pulse" />
-                    Visualizer Active
-                  </span>
-                  <span className="tabular-nums">
-                    {hh}:{mm}:{ss}
-                  </span>
+              </div>
+              <div className="relative z-10 w-2/3">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-900/20 text-red-400 mb-4 border border-red-500/30 text-[10px] font-bold uppercase tracking-wider">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z" />
+                  </svg>
+                  Premium Feature
                 </div>
-              </div>
-            </div>
-          </GlassPanel>
-        </motion.div>
-
-        {/* AI assistant side console */}
-        <motion.div {...reveal(1)} className="col-span-12 md:col-span-4">
-          <GlassPanel className="flex h-full min-h-[440px] flex-col gap-5 p-6 hover:border-accent/30 transition-colors">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-                AI Assistant
-              </span>
-              <span className="size-2 rounded-full bg-accent animate-pulse" />
-            </div>
-            <div className="rounded-xl border border-border bg-black/40 p-4 text-sm leading-relaxed">
-              <span className="text-accent">CyberAI: </span>
-              Sector 5G perimeter activity being analyzed. Rerouting network traffic through
-              isolation filters recommended.
-            </div>
-            <div className="flex items-center gap-3 rounded-lg border border-border bg-white/[0.03] px-4 py-2.5">
-              <div className="h-1 w-24 overflow-hidden rounded-full bg-primary/15">
-                <div className="h-full w-2/3 bg-primary" />
-              </div>
-              <span className="ml-auto font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                Threat: Past
-              </span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-xl border border-border bg-black/40">
-              <img
-                src={neuralTopology}
-                alt="Neural network topology"
-                width={800}
-                height={800}
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover opacity-80"
-              />
-              <div className="absolute bottom-3 left-3 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                Neural Topology
-              </div>
-            </div>
-          </GlassPanel>
-        </motion.div>
-
-        {/* Stats trio */}
-        <motion.div {...reveal(2)} className="col-span-6 md:col-span-3">
-          <GlassPanel className="p-6">
-            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Uptime
-            </div>
-            <div className="font-display text-4xl font-bold tracking-tighter">
-              99.99<span className="text-primary">%</span>
-            </div>
-            <div className="mt-4 h-1 w-full overflow-hidden rounded-full bg-white/5">
-              <div className="h-full bg-primary" style={{ width: "99.9%" }} />
-            </div>
-          </GlassPanel>
-        </motion.div>
-
-        <motion.div {...reveal(3)} className="col-span-6 md:col-span-3">
-          <GlassPanel className="p-6">
-            <div className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-              Threats Blocked
-            </div>
-            <div className="font-display text-4xl font-bold tracking-tighter">
-              14.2<span className="text-accent">M</span>
-            </div>
-            <div className="mt-4 flex items-end gap-1">
-              {[0.2, 0.3, 0.45, 0.6, 0.8, 1].map((h, i) => (
-                <div
-                  key={i}
-                  className="w-1 rounded-sm bg-accent"
-                  style={{ height: `${h * 28}px`, opacity: 0.25 + h * 0.7 }}
-                />
-              ))}
-            </div>
-          </GlassPanel>
-        </motion.div>
-
-        <motion.div {...reveal(4)} className="col-span-12 md:col-span-6">
-          <GlassPanel className="flex items-center justify-between p-6">
-            <div>
-              <div className="mb-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                System Status
-              </div>
-              <div className="font-display text-xl font-bold">All sectors operational</div>
-            </div>
-            <div className="flex -space-x-3">
-              {["S1", "S2", "S3"].map((s, i) => (
-                <div
-                  key={s}
-                  className="grid size-10 place-items-center rounded-full border-2 border-background bg-surface-2 font-mono text-[10px]"
-                  style={{ zIndex: 10 - i }}
+                <h3 className="text-2xl font-bold text-foreground mb-2">Automated Threat Emulation</h3>
+                <p className="text-muted-foreground mb-6">Test your defenses against AI-generated attack vectors that adapt to your architecture in real-time.</p>
+                <a
+                  href="/console"
+                  className="text-primary hover:text-primary/80 flex items-center gap-1 font-semibold transition-colors text-sm"
                 >
-                  {s}
-                </div>
-              ))}
-              <div className="grid size-10 place-items-center rounded-full border-2 border-background bg-primary font-mono text-[10px] font-bold text-primary-foreground">
-                +4
+                  Explore Red Team Tools
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </a>
               </div>
-            </div>
-          </GlassPanel>
-        </motion.div>
+            </GlassPanel>
+          </motion.div>
+        </div>
       </div>
     </section>
   );

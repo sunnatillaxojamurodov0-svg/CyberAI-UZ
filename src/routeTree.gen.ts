@@ -17,6 +17,8 @@ import { Route as ConsoleRouteImport } from './routes/console'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as StitchIndexRouteImport } from './routes/stitch/index'
+import { Route as StitchScreenIdRouteImport } from './routes/stitch/$screenId'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as ApiConsoleHintRouteImport } from './routes/api/console/hint'
@@ -67,6 +69,16 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StitchIndexRoute = StitchIndexRouteImport.update({
+  id: '/stitch/',
+  path: '/stitch/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StitchScreenIdRoute = StitchScreenIdRouteImport.update({
+  id: '/stitch/$screenId',
+  path: '/stitch/$screenId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -136,6 +148,8 @@ export interface FileRoutesByFullPath {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/stitch/$screenId': typeof StitchScreenIdRoute
+  '/stitch/': typeof StitchIndexRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -157,6 +171,8 @@ export interface FileRoutesByTo {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/stitch/$screenId': typeof StitchScreenIdRoute
+  '/stitch': typeof StitchIndexRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -179,6 +195,8 @@ export interface FileRoutesById {
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/chat': typeof ApiChatRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/stitch/$screenId': typeof StitchScreenIdRoute
+  '/stitch/': typeof StitchIndexRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -202,6 +220,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/auth/callback'
+    | '/stitch/$screenId'
+    | '/stitch/'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
@@ -223,6 +243,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/auth/callback'
+    | '/stitch/$screenId'
+    | '/stitch'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
@@ -244,6 +266,8 @@ export interface FileRouteTypes {
     | '/sitemap.xml'
     | '/api/chat'
     | '/auth/callback'
+    | '/stitch/$screenId'
+    | '/stitch/'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
@@ -266,6 +290,8 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiChatRoute: typeof ApiChatRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  StitchScreenIdRoute: typeof StitchScreenIdRoute
+  StitchIndexRoute: typeof StitchIndexRoute
   ApiAuthGithubRoute: typeof ApiAuthGithubRouteWithChildren
   ApiAuthGoogleRoute: typeof ApiAuthGoogleRouteWithChildren
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
@@ -331,6 +357,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stitch/': {
+      id: '/stitch/'
+      path: '/stitch'
+      fullPath: '/stitch/'
+      preLoaderRoute: typeof StitchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/stitch/$screenId': {
+      id: '/stitch/$screenId'
+      path: '/stitch/$screenId'
+      fullPath: '/stitch/$screenId'
+      preLoaderRoute: typeof StitchScreenIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -448,6 +488,8 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiChatRoute: ApiChatRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  StitchScreenIdRoute: StitchScreenIdRoute,
+  StitchIndexRoute: StitchIndexRoute,
   ApiAuthGithubRoute: ApiAuthGithubRouteWithChildren,
   ApiAuthGoogleRoute: ApiAuthGoogleRouteWithChildren,
   ApiAuthLoginRoute: ApiAuthLoginRoute,

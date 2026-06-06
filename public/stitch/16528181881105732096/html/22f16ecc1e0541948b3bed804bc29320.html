@@ -1,0 +1,331 @@
+<!DOCTYPE html><html class="dark scroll-smooth" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>CyberAI Platform - Master the Digital Frontier</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;family=Geist:wght@400;600&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&amp;family=Inter:wght@100..900&amp;display=swap" rel="stylesheet">
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        .float-anim {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes pulse-glow {
+            0% { box-shadow: 0 0 0 0 rgba(0, 244, 254, 0.4); }
+            70% { box-shadow: 0 0 0 15px rgba(0, 244, 254, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(0, 244, 254, 0); }
+        }
+        .pulse-glow {
+            animation: pulse-glow 2s infinite;
+        }
+        
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #101415;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #323537;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #46464b;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#272a2c",
+                        "surface-container": "#1d2022",
+                        "primary-fixed": "#e2e2eb",
+                        "surface-variant": "#323537",
+                        "on-tertiary-container": "#9b4efd",
+                        "tertiary": "#d8b9ff",
+                        "primary": "#c6c6cf",
+                        "on-primary-fixed": "#191b22",
+                        "secondary-container": "#00f4fe",
+                        "surface-container-highest": "#323537",
+                        "surface-container-low": "#191c1e",
+                        "on-primary-fixed-variant": "#45464e",
+                        "on-secondary-fixed-variant": "#004f53",
+                        "primary-fixed-dim": "#c6c6cf",
+                        "surface-bright": "#363a3b",
+                        "tertiary-fixed-dim": "#d8b9ff",
+                        "error-container": "#93000a",
+                        "inverse-on-surface": "#2d3133",
+                        "outline-variant": "#46464b",
+                        "on-secondary-fixed": "#002021",
+                        "secondary": "#e6feff",
+                        "on-primary": "#2e3037",
+                        "on-secondary": "#003739",
+                        "surface": "#101415",
+                        "surface-container-lowest": "#0b0f10",
+                        "on-tertiary": "#450086",
+                        "secondary-fixed": "#63f7ff",
+                        "error": "#ffb4ab",
+                        "on-surface": "#e0e3e5",
+                        "secondary-fixed-dim": "#00dce5",
+                        "on-error-container": "#ffdad6",
+                        "primary-container": "#0a0c12",
+                        "tertiary-fixed": "#eddcff",
+                        "on-surface-variant": "#c7c6cb",
+                        "surface-tint": "#c6c6cf",
+                        "surface-dim": "#101415",
+                        "background": "#101415",
+                        "on-secondary-container": "#006c71",
+                        "inverse-primary": "#5d5e66",
+                        "inverse-surface": "#e0e3e5",
+                        "outline": "#909095",
+                        "on-primary-container": "#797a82",
+                        "on-tertiary-fixed": "#290055",
+                        "tertiary-container": "#150030",
+                        "on-background": "#e0e3e5",
+                        "on-tertiary-fixed-variant": "#6200bc",
+                        "on-error": "#690005"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "margin-desktop": "40px",
+                        "base": "8px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "code-sm": ["Geist"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-caps": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "code-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "600" }],
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex flex-col overflow-x-hidden selection:bg-secondary-container selection:text-on-secondary-container">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 flex justify-between items-center px-margin-mobile md:px-margin-desktop h-20 bg-surface/60 backdrop-blur-xl border-b border-white/10">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-3xl filled" data-icon="security">security</span>
+<span class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary">CyberAI</span>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<a class="font-body-md text-body-md text-secondary border-b-2 border-secondary-container pb-1 hover:text-secondary hover:bg-white/5 transition-all" href="#">Platform</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:bg-white/5 transition-all" href="#">Console</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:bg-white/5 transition-all" href="#">AI</a>
+<a class="font-body-md text-body-md text-on-surface-variant hover:text-secondary hover:bg-white/5 transition-all" href="#">About</a>
+</div>
+<button class="font-body-md text-body-md bg-secondary-container text-on-secondary-container px-6 py-2 rounded-full font-semibold hover:bg-secondary-fixed transition-colors scale-95 active:scale-90 duration-200" onclick="document.getElementById('auth-modal').classList.remove('hidden')">
+            Sign In
+        </button>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-20">
+<!-- Hero Section -->
+<section class="relative min-h-[921px] flex items-center justify-center px-margin-mobile md:px-margin-desktop overflow-hidden">
+<!-- Background Glows -->
+<div class="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-secondary-container/10 rounded-full blur-[120px] pointer-events-none"></div>
+<div class="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-on-tertiary-container/10 rounded-full blur-[150px] pointer-events-none"></div>
+<div class="max-w-container-max mx-auto grid grid-cols-1 lg:grid-cols-2 gap-gutter items-center z-10 relative">
+<div class="flex flex-col items-start gap-8">
+<div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container border border-outline-variant/50">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="font-code-sm text-code-sm text-secondary">v2.0 Beta Live</span>
+</div>
+<h1 class="font-display-lg text-display-lg md:text-7xl lg:text-[80px] leading-[1.1] font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+                        Master the Digital Frontier
+                    </h1>
+<p class="font-body-md text-body-md md:text-xl text-on-surface-variant max-w-xl">
+                        Elite cybersecurity training powered by advanced AI. Experience real-world threats in our secure cloud environments, guided by your personal AI mentor.
+                    </p>
+<div class="flex flex-wrap items-center gap-4">
+<button class="bg-secondary-container text-on-secondary-container px-8 py-4 rounded-full font-semibold text-lg hover:bg-secondary-fixed transition-all scale-100 hover:scale-[1.02] active:scale-95 shadow-[0_0_20px_rgba(0,244,254,0.3)] pulse-glow">
+                            Start for Free
+                        </button>
+<button class="px-8 py-4 rounded-full font-semibold text-lg border border-outline-variant hover:bg-surface-container transition-all flex items-center gap-2 group text-primary">
+<span class="material-symbols-outlined group-hover:text-secondary transition-colors" data-icon="play_circle">play_circle</span>
+                            Watch Demo
+                        </button>
+</div>
+<div class="flex items-center gap-4 mt-4">
+<div class="flex -space-x-3">
+<div class="w-10 h-10 rounded-full border-2 border-background bg-surface-container flex items-center justify-center text-xs">P1</div>
+<div class="w-10 h-10 rounded-full border-2 border-background bg-surface-container flex items-center justify-center text-xs">P2</div>
+<div class="w-10 h-10 rounded-full border-2 border-background bg-surface-container flex items-center justify-center text-xs">P3</div>
+</div>
+<p class="font-code-sm text-code-sm text-on-surface-variant">Join 50,000+ elite researchers</p>
+</div>
+</div>
+<!-- Hero Visual -->
+<div class="relative h-[600px] rounded-2xl bg-surface-container-lowest border border-outline-variant/30 overflow-hidden shadow-2xl float-anim">
+<img alt="Abstract digital network visualization" class="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen" data-alt="A highly detailed 3D visualization of a futuristic cyber network structure glowing in neon cyan and purple against a pitch-black background. The nodes and data streams intersect dynamically, representing an advanced AI-driven cybersecurity environment. The scene is illuminated by striking digital lighting that highlights the intricate geometric connections, evoking a high-stakes, elite hacker aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4AHgplpYbDA3ZVv28jwg-P51f9dQo1_LB7AbRuxmV0QYqpodwh0mtmxTF26dr18gpnOjGzof3qVqWxDDCyvhHnWMQSr0HGYBYQq1IAg0UYq1BSYQSOkV0IxpLFJKuOrDi6GcsVgAj0TH3YKaEBx-huE69ljuMrN_oj_KkC91Gjzoj97h6F135cs11XcYUKWsnsdcYg8WFjCm2-OpJfTX9_zAyzgf50h-mq20SmwycA35zseVpF5-V94a77taBSF_U-BTsOo89iJkT">
+<!-- Overlay UI Elements -->
+<div class="absolute inset-4 rounded-xl border border-white/5 bg-surface/40 backdrop-blur-md p-6 flex flex-col font-code-sm text-code-sm">
+<div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span>cyber-ai_agent_v2</span>
+</div>
+<div class="flex gap-2">
+<span class="w-3 h-3 rounded-full bg-error"></span>
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+<span class="w-3 h-3 rounded-full bg-secondary-container"></span>
+</div>
+</div>
+<div class="flex-grow text-on-surface-variant space-y-2">
+<p>&gt; Initializing security protocol...</p>
+<p class="text-secondary">&gt; Vulnerability detected in sector 7G</p>
+<p>&gt; Deploying counter-measures...</p>
+<div class="mt-4 p-4 bg-surface-container rounded-lg border border-secondary-container/30 flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary-container mt-1" data-icon="memory">memory</span>
+<div>
+<p class="text-primary font-semibold">AI Assistant</p>
+<p class="text-xs mt-1 text-on-surface-variant">I've identified the zero-day exploit payload. Recommending immediate sandbox isolation.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Value Prop Bento Grid -->
+<section class="py-24 px-margin-mobile md:px-margin-desktop bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto">
+<div class="text-center mb-16">
+<h2 class="font-display-lg text-display-lg md:text-5xl font-bold text-primary mb-4">Unfair Advantage, Built In</h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">Accelerate your learning curve with tools previously only available to nation-state actors and top-tier red teams.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
+<!-- Bento Box 1 -->
+<div class="md:col-span-2 rounded-2xl bg-surface-container border border-outline-variant/30 p-8 flex flex-col justify-between group hover:border-secondary-container/50 transition-colors relative overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-br from-secondary-container/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="z-10">
+<span class="material-symbols-outlined text-4xl text-secondary-container mb-4" data-icon="model_training">model_training</span>
+<h3 class="text-2xl font-bold text-primary mb-2">Adaptive AI Mentor</h3>
+<p class="text-on-surface-variant max-w-md">Our LLM-powered mentor watches your keystrokes, offering context-aware hints just before you get stuck, without giving away the answer.</p>
+</div>
+</div>
+<!-- Bento Box 2 -->
+<div class="rounded-2xl bg-surface-container border border-outline-variant/30 p-8 flex flex-col justify-between group hover:border-tertiary/50 transition-colors relative overflow-hidden">
+<div class="z-10">
+<span class="material-symbols-outlined text-4xl text-tertiary mb-4" data-icon="hub">hub</span>
+<h3 class="text-2xl font-bold text-primary mb-2">Live Cloud Targets</h3>
+<p class="text-on-surface-variant">Spin up isolated, realistic vulnerable networks in seconds. No local VMs required.</p>
+</div>
+</div>
+<!-- Bento Box 3 -->
+<div class="rounded-2xl bg-surface-container border border-outline-variant/30 p-8 flex flex-col justify-between group hover:border-primary/50 transition-colors relative overflow-hidden">
+<div class="z-10">
+<span class="material-symbols-outlined text-4xl text-primary mb-4" data-icon="sports_esports">sports_esports</span>
+<h3 class="text-2xl font-bold text-primary mb-2">Gamified CTFs</h3>
+<p class="text-on-surface-variant">Compete in global leaderboards. Earn zero-knowledge proofs for every vulnerability you exploit.</p>
+</div>
+</div>
+<!-- Bento Box 4 -->
+<div class="md:col-span-2 rounded-2xl bg-surface-container border border-outline-variant/30 p-8 flex flex-col justify-between group hover:border-error-container/50 transition-colors relative overflow-hidden">
+<div class="absolute right-0 top-0 w-1/2 h-full opacity-20">
+<img alt="Code screen" class="w-full h-full object-cover mix-blend-screen mask-image:linear-gradient(to_left,black,transparent)" data-alt="A close-up shot of a glowing computer monitor displaying lines of intricate green code over a dark background. The matrix-style data streams evoke a sense of deep technical analysis and active cybersecurity threat hunting within a premium dark-mode interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBoJwRqTAMrvBU8u0F-IlQ37fxcjEUcRKRahnspitloIKXzbet2JFi2Tr1ALUdZpKB3tcvqnnHnDBaGvnCgidhXB7YfzZOZXb15FOCnViSY1zFC22SDdHS4BwqJz9HlBCOxqfaFRDiF00IZAdjxUnUHQyMUftTifYf0OkuHEocRZ7EvzOAN-2vA_SO8MN85Ic5V4SlLSlk-diVp-AdWZeoL7CvqfKjMV4rMU8V8_6Plbn4E1tcON1K1KBYUoLQu2sfNw2afFmdMwDTA">
+</div>
+<div class="z-10 w-2/3">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-error-container/20 text-error mb-4 border border-error/30 text-xs font-bold uppercase tracking-wider">
+<span class="material-symbols-outlined text-sm" data-icon="local_fire_department">local_fire_department</span>
+                                Premium Feature
+                            </div>
+<h3 class="text-2xl font-bold text-primary mb-2">Automated Threat Emulation</h3>
+<p class="text-on-surface-variant mb-6">Test your defenses against AI-generated attack vectors that adapt to your architecture in real-time.</p>
+<a class="text-secondary hover:text-secondary-fixed flex items-center gap-1 font-semibold transition-colors" href="#">
+                                Explore Red Team Tools <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-8 px-margin-mobile md:px-margin-desktop flex flex-col md:flex-row justify-between items-center bg-surface-container-lowest border-t border-white/5 mt-auto">
+<p class="font-code-sm text-code-sm text-on-surface-variant">© 2024 CyberAI. All rights reserved.</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Telegram</a>
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">YouTube</a>
+<a class="font-code-sm text-code-sm text-on-surface-variant hover:text-secondary-fixed transition-colors" href="#">Instagram</a>
+</div>
+<div class="font-label-caps text-label-caps text-primary mt-4 md:mt-0">CYBERAI</div>
+</footer>
+<!-- Floating AI Assistant -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-surface-container border border-secondary-container/50 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(0,244,254,0.2)] hover:shadow-[0_0_30px_rgba(0,244,254,0.4)] transition-all z-40 group float-anim">
+<span class="material-symbols-outlined text-secondary-container text-2xl group-hover:scale-110 transition-transform" data-icon="smart_toy">smart_toy</span>
+</button>
+<!-- Auth Modal (Hidden by default) -->
+<div class="hidden fixed inset-0 z-[100] bg-background/80 backdrop-blur-sm flex items-center justify-center px-4" id="auth-modal">
+<div class="w-full max-w-md bg-surface-container border border-outline-variant/30 rounded-2xl shadow-2xl overflow-hidden relative">
+<button class="absolute top-4 right-4 text-on-surface-variant hover:text-primary transition-colors" onclick="document.getElementById('auth-modal').classList.add('hidden')">
+<span class="material-symbols-outlined" data-icon="close">close</span>
+</button>
+<div class="p-8">
+<div class="text-center mb-8">
+<span class="material-symbols-outlined text-primary text-4xl mb-2 filled" data-icon="security">security</span>
+<h2 class="text-2xl font-bold text-primary">Access Terminal</h2>
+<p class="text-on-surface-variant text-sm mt-1">Sign in to continue your session</p>
+</div>
+<form class="space-y-4">
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1">Email / Handle</label>
+<input class="w-full bg-background border border-outline-variant/50 rounded-lg px-4 py-3 text-primary focus:border-secondary-container focus:ring-1 focus:ring-secondary-container outline-none transition-all font-code-sm" placeholder="root@cyberai.io" type="text">
+</div>
+<div>
+<label class="block font-code-sm text-code-sm text-on-surface-variant mb-1">Passphrase</label>
+<input class="w-full bg-background border border-outline-variant/50 rounded-lg px-4 py-3 text-primary focus:border-secondary-container focus:ring-1 focus:ring-secondary-container outline-none transition-all font-code-sm" placeholder="••••••••" type="password">
+</div>
+<button class="w-full bg-secondary-container text-on-secondary-container py-3 rounded-lg font-semibold hover:bg-secondary-fixed transition-colors mt-6" type="button">
+                        Authenticate
+                    </button>
+</form>
+<div class="mt-6 flex items-center gap-4">
+<div class="flex-grow h-px bg-outline-variant/30"></div>
+<span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Or connect via</span>
+<div class="flex-grow h-px bg-outline-variant/30"></div>
+</div>
+<div class="mt-6 grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-outline-variant/50 bg-background hover:bg-surface-variant transition-colors text-primary text-sm font-semibold">
+                        Google
+                    </button>
+<button class="flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-outline-variant/50 bg-background hover:bg-surface-variant transition-colors text-primary text-sm font-semibold">
+                        GitHub
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>
