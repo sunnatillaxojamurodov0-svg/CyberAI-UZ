@@ -22,7 +22,7 @@ export const MODELS: AIModel[] = [
     icon: CloudLightning,
     provider: "gemini",
     modelName: "gemini-2.5-flash",
-    supportsVision: false,
+    supportsVision: true,
   },
 ];
 

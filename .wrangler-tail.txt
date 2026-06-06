@@ -7961,3 +7961,522 @@
         }
     }
 }
+{
+    "wallTime": 92,
+    "cpuTime": 84,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "bf742839-44dc-4cba-a447-598325fd4112"
+    },
+    "scriptName": "cyberai",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [],
+    "eventTimestamp": 1780722132118,
+    "event": {
+        "request": {
+            "url": "https://cyberai.sunnatillaxojamurodov0.workers.dev/",
+            "method": "GET",
+            "headers": {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-encoding": "gzip, br",
+                "accept-language": "en-US,en;q=0.9,uz;q=0.8",
+                "cache-control": "max-age=0",
+                "cf-connecting-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91",
+                "cf-ipcountry": "UZ",
+                "cf-ray": "a074dd0dbd9f3560",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "host": "cyberai.sunnatillaxojamurodov0.workers.dev",
+                "priority": "u=0, i",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "document",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "none",
+                "sec-fetch-user": "?1",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/3",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 0,
+                "clientQuicRtt": 68,
+                "colo": "WAW",
+                "asn": 8193,
+                "asOrganization": "Uzbektelekom Joint Stock Company",
+                "country": "UZ",
+                "isEUCountry": false,
+                "city": "Tashkent",
+                "continent": "AS",
+                "region": "Tashkent",
+                "regionCode": "TK",
+                "timezone": "Asia/Tashkent",
+                "longitude": "69.21627",
+                "latitude": "41.26465",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES128-GCM-SHA256",
+                "tlsClientRandom": "Bg/sC8uFE6qPYjJUcizsjlAjSzQgwxV1DFYsyrk+0ck=",
+                "tlsClientCiphersSha1": "3HTt3+R/6BL3zeALJDSq0pR1yOQ=",
+                "tlsClientExtensionsSha1": "IbT73Gmat6pOpw5LiuU8Gsd+Yew=",
+                "tlsClientExtensionsSha1Le": "sefMTBZmkLv6SN3Pi9BK0Eukgt4=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "3e055040bcd85a9dd2fb5b5e1988aaa4454777e1e880f48a39fbbdb5de9886d7",
+                    "serverHandshake": "1061309276a7b2e5062f87c28d2b745e192edef09c0eecc496edd541d5caa43e",
+                    "clientFinished": "6c5711b2b11b0622e1c7039126a379590fd22f52abe8616d4b5343c135cc97eb",
+                    "serverFinished": "b5dafeb1a5f4c90ff91d5c6917ad305b4e1717be0eabb024edaec16fabba283f"
+                },
+                "tlsClientHelloLength": "1999",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 22516
+                }
+            }
+        },
+        "response": {
+            "status": 200
+        }
+    }
+}
+{
+    "wallTime": 17,
+    "cpuTime": 17,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "bf742839-44dc-4cba-a447-598325fd4112"
+    },
+    "scriptName": "cyberai",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [],
+    "eventTimestamp": 1780722133371,
+    "event": {
+        "request": {
+            "url": "https://cyberai.sunnatillaxojamurodov0.workers.dev/",
+            "method": "GET",
+            "headers": {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-encoding": "gzip, br",
+                "accept-language": "en-US,en;q=0.9,uz;q=0.8",
+                "cache-control": "max-age=0",
+                "cf-connecting-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91",
+                "cf-ipcountry": "UZ",
+                "cf-ray": "a074dd158cc33560",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "host": "cyberai.sunnatillaxojamurodov0.workers.dev",
+                "priority": "u=0, i",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "document",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "none",
+                "sec-fetch-user": "?1",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/3",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 0,
+                "clientQuicRtt": 71,
+                "colo": "WAW",
+                "asn": 8193,
+                "asOrganization": "Uzbektelekom Joint Stock Company",
+                "country": "UZ",
+                "isEUCountry": false,
+                "city": "Tashkent",
+                "continent": "AS",
+                "region": "Tashkent",
+                "regionCode": "TK",
+                "timezone": "Asia/Tashkent",
+                "longitude": "69.21627",
+                "latitude": "41.26465",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES128-GCM-SHA256",
+                "tlsClientRandom": "Bg/sC8uFE6qPYjJUcizsjlAjSzQgwxV1DFYsyrk+0ck=",
+                "tlsClientCiphersSha1": "3HTt3+R/6BL3zeALJDSq0pR1yOQ=",
+                "tlsClientExtensionsSha1": "IbT73Gmat6pOpw5LiuU8Gsd+Yew=",
+                "tlsClientExtensionsSha1Le": "sefMTBZmkLv6SN3Pi9BK0Eukgt4=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "3e055040bcd85a9dd2fb5b5e1988aaa4454777e1e880f48a39fbbdb5de9886d7",
+                    "serverHandshake": "1061309276a7b2e5062f87c28d2b745e192edef09c0eecc496edd541d5caa43e",
+                    "clientFinished": "6c5711b2b11b0622e1c7039126a379590fd22f52abe8616d4b5343c135cc97eb",
+                    "serverFinished": "b5dafeb1a5f4c90ff91d5c6917ad305b4e1717be0eabb024edaec16fabba283f"
+                },
+                "tlsClientHelloLength": "1999",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 163917
+                }
+            }
+        },
+        "response": {
+            "status": 200
+        }
+    }
+}
+{
+    "wallTime": 18,
+    "cpuTime": 16,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "bf742839-44dc-4cba-a447-598325fd4112"
+    },
+    "scriptName": "cyberai",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [],
+    "eventTimestamp": 1780722203763,
+    "event": {
+        "request": {
+            "url": "https://cyberai.sunnatillaxojamurodov0.workers.dev/",
+            "method": "GET",
+            "headers": {
+                "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+                "accept-encoding": "gzip, br",
+                "accept-language": "en-US,en;q=0.9,uz;q=0.8",
+                "cache-control": "max-age=0",
+                "cf-connecting-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91",
+                "cf-ipcountry": "UZ",
+                "cf-ray": "a074decd7aea6e97",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "host": "cyberai.sunnatillaxojamurodov0.workers.dev",
+                "priority": "u=0, i",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "document",
+                "sec-fetch-mode": "navigate",
+                "sec-fetch-site": "none",
+                "sec-fetch-user": "?1",
+                "upgrade-insecure-requests": "1",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/3",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 0,
+                "clientQuicRtt": 72,
+                "colo": "WAW",
+                "asn": 8193,
+                "asOrganization": "Uzbektelekom Joint Stock Company",
+                "country": "UZ",
+                "isEUCountry": false,
+                "city": "Tashkent",
+                "continent": "AS",
+                "region": "Tashkent",
+                "regionCode": "TK",
+                "timezone": "Asia/Tashkent",
+                "longitude": "69.21627",
+                "latitude": "41.26465",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES128-GCM-SHA256",
+                "tlsClientRandom": "KO1AWbpaS9iY9Kujo3hA+bs6wLNP1zZLO8AsQcq4Z70=",
+                "tlsClientCiphersSha1": "3HTt3+R/6BL3zeALJDSq0pR1yOQ=",
+                "tlsClientExtensionsSha1": "pRqwWgm8IOWh5Q75c1CwvFbFsqE=",
+                "tlsClientExtensionsSha1Le": "lz+BMTc9jlXqO1t3qtLF7Gk0VUI=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "f7df092f9ede351dd5192867a2191dc0259fcc616feb54575d17ad2728165fd9",
+                    "serverHandshake": "dac43bebb9f329d90aeac258083c16fb9b4ee0eb03f7740942126696b480f1cd",
+                    "clientFinished": "6ebe23cba88abaa040e03eca995b2490f66efc950c2af681d79b9e707b991559",
+                    "serverFinished": "d255b09efb57b470b765e9cfc8dde05cb10346c36d539d7891089039282b6ea2"
+                },
+                "tlsClientHelloLength": "2032",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 21209
+                }
+            }
+        },
+        "response": {
+            "status": 200
+        }
+    }
+}
+{
+    "wallTime": 1,
+    "cpuTime": 1,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "bf742839-44dc-4cba-a447-598325fd4112"
+    },
+    "scriptName": "cyberai",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [],
+    "eventTimestamp": 1780722204302,
+    "event": {
+        "request": {
+            "url": "https://cyberai.sunnatillaxojamurodov0.workers.dev/api/auth/me",
+            "method": "GET",
+            "headers": {
+                "accept": "*/*",
+                "accept-encoding": "gzip, br",
+                "accept-language": "en-US,en;q=0.9,uz;q=0.8",
+                "cf-connecting-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91",
+                "cf-ipcountry": "UZ",
+                "cf-ray": "a074ded0ddfc6e97",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "connection": "Keep-Alive",
+                "content-type": "application/json",
+                "host": "cyberai.sunnatillaxojamurodov0.workers.dev",
+                "priority": "u=1, i",
+                "referer": "https://cyberai.sunnatillaxojamurodov0.workers.dev/",
+                "sec-ch-ua": "\"Chromium\";v=\"148\", \"Google Chrome\";v=\"148\", \"Not/A)Brand\";v=\"99\"",
+                "sec-ch-ua-mobile": "?0",
+                "sec-ch-ua-platform": "\"Windows\"",
+                "sec-fetch-dest": "empty",
+                "sec-fetch-mode": "cors",
+                "sec-fetch-site": "same-origin",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "2a05:45c2:3039:d301:900d:66d8:98df:eb91"
+            },
+            "cf": {
+                "httpProtocol": "HTTP/3",
+                "clientAcceptEncoding": "gzip, deflate, br",
+                "requestPriority": "",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestHeaderNames": {},
+                "clientTcpRtt": 0,
+                "clientQuicRtt": 69,
+                "colo": "WAW",
+                "asn": 8193,
+                "asOrganization": "Uzbektelekom Joint Stock Company",
+                "country": "UZ",
+                "isEUCountry": false,
+                "city": "Tashkent",
+                "continent": "AS",
+                "region": "Tashkent",
+                "regionCode": "TK",
+                "timezone": "Asia/Tashkent",
+                "longitude": "69.21627",
+                "latitude": "41.26465",
+                "tlsVersion": "TLSv1.3",
+                "tlsCipher": "AEAD-AES128-GCM-SHA256",
+                "tlsClientRandom": "KO1AWbpaS9iY9Kujo3hA+bs6wLNP1zZLO8AsQcq4Z70=",
+                "tlsClientCiphersSha1": "3HTt3+R/6BL3zeALJDSq0pR1yOQ=",
+                "tlsClientExtensionsSha1": "pRqwWgm8IOWh5Q75c1CwvFbFsqE=",
+                "tlsClientExtensionsSha1Le": "lz+BMTc9jlXqO1t3qtLF7Gk0VUI=",
+                "tlsExportedAuthenticator": {
+                    "clientHandshake": "f7df092f9ede351dd5192867a2191dc0259fcc616feb54575d17ad2728165fd9",
+                    "serverHandshake": "dac43bebb9f329d90aeac258083c16fb9b4ee0eb03f7740942126696b480f1cd",
+                    "clientFinished": "6ebe23cba88abaa040e03eca995b2490f66efc950c2af681d79b9e707b991559",
+                    "serverFinished": "d255b09efb57b470b765e9cfc8dde05cb10346c36d539d7891089039282b6ea2"
+                },
+                "tlsClientHelloLength": "2032",
+                "tlsClientAuth": {
+                    "certPresented": "0",
+                    "certVerified": "NONE",
+                    "certRevoked": "0",
+                    "certIssuerDN": "",
+                    "certSubjectDN": "",
+                    "certIssuerDNRFC2253": "",
+                    "certSubjectDNRFC2253": "",
+                    "certIssuerDNLegacy": "",
+                    "certSubjectDNLegacy": "",
+                    "certSerial": "",
+                    "certIssuerSerial": "",
+                    "certSKI": "",
+                    "certIssuerSKI": "",
+                    "certFingerprintSHA1": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certNotAfter": "",
+                    "certRFC9440": "",
+                    "certRFC9440TooLarge": false,
+                    "certChainRFC9440": "",
+                    "certChainRFC9440TooLarge": false
+                },
+                "verifiedBotCategory": "",
+                "edgeL4": {
+                    "deliveryRate": 163623
+                }
+            }
+        },
+        "response": {
+            "status": 200
+        }
+    }
+}
+{
+    "wallTime": 97,
+    "cpuTime": 90,
+    "truncated": false,
+    "executionModel": "stateless",
+    "outcome": "ok",
+    "scriptVersion": {
+        "id": "cd50f076-0d62-4fdc-b815-8cfceb96a772"
+    },
+    "scriptName": "cyberai",
+    "diagnosticsChannelEvents": [],
+    "exceptions": [],
+    "logs": [],
+    "eventTimestamp": 1780722257788,
+    "event": {
+        "request": {
+            "url": "https://cyberai.sunnatillaxojamurodov0.workers.dev/",
+            "method": "GET",
+            "headers": {
+                "accept-encoding": "gzip, br",
+                "cf-connecting-ip": "2a06:98c0:3600::103",
+                "cf-ipcountry": "US",
+                "cf-ray": "a074e01ef7aa1664",
+                "cf-visitor": "{\"scheme\":\"https\"}",
+                "cf-worker": "cfone.cfdata.org",
+                "connection": "Keep-Alive",
+                "host": "cyberai.sunnatillaxojamurodov0.workers.dev",
+                "x-forwarded-proto": "https",
+                "x-real-ip": "2a06:98c0:3600::103"
+            },
+            "cf": {
+                "requestHeaderNames": {},
+                "httpProtocol": "HTTP/1.1",
+                "tlsCipher": "",
+                "continent": "NA",
+                "asn": 13335,
+                "clientAcceptEncoding": "identity",
+                "verifiedBotCategory": "",
+                "country": "US",
+                "isEUCountry": false,
+                "region": "California",
+                "tlsClientCiphersSha1": "",
+                "tlsClientAuth": {
+                    "certIssuerDNLegacy": "",
+                    "certIssuerSKI": "",
+                    "certSubjectDNRFC2253": "",
+                    "certSubjectDNLegacy": "",
+                    "certFingerprintSHA256": "",
+                    "certNotBefore": "",
+                    "certSKI": "",
+                    "certSerial": "",
+                    "certIssuerDN": "",
+                    "certVerified": "NONE",
+                    "certNotAfter": "",
+                    "certSubjectDN": "",
+                    "certPresented": "0",
+                    "certRevoked": "0",
+                    "certIssuerSerial": "",
+                    "certIssuerDNRFC2253": "",
+                    "certFingerprintSHA1": ""
+                },
+                "tlsClientRandom": "",
+                "tlsClientHelloLength": "",
+                "colo": "SJC",
+                "timezone": "America/Los_Angeles",
+                "longitude": "-121.89496",
+                "latitude": "37.33939",
+                "edgeRequestKeepAliveStatus": 1,
+                "requestPriority": "",
+                "postalCode": "95025",
+                "city": "San Jose",
+                "tlsVersion": "",
+                "regionCode": "CA",
+                "asOrganization": "Cloudflare, Inc.",
+                "metroCode": "807",
+                "tlsClientExtensionsSha1Le": "",
+                "tlsClientExtensionsSha1": ""
+            }
+        },
+        "response": {
+            "status": 200
+        }
+    }
+}

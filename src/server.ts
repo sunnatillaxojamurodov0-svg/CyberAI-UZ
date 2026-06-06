@@ -10,13 +10,14 @@ type ServerEntry = {
 
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
-  "style-src 'self' 'unsafe-inline'",
+  "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.googleusercontent.com",
-  "font-src 'self'",
+  "font-src 'self' https://fonts.gstatic.com",
   "form-action 'self'",
   "base-uri 'self'",
   "frame-ancestors 'none'",
+  "connect-src 'self' https://*.googleapis.com",
 ].join("; ");
 
 const SECURITY_HEADERS: Record<string, string> = {

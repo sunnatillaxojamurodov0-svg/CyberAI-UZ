@@ -14,7 +14,6 @@ const NAV = [
   { label: "Chat", to: "/chat" },
   { label: "Projects", to: "/projects" },
   { label: "Prompts", to: "/prompts" },
-  { label: "Designs", to: "/stitch" },
   { label: "About", to: "/about" },
 ];
 

@@ -101,17 +101,7 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
       e?.preventDefault();
       if ((!value.trim() && !attachment) || disabled) return;
 
-      let att = attachment ?? undefined;
-      if (att && att.file.type.startsWith("image/") && !selectedModel.supportsVision) {
-        URL.revokeObjectURL(att.previewUrl ?? "");
-        att = undefined;
-        toast.error("Image removed", {
-          description:
-            "This model does not support image input. Image was removed from the message.",
-        });
-      }
-
-      onSend(value.trim(), selectedSkill ?? undefined, att);
+      onSend(value.trim(), selectedSkill ?? undefined, attachment ?? undefined);
       setValue("");
       setSelectedSkill(null);
       if (attachment) {
@@ -122,7 +112,7 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
         inputRef.current.style.height = "auto";
       }
     },
-    [value, attachment, disabled, onSend, selectedSkill, selectedModel.supportsVision],
+    [value, attachment, disabled, onSend, selectedSkill],
   );
 
   const handleKeyDown = useCallback(
@@ -166,14 +156,6 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
         return;
       }
 
-      if (file.type.startsWith("image/") && !selectedModel.supportsVision) {
-        toast.error("Image not supported", {
-          description: "This AI model does not support image input.",
-        });
-        setShowFileMenu(false);
-        return;
-      }
-
       let previewUrl: string | undefined;
       let base64: string | undefined;
 
@@ -186,7 +168,7 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
       setShowFileMenu(false);
       inputRef.current?.focus();
     },
-    [selectedModel.supportsVision],
+    [],
   );
 
   const handleFilePick = useCallback(
@@ -280,8 +262,7 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
               ref={fileMenuRef}
               className="absolute bottom-full left-0 mb-2 w-48 overflow-hidden rounded-xl border border-border bg-surface/95 backdrop-blur-xl shadow-2xl"
             >
-              {selectedModel.supportsVision && (
-                <button
+              <button
                   type="button"
                   onClick={() => handleFilePick("image/*")}
                   className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-sm text-foreground/80 hover:bg-white/5 transition-colors"
@@ -296,7 +277,6 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
                     </div>
                   </div>
                 </button>
-              )}
               <div className="mx-3 h-px bg-border" />
               <button
                 type="button"
