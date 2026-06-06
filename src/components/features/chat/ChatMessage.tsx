@@ -69,7 +69,10 @@ function renderTextPart(text: string) {
 /* ── Component ─────────────────────────────────────────── */
 
 export function ChatMessage({ role, content, skill, attachment, isStreaming }: ChatMessageProps) {
-  const parts = useMemo(() => (isStreaming || !content ? null : parseContent(content)), [content, isStreaming]);
+  const parts = useMemo(
+    () => (isStreaming || !content ? null : parseContent(content)),
+    [content, isStreaming],
+  );
 
   return (
     <motion.div
@@ -103,7 +106,9 @@ export function ChatMessage({ role, content, skill, attachment, isStreaming }: C
             {skill && (
               <div className="inline-flex items-center gap-1.5 rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5">
                 <skill.icon size={11} className="text-accent" />
-                <span className="text-[10px] font-semibold text-accent uppercase tracking-wider">{skill.label}</span>
+                <span className="text-[10px] font-semibold text-accent uppercase tracking-wider">
+                  {skill.label}
+                </span>
               </div>
             )}
             {attachment && (
@@ -142,7 +147,10 @@ export function ChatMessage({ role, content, skill, attachment, isStreaming }: C
                   part.type === "code" ? (
                     <CodeBlock key={i} language={part.language || ""} code={part.content} />
                   ) : (
-                    <p key={i} className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap">
+                    <p
+                      key={i}
+                      className="text-sm leading-relaxed text-foreground/90 whitespace-pre-wrap"
+                    >
                       {renderTextPart(part.content)}
                     </p>
                   ),

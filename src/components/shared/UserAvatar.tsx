@@ -34,7 +34,8 @@ export function UserAvatar({ profile, size = "md", className, onClick }: UserAva
       onClick={onClick}
       className={cn(
         "relative shrink-0 overflow-hidden rounded-full border-2 border-accent/30 bg-surface-2 transition-all",
-        onClick && "cursor-pointer hover:border-accent/60 hover:shadow-[0_0_16px_-4px] hover:shadow-accent/40",
+        onClick &&
+          "cursor-pointer hover:border-accent/60 hover:shadow-[0_0_16px_-4px] hover:shadow-accent/40",
         !onClick && "cursor-default",
         sizeClass,
         className,

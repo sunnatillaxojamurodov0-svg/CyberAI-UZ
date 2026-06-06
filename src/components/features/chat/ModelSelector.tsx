@@ -31,7 +31,9 @@ export function ModelSelector({ selected, onChange }: ModelSelectorProps) {
         onClick={() => setOpen((v) => !v)}
         className={cn(
           "glass-panel flex items-center gap-2.5 rounded-xl border border-border px-3.5 py-2 text-sm transition-all duration-300",
-          open ? "border-accent/40 shadow-[0_0_20px_-8px] shadow-accent/20" : "hover:border-accent/20",
+          open
+            ? "border-accent/40 shadow-[0_0_20px_-8px] shadow-accent/20"
+            : "hover:border-accent/20",
         )}
       >
         <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-accent/10">
@@ -87,7 +89,9 @@ export function ModelSelector({ selected, onChange }: ModelSelectorProps) {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium leading-tight">{model.label}</span>
-                        <span className="text-[10px] text-muted-foreground/40 font-mono">{model.shortLabel}</span>
+                        <span className="text-[10px] text-muted-foreground/40 font-mono">
+                          {model.shortLabel}
+                        </span>
                         {isSelected && <Check size={12} className="shrink-0 text-accent" />}
                       </div>
                       <div className="mt-0.5 text-[11px] text-muted-foreground/60 leading-tight truncate">

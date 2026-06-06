@@ -7,9 +7,15 @@ import { MagneticButton } from "@/components/shared/MagneticButton";
 
 const LINES: Array<{ from: "user" | "ai"; text: string }> = [
   { from: "user", text: "Audit all SSH ingress in the last 24 hours and isolate anomalies." },
-  { from: "ai", text: "14,206 sessions scanned. 3 anomalies in EU-WEST-2 region isolated to quarantine VPC. Remediation diff being generated." },
+  {
+    from: "ai",
+    text: "14,206 sessions scanned. 3 anomalies in EU-WEST-2 region isolated to quarantine VPC. Remediation diff being generated.",
+  },
   { from: "user", text: "Verify edge gateway certificate integrity." },
-  { from: "ai", text: "All 12 gateway signatures match expected CA pins. Gateway-03 expires in 4 days — schedule automatic renewal?" },
+  {
+    from: "ai",
+    text: "All 12 gateway signatures match expected CA pins. Gateway-03 expires in 4 days — schedule automatic renewal?",
+  },
 ];
 
 export function AssistantTeaser() {
@@ -25,8 +31,8 @@ export function AssistantTeaser() {
               Talk to your <span className="gradient-text">infrastructure.</span>
             </h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-              No more cryptic log greps and fragile runbooks. Describe the state you need;
-              CyberAI translates your intent into hardened, audit-ready policy in milliseconds.
+              No more cryptic log greps and fragile runbooks. Describe the state you need; CyberAI
+              translates your intent into hardened, audit-ready policy in milliseconds.
             </p>
             <ul className="mt-8 space-y-3 text-sm">
               {[
@@ -59,9 +65,13 @@ export function AssistantTeaser() {
                 <div className="flex items-center justify-between border-b border-border pb-4">
                   <div className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">CYBERAI · ASSISTANT_V2</span>
+                    <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                      CYBERAI · ASSISTANT_V2
+                    </span>
                   </div>
-                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">42ms</span>
+                  <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                    42ms
+                  </span>
                 </div>
                 <div className="mt-5 space-y-4 text-[13px] leading-relaxed">
                   {LINES.map((l, i) => (
@@ -77,17 +87,25 @@ export function AssistantTeaser() {
                           : "flex flex-col gap-1 rounded-xl border border-border bg-white/[0.03] p-3"
                       }
                     >
-                      <span className={l.from === "user" ? "text-muted-foreground" : "text-primary"}>
+                      <span
+                        className={l.from === "user" ? "text-muted-foreground" : "text-primary"}
+                      >
                         {l.from === "user" ? "USER:" : "CYBERAI:"}
                       </span>
-                      <span className={l.from === "user" ? "text-foreground" : "text-foreground/90"}>{l.text}</span>
+                      <span
+                        className={l.from === "user" ? "text-foreground" : "text-foreground/90"}
+                      >
+                        {l.text}
+                      </span>
                     </motion.div>
                   ))}
                 </div>
                 <div className="mt-5 flex items-center gap-3 rounded-lg border border-border bg-black/40 px-4 py-3">
                   <span className="size-2 rounded-full bg-primary animate-pulse" />
                   <span className="text-xs text-muted-foreground">Awaiting command_</span>
-                  <span className="ml-auto rounded border border-border px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">⌘ K</span>
+                  <span className="ml-auto rounded border border-border px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
+                    ⌘ K
+                  </span>
                 </div>
               </div>
             </GlassPanel>

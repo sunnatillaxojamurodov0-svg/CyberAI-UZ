@@ -28,7 +28,7 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
       {/* Header */}
       <div>
         <div className="flex flex-wrap items-center gap-2">
-          <StatusPill tone={meta.tone}>
+          <StatusPill tone={meta.tone as "primary" | "accent" | "emerald"}>
             {meta.label} · {meta.sublabel}
           </StatusPill>
           <span className="rounded-full border border-border bg-surface px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
@@ -38,12 +38,8 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
             {challenge.points} ball
           </span>
         </div>
-        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">
-          {challenge.title}
-        </h2>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          {challenge.scenario}
-        </p>
+        <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">{challenge.title}</h2>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{challenge.scenario}</p>
       </div>
 
       {/* Target */}
@@ -123,7 +119,9 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
           >
             <ChevronDown size={13} />
             Maslahatni ochish
-            {revealed > 0 && <span className="text-muted-foreground/50">(ball biroz kamayadi)</span>}
+            {revealed > 0 && (
+              <span className="text-muted-foreground/50">(ball biroz kamayadi)</span>
+            )}
           </button>
         )}
       </div>
@@ -132,9 +130,9 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
       <div className="flex items-start gap-2.5 rounded-xl border border-border bg-surface/20 px-4 py-3">
         <Target size={14} className="mt-0.5 shrink-0 text-muted-foreground" />
         <p className="text-[11px] leading-relaxed text-muted-foreground">
-          This environment is a fully isolated virtual sandbox. All techniques are for
-          educational purposes only and operate against these CTF targets. No connection
-          to external systems is available.
+          This environment is a fully isolated virtual sandbox. All techniques are for educational
+          purposes only and operate against these CTF targets. No connection to external systems is
+          available.
         </p>
       </div>
     </div>

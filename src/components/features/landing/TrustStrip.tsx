@@ -1,4 +1,12 @@
-const LOGOS = ["AETHERIA", "VECTRA-9", "CORE.SYS", "LUNAR-OPS", "NEO-GEN", "QUANTUM_CORE", "TITAN-NET"];
+const LOGOS = [
+  "AETHERIA",
+  "VECTRA-9",
+  "CORE.SYS",
+  "LUNAR-OPS",
+  "NEO-GEN",
+  "QUANTUM_CORE",
+  "TITAN-NET",
+];
 
 export function TrustStrip() {
   return (
@@ -7,7 +15,10 @@ export function TrustStrip() {
       <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-32 bg-gradient-to-l from-background to-transparent" />
       <div className="flex animate-marquee gap-16 whitespace-nowrap opacity-60">
         {[...LOGOS, ...LOGOS].map((l, i) => (
-          <span key={i} className="font-mono text-sm font-bold tracking-[0.25em] text-muted-foreground">
+          <span
+            key={i}
+            className="font-mono text-sm font-bold tracking-[0.25em] text-muted-foreground"
+          >
             {l}
           </span>
         ))}

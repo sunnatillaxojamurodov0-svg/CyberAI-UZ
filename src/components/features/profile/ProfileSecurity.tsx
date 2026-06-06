@@ -18,7 +18,9 @@ export function ProfileSecurity() {
           </span>
         </div>
         <div className="space-y-3 text-sm text-muted-foreground">
-          <p>Password management and two-factor authentication will be available in a future update.</p>
+          <p>
+            Password management and two-factor authentication will be available in a future update.
+          </p>
         </div>
       </GlassPanel>
     </motion.div>

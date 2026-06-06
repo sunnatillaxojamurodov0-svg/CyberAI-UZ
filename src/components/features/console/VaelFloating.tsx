@@ -89,16 +89,12 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
           model: MODELS[0],
         })) {
           acc += chunk;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === aiId ? { ...m, content: acc } : m)),
-          );
+          setMessages((prev) => prev.map((m) => (m.id === aiId ? { ...m, content: acc } : m)));
         }
         if (!acc) {
           setMessages((prev) =>
             prev.map((m) =>
-              m.id === aiId
-                ? { ...m, content: "VAEL did not respond. Please try again." }
-                : m,
+              m.id === aiId ? { ...m, content: "VAEL did not respond. Please try again." } : m,
             ),
           );
         }

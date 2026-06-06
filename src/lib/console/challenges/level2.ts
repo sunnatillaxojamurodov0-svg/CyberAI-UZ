@@ -47,7 +47,10 @@ export const LEVEL2: CTFChallenge[] = [
           web: {
             server: "Apache/2.4.52",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>Corp Portal</h1><a href='/login'>Login</a></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>Corp Portal</h1><a href='/login'>Login</a></body></html>",
+              },
               "/login": {
                 status: 200,
                 protected: true,
@@ -101,8 +104,14 @@ export const LEVEL2: CTFChallenge[] = [
           web: {
             server: "Apache/2.4.52",
             routes: {
-              "/": { status: 200, body: "<html><body><h1>CMS</h1><a href='/?page=about'>About</a></body></html>" },
-              "/?page=about": { status: 200, body: "<html><body><h1>About Us</h1><p>We are a corp.</p></body></html>" },
+              "/": {
+                status: 200,
+                body: "<html><body><h1>CMS</h1><a href='/?page=about'>About</a></body></html>",
+              },
+              "/?page=about": {
+                status: 200,
+                body: "<html><body><h1>About Us</h1><p>We are a corp.</p></body></html>",
+              },
               "/?page=../../../../etc/passwd": {
                 status: 200,
                 body: "root:x:0:0:root:/root:/bin/bash\nwww-data:x:33:33:www-data:/var/www:/usr/sbin/nologin\nadmin:x:1000:1000::/home/admin:/bin/bash",
@@ -161,7 +170,10 @@ export const LEVEL2: CTFChallenge[] = [
             server: "nginx/1.18.0",
             routes: {
               "/": { status: 200, body: "<html><body><h1>Git Server</h1></body></html>" },
-              "/backup/": { status: 200, body: "<html><body>Index of /backup/<br><a href='id_rsa'>id_rsa</a></body></html>" },
+              "/backup/": {
+                status: 200,
+                body: "<html><body>Index of /backup/<br><a href='id_rsa'>id_rsa</a></body></html>",
+              },
               "/backup/id_rsa": {
                 status: 200,
                 body: "-----BEGIN OPENSSH PRIVATE KEY-----\nb3BlbnNzaC1rZXktdjEAAAA...(svcuser key, no passphrase)...\n-----END OPENSSH PRIVATE KEY-----",
@@ -437,7 +449,8 @@ export const LEVEL2: CTFChallenge[] = [
     env: {
       network: "Local image file.",
       localFiles: {
-        "/root/image.png": "[PNG IMAGE — steghide payload (no pass) -> hidden.txt -> CYBERAI{h1dd3n_1n_p1x3ls}]",
+        "/root/image.png":
+          "[PNG IMAGE — steghide payload (no pass) -> hidden.txt -> CYBERAI{h1dd3n_1n_p1x3ls}]",
       },
       hosts: [],
     },
@@ -480,7 +493,8 @@ export const LEVEL2: CTFChallenge[] = [
           credentials: [{ service: "ssh", username: "maint", password: "maint2024" }],
           fs: {
             "/etc/crontab": "* * * * * root /opt/backup.sh",
-            "/opt/backup.sh": "#!/bin/bash\n# world-writable! (rwxrwxrwx)\ntar -czf /backups/data.tgz /var/www",
+            "/opt/backup.sh":
+              "#!/bin/bash\n# world-writable! (rwxrwxrwx)\ntar -czf /backups/data.tgz /var/www",
             "/root/root.txt": "CYBERAI{cr0n_j0b_h1j4ck}",
           },
           rootFlagPath: "/root/root.txt",

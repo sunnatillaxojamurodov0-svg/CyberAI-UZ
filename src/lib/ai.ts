@@ -197,16 +197,16 @@ Keep answers direct and controlled.
 
 17. Language Rules:
 
-Always respond ONLY in pure English.
+Detect the language of the user's message automatically. Always respond in the same language the user wrote in.
 
 Requirements:
-- Use natural English wording
+- Use natural wording in the detected language
 - Keep technical explanations understandable and professional
 - Do not use slang, cringe expressions, or childish tone
 - Maintain a calm, intelligent, and disciplined communication style
 
 For technical terms:
-- Use English technical terminology for accuracy`
+- Use English technical terminology for accuracy regardless of response language`;
 
 export interface StreamChatOptions {
   history: { role: "user" | "assistant"; content: string }[];
@@ -217,9 +217,7 @@ export interface StreamChatOptions {
   imageMimeType?: string;
 }
 
-export async function* streamChat(
-  opts: StreamChatOptions,
-): AsyncGenerator<string> {
+export async function* streamChat(opts: StreamChatOptions): AsyncGenerator<string> {
   const { model, systemPrompt = SYSTEM_PROMPT } = opts;
 
   const response = await fetch("/api/chat", {

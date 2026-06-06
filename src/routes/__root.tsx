@@ -25,16 +25,19 @@ function NotFoundComponent() {
 
           <div className="space-y-3 text-sm leading-relaxed">
             <p className="text-destructive/90">
-              <span className="text-destructive font-bold">[ERROR]</span> Kernel panic: Route not found.
+              <span className="text-destructive font-bold">[ERROR]</span> Kernel panic: Route not
+              found.
             </p>
             <p className="text-destructive/70">
-              <span className="text-destructive/50">[CAUSE]</span> The requested route does not exist or has been relocated.
+              <span className="text-destructive/50">[CAUSE]</span> The requested route does not
+              exist or has been relocated.
             </p>
             <p className="text-destructive/50">
               <span className="text-destructive/40">[STATUS]</span> 404 — Not Found
             </p>
             <p className="text-destructive/50">
-              <span className="text-destructive/40">[ADDRESS]</span> Access denied. Your IP has been logged.
+              <span className="text-destructive/40">[ADDRESS]</span> Access denied. Your IP has been
+              logged.
             </p>
           </div>
 
@@ -105,23 +108,43 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "CyberAI — Autonomous Defense for the Synthetic Era" },
-      { name: "description", content: "Sovereign AI cybersecurity platform for high-stakes infrastructure." },
+      {
+        name: "description",
+        content: "Sovereign AI cybersecurity platform for high-stakes infrastructure.",
+      },
       { property: "og:site_name", content: "CyberAI" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#020408" },
       { property: "og:title", content: "CyberAI — Autonomous Defense for the Synthetic Era" },
       { name: "twitter:title", content: "CyberAI — Autonomous Defense for the Synthetic Era" },
-      { property: "og:description", content: "Sovereign AI cybersecurity platform for high-stakes infrastructure." },
-      { name: "twitter:description", content: "Sovereign AI cybersecurity platform for high-stakes infrastructure." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0" },
+      {
+        property: "og:description",
+        content: "Sovereign AI cybersecurity platform for high-stakes infrastructure.",
+      },
+      {
+        name: "twitter:description",
+        content: "Sovereign AI cybersecurity platform for high-stakes infrastructure.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0",
+      },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap",
+      },
     ],
     scripts: [
       {
@@ -139,7 +162,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
               "@type": "WebSite",
               name: "CyberAI",
               url: "https://cyberaiuz.lovable.app",
-              description: "Autonomous defense for the synthetic era — predictive threat intelligence, conversational defense, and autonomous remediation.",
+              description:
+                "Autonomous defense for the synthetic era — predictive threat intelligence, conversational defense, and autonomous remediation.",
             },
           ],
         }),

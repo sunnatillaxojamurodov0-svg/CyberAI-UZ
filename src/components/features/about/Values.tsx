@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Shield, Zap, BellOff, ScrollText, CheckCircle2, X } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { cn } from "@/lib/utils";
@@ -194,8 +189,7 @@ export function Values() {
         >
           <StatusPill tone="accent">Operational Doctrine</StatusPill>
           <h2 className="max-w-3xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
-            Four values we never{" "}
-            <span className="text-muted-foreground">negotiate.</span>
+            Four values we never <span className="text-muted-foreground">negotiate.</span>
           </h2>
         </motion.div>
 

@@ -40,8 +40,7 @@ export function Timeline() {
         >
           <StatusPill>Operational Chronology</StatusPill>
           <h2 className="max-w-3xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
-            Four years.{" "}
-            <span className="text-muted-foreground">A different theater of war.</span>
+            Four years. <span className="text-muted-foreground">A different theater of war.</span>
           </h2>
         </motion.div>
 

@@ -48,8 +48,8 @@ export function ProfilePage() {
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       >
         <GlassPanel className="relative overflow-hidden p-6 md:p-8">
-          <div className="pointer-events-none absolute -right-32 -top-32 size-80 rounded-full bg-accent/8 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 -left-32 size-80 rounded-full bg-primary/6 blur-3xl" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 size-[min(60vw,30rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/8 blur-3xl" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 size-[min(50vw,25rem)] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/6 blur-3xl" />
 
           <div className="relative flex flex-col gap-6 sm:flex-row sm:items-start">
             {/* Avatar */}
@@ -91,9 +91,7 @@ export function ProfilePage() {
                   {name}
                 </h1>
               </div>
-              <p className="mt-0.5 font-mono text-sm text-muted-foreground">
-                {user?.email}
-              </p>
+              <p className="mt-0.5 font-mono text-sm text-muted-foreground">{user?.email}</p>
               <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
                 <span>Registered with email</span>
               </div>
@@ -133,11 +131,15 @@ export function ProfilePage() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">Email</div>
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                    Email
+                  </div>
                   <div className="text-sm text-foreground">{user?.email}</div>
                 </div>
                 <div className="space-y-1">
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">Name</div>
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                    Name
+                  </div>
                   <div className="text-sm text-foreground">{profile?.name ?? "Not set"}</div>
                 </div>
               </div>

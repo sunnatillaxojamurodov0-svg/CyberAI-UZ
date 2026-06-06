@@ -1,11 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useEffect,
-  useCallback,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from "react";
 
 export interface AuthUser {
   id: string;
@@ -22,6 +15,7 @@ interface AuthContextValue {
   signUp: (email: string, password: string, username?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   signInWithGithub: () => void;
+  signInWithGoogle: () => void;
   resetPassword: (email: string) => Promise<string | null>;
   openAuthModal: () => void;
   closeAuthModal: () => void;
@@ -58,29 +52,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const signIn = useCallback(
-    async (email: string, password: string): Promise<string | null> => {
-      setAuthError(null);
-      try {
-        const res = await apiFetch("/api/auth/login", {
-          method: "POST",
-          body: JSON.stringify({ email, password }),
-        });
-        const data = await res.json();
-        if (!data.ok) {
-          setAuthError(data.error ?? "Login failed.");
-          return data.error ?? "Login failed.";
-        }
-        setUser(data.user);
-        setAuthModalOpen(false);
-        return null;
-      } catch {
-        setAuthError("Network error. Please try again.");
-        return "Network error. Please try again.";
+  const signIn = useCallback(async (email: string, password: string): Promise<string | null> => {
+    setAuthError(null);
+    try {
+      const res = await apiFetch("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        setAuthError(data.error ?? "Login failed.");
+        return data.error ?? "Login failed.";
       }
-    },
-    [],
-  );
+      setUser(data.user);
+      setAuthModalOpen(false);
+      return null;
+    } catch {
+      setAuthError("Network error. Please try again.");
+      return "Network error. Please try again.";
+    }
+  }, []);
 
   const signUp = useCallback(
     async (email: string, password: string, username?: string): Promise<string | null> => {
@@ -119,13 +110,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = "/api/auth/github";
   }, []);
 
-  const resetPassword = useCallback(
-    async (_email: string): Promise<string | null> => {
-      setAuthError("Password reset is not available yet.");
-      return "Password reset is not available yet.";
-    },
-    [],
-  );
+  const signInWithGoogle = useCallback(() => {
+    window.location.href = "/api/auth/google";
+  }, []);
+
+  const resetPassword = useCallback(async (_email: string): Promise<string | null> => {
+    setAuthError("Password reset is not available yet.");
+    return "Password reset is not available yet.";
+  }, []);
 
   const clearError = useCallback(() => setAuthError(null), []);
 
@@ -139,6 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signUp,
         signOut,
         signInWithGithub,
+        signInWithGoogle,
         resetPassword,
         openAuthModal: () => setAuthModalOpen(true),
         closeAuthModal: () => {

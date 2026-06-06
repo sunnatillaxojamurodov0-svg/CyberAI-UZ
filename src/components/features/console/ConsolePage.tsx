@@ -14,12 +14,10 @@ import type { CTFChallenge, ScoreBreakdown } from "@/lib/console/types";
 export function ConsolePage() {
   const [active, setActive] = useState<CTFChallenge | null>(null);
   const terminalRef = useRef<TerminalHandle>(null);
-  const { progress, recordSolve, isSolved, totalPoints, solvedCount, base30Solved } = useConsoleProgress();
+  const { progress, recordSolve, isSolved, totalPoints, solvedCount, base30Solved } =
+    useConsoleProgress();
 
-  const bestScore = useCallback(
-    (id: string) => progress[id]?.bestScore,
-    [progress],
-  );
+  const bestScore = useCallback((id: string) => progress[id]?.bestScore, [progress]);
 
   /* Hint reveals -> telemetry */
   const handleHint = useCallback((index: number) => {
@@ -62,10 +60,34 @@ export function ConsolePage() {
             CTF <span className="gradient-text">Console</span>
           </h1>
           <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">
-            In a fully isolated Kali Linux environment <span className="font-semibold text-foreground">30 CTFs</span> — 3 levels.
-            For those who solve them all <span className="font-semibold text-red-400">5 Elite</span> exam machines unlock.
-            Haqiqiy terminal, VAEL AI co-pilot, OSCP uslubidagi baholash.
+            Fully isolated Kali Linux environment with{" "}
+            <span className="font-semibold text-foreground">60 CTFs</span> across 3 difficulty
+            tiers. Complete all 60 to unlock{" "}
+            <span className="font-semibold text-red-400">10 Master</span> OSCP-level challenges (6
+            machines each). Real terminal, VAEL AI co-pilot, OSCP-style scoring.
           </p>
+
+          {/* Certificate unlock banner */}
+          {base30Solved >= 60 && (
+            <div className="mt-4 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.04] p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="font-display text-sm font-bold text-emerald-300">
+                    All 60 base CTFs completed!
+                  </span>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    You've unlocked the Master Tier and earned your completion certificate.
+                  </p>
+                </div>
+                <button
+                  onClick={() => window.print()}
+                  className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2 font-mono text-xs font-bold text-emerald-400 hover:brightness-110 transition-all"
+                >
+                  Download Certificate
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         <ChallengeGrid

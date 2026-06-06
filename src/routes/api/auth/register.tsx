@@ -14,17 +14,27 @@ export const Route = createFileRoute("/api/auth/register")({
           const rl = await checkRateLimit(rateLimitKey(ip, "register"), "register");
           if (!rl.allowed) {
             return new Response(
-              JSON.stringify({ ok: false, error: "Too many registration attempts. Try again later." }),
+              JSON.stringify({
+                ok: false,
+                error: "Too many registration attempts. Try again later.",
+              }),
               { status: 429, headers: { "Content-Type": "application/json" } },
             );
           }
 
-          const body = await request.json() as { email?: string; password?: string; name?: string };
+          const body = (await request.json()) as {
+            email?: string;
+            password?: string;
+            name?: string;
+          };
           if (!body.email || !body.password) {
-            return new Response(JSON.stringify({ ok: false, error: "Email and password are required." }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return new Response(
+              JSON.stringify({ ok: false, error: "Email and password are required." }),
+              {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+              },
+            );
           }
           const email = body.email.trim().toLowerCase();
           if (!EMAIL_RE.test(email)) {
@@ -36,10 +46,13 @@ export const Route = createFileRoute("/api/auth/register")({
           const name = body.name?.trim().slice(0, 100) || undefined;
           const result = await registerUser(email, body.password, name);
           if (!result.ok || !result.token) {
-            return new Response(JSON.stringify({ ok: false, error: result.error ?? "Registration failed." }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return new Response(
+              JSON.stringify({ ok: false, error: result.error ?? "Registration failed." }),
+              {
+                status: 400,
+                headers: { "Content-Type": "application/json" },
+              },
+            );
           }
           return new Response(JSON.stringify({ ok: true, user: result.user }), {
             status: 200,

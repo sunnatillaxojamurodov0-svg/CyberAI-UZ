@@ -56,16 +56,16 @@ export function ChallengeGrid({
     <div className="space-y-8">
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard label="Solved" value={`${solvedCount}/35`} icon={CheckCircle2} />
+        <StatCard label="Solved" value={`${solvedCount}/70`} icon={CheckCircle2} />
         <StatCard label="Total points" value={totalPoints.toLocaleString()} icon={Trophy} />
         <StatCard
           label="Progress"
-          value={`${Math.round((base30Solved / 30) * 100)}%`}
+          value={`${Math.round((base30Solved / 60) * 100)}%`}
           icon={TermIcon}
         />
         <StatCard
-          label="Elite"
-          value={eliteUnlocked ? "UNLOCKED" : `${base30Solved}/30`}
+          label="Master"
+          value={eliteUnlocked ? "UNLOCKED" : `${base30Solved}/60`}
           icon={eliteUnlocked ? Star : Lock}
           highlight={eliteUnlocked}
         />
@@ -78,7 +78,7 @@ export function ChallengeGrid({
           const active = activeLevel === lvl;
           const isElite = lvl === 4;
           const locked = isElite && !eliteUnlocked;
-          const total = isElite ? 5 : 10;
+          const total = isElite ? 10 : 20;
           const solved = getChallengesByLevel(lvl).filter((c) => isSolved(c.id)).length;
 
           return (
@@ -137,16 +137,11 @@ export function ChallengeGrid({
       </div>
 
       {/* Level description */}
-      <p
-        className={cn(
-          "text-sm",
-          activeLevel === 4 ? "text-red-400/80" : "text-muted-foreground",
-        )}
-      >
+      <p className={cn("text-sm", activeLevel === 4 ? "text-red-400/80" : "text-muted-foreground")}>
         {LEVEL_META[activeLevel].description}
       </p>
 
-      {/* OSCP Elite locked banner */}
+      {/* Master Tier locked banner */}
       <AnimatePresence>
         {activeLevel === 4 && !eliteUnlocked && (
           <motion.div
@@ -160,17 +155,17 @@ export function ChallengeGrid({
             </span>
             <div>
               <div className="font-display text-lg font-bold text-red-300">
-                Elite — Locked
+                Master Tier — Locked
               </div>
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                This level only unlocks for operators who have
-                successfully completed all <span className="font-semibold text-foreground">30 CTFs</span>. Currently {" "}
-                <span className="font-mono font-bold text-accent">{base30Solved}/30</span> solved.
+                This level only unlocks for operators who have successfully completed all{" "}
+                <span className="font-semibold text-foreground">60 CTFs</span>. Currently{" "}
+                <span className="font-mono font-bold text-accent">{base30Solved}/60</span> solved.
               </p>
               <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-2">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${(base30Solved / 30) * 100}%` }}
+                  animate={{ width: `${(base30Solved / 60) * 100}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
                   className="h-full rounded-full bg-gradient-to-r from-accent to-red-500"
                 />
@@ -213,15 +208,15 @@ export function ChallengeGrid({
                       : "border-border",
                 )}
               >
-                {/* Elite badge */}
+                {/* Master badge */}
                 {isElite && (
                   <div className="mb-3 flex items-center gap-2">
                     <span className="flex items-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-2.5 py-1 font-mono text-[10px] font-bold uppercase tracking-wider text-red-400">
                       <Skull size={10} />
-                      Elite
+                      Master
                     </span>
                     <span className="font-mono text-[10px] text-muted-foreground/60">
-                      24h format
+                      6 machines · 24h
                     </span>
                   </div>
                 )}
@@ -263,16 +258,14 @@ export function ChallengeGrid({
                 >
                   {c.title}
                 </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                  {c.summary}
-                </p>
+                <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{c.summary}</p>
 
-                {/* Rabbit hole warning for elite */}
+                {/* Master rabbit hole warning */}
                 {isElite && (
                   <div className="mt-3 flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] px-3 py-2">
                     <ShieldAlert size={12} className="shrink-0 text-amber-400" />
                     <span className="font-mono text-[10px] text-amber-400/80">
-                      Rabbit holes exist — proceed with caution
+                      6 interconnected targets — rabbit holes exist
                     </span>
                   </div>
                 )}
@@ -314,9 +307,7 @@ function StatCard({
     <div
       className={cn(
         "flex items-center gap-3 rounded-xl border px-4 py-3",
-        highlight
-          ? "border-amber-500/30 bg-amber-500/[0.04]"
-          : "border-border bg-surface/40",
+        highlight ? "border-amber-500/30 bg-amber-500/[0.04]" : "border-border bg-surface/40",
       )}
     >
       <span

@@ -125,7 +125,9 @@ function scoreAiCollaboration(tel: SolveTelemetry): { score: number; note: strin
     const low = m.toLowerCase();
     if (RELEVANT_AI_TERMS.some((t) => low.includes(t))) relevant += 1;
     if (
-      /flag\s*(give|tell|show|what|where)|give\s+(me\s+)?(the\s+)?(answer|flag)|tell\s+(me\s+)?(the\s+)?flag/.test(low)
+      /flag\s*(give|tell|show|what|where)|give\s+(me\s+)?(the\s+)?(answer|flag)|tell\s+(me\s+)?(the\s+)?flag/.test(
+        low,
+      )
     ) {
       flagBegging += 1;
     }
@@ -165,10 +167,7 @@ function letterGrade(total: number): string {
 
 /* ── Main ────────────────────────────────────────────────────── */
 
-export function scoreSolve(
-  challenge: CTFChallenge,
-  tel: SolveTelemetry,
-): ScoreBreakdown {
+export function scoreSolve(challenge: CTFChallenge, tel: SolveTelemetry): ScoreBreakdown {
   const notes: string[] = [];
   const usedSet = new Set(tel.toolsUsed.map(norm));
 
@@ -190,7 +189,9 @@ export function scoreSolve(
   );
   const missing = expected.filter((t) => !toolMatches(t, usedSet));
   if (missing.length) {
-    notes.push(`Recommendation: tools like ${missing.join(", ")} would have provided a more effective solution.`);
+    notes.push(
+      `Recommendation: tools like ${missing.join(", ")} would have provided a more effective solution.`,
+    );
   }
 
   /* 3. Tool coverage — breadth of distinct relevant tools used */
@@ -207,9 +208,7 @@ export function scoreSolve(
   // command economy: ideal roughly 2x expected tools count
   const idealCmds = Math.max(expected.length * 2, 4);
   const cmdRatio = clamp(idealCmds / Math.max(tel.commandCount, 1));
-  const efficiency = tel.solved
-    ? Math.round(W.efficiency * (0.6 * timeRatio + 0.4 * cmdRatio))
-    : 0;
+  const efficiency = tel.solved ? Math.round(W.efficiency * (0.6 * timeRatio + 0.4 * cmdRatio)) : 0;
   if (tel.solved) {
     const fast = minutes <= par;
     notes.push(
@@ -237,17 +236,13 @@ export function scoreSolve(
     notes.push(`Independence: solved without hints or errors (+${independence}%).`);
   }
 
-  const total = clamp(
-    (correctness +
-      methodology +
-      toolCoverage +
-      efficiency +
-      aiCollaboration +
-      independence) /
-      100,
-    0,
-    1,
-  ) * 100;
+  const total =
+    clamp(
+      (correctness + methodology + toolCoverage + efficiency + aiCollaboration + independence) /
+        100,
+      0,
+      1,
+    ) * 100;
 
   const rounded = Math.round(total);
 

@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback, useEffect, type FormEvent } from "react";
-import { Send, X, Plus, Image, Paperclip, Check, ChevronDown } from "lucide-react";
+import { Send, X, Plus, Image, Paperclip } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SKILLS, type Skill } from "@/lib/skills";
-import { MODELS, type AIModel } from "@/lib/models";
+import type { AIModel } from "@/lib/models";
 import { FilePreview, type FileAttachment } from "./FilePreview";
 
 const MAX_FILE_SIZE = 30 * 1024 * 1024;
@@ -12,27 +12,22 @@ interface ChatInputProps {
   onSend: (message: string, skill?: Skill, attachment?: FileAttachment) => void;
   disabled?: boolean;
   selectedModel: AIModel;
-  onModelChange: (model: AIModel) => void;
 }
 
-export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: ChatInputProps) {
+export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
   const [value, setValue] = useState("");
   const [selectedSkill, setSelectedSkill] = useState<Skill | null>(null);
   const [showPicker, setShowPicker] = useState(false);
   const [filter, setFilter] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const [showFileMenu, setShowFileMenu] = useState(false);
-  const [showModelMenu, setShowModelMenu] = useState(false);
   const [attachment, setAttachment] = useState<FileAttachment | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const pickerRef = useRef<HTMLDivElement>(null);
   const fileMenuRef = useRef<HTMLDivElement>(null);
-  const modelMenuRef = useRef<HTMLDivElement>(null);
 
   const filtered = filter
-    ? SKILLS.filter((s) =>
-        s.label.toLowerCase().includes(filter.toLowerCase()),
-      )
+    ? SKILLS.filter((s) => s.label.toLowerCase().includes(filter.toLowerCase()))
     : SKILLS;
 
   useEffect(() => {
@@ -60,31 +55,13 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
   useEffect(() => {
     if (!showFileMenu) return;
     const handler = (e: MouseEvent) => {
-      if (
-        fileMenuRef.current &&
-        !fileMenuRef.current.contains(e.target as Node)
-      ) {
+      if (fileMenuRef.current && !fileMenuRef.current.contains(e.target as Node)) {
         setShowFileMenu(false);
       }
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [showFileMenu]);
-
-  /* Close model menu on outside click */
-  useEffect(() => {
-    if (!showModelMenu) return;
-    const handler = (e: MouseEvent) => {
-      if (
-        modelMenuRef.current &&
-        !modelMenuRef.current.contains(e.target as Node)
-      ) {
-        setShowModelMenu(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [showModelMenu]);
 
   const selectSkill = useCallback((skill: Skill) => {
     setSelectedSkill(skill);
@@ -123,7 +100,18 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
     (e?: FormEvent) => {
       e?.preventDefault();
       if ((!value.trim() && !attachment) || disabled) return;
-      onSend(value.trim(), selectedSkill ?? undefined, attachment ?? undefined);
+
+      let att = attachment ?? undefined;
+      if (att && att.file.type.startsWith("image/") && !selectedModel.supportsVision) {
+        URL.revokeObjectURL(att.previewUrl ?? "");
+        att = undefined;
+        toast.error("Image removed", {
+          description:
+            "This model does not support image input. Image was removed from the message.",
+        });
+      }
+
+      onSend(value.trim(), selectedSkill ?? undefined, att);
       setValue("");
       setSelectedSkill(null);
       if (attachment) {
@@ -134,7 +122,7 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
         inputRef.current.style.height = "auto";
       }
     },
-    [value, attachment, disabled, onSend, selectedSkill],
+    [value, attachment, disabled, onSend, selectedSkill, selectedModel.supportsVision],
   );
 
   const handleKeyDown = useCallback(
@@ -169,26 +157,37 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
     [showPicker, filtered, activeIndex, selectSkill, handleSubmit],
   );
 
-  const processFile = useCallback(async (file: File) => {
-    if (file.size > MAX_FILE_SIZE) {
-      toast.error("File too large", {
-        description: `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is 30 MB.`,
-      });
-      return;
-    }
+  const processFile = useCallback(
+    async (file: File) => {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error("File too large", {
+          description: `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is 30 MB.`,
+        });
+        return;
+      }
 
-    let previewUrl: string | undefined;
-    let base64: string | undefined;
+      if (file.type.startsWith("image/") && !selectedModel.supportsVision) {
+        toast.error("Image not supported", {
+          description: "This AI model does not support image input.",
+        });
+        setShowFileMenu(false);
+        return;
+      }
 
-    if (file.type.startsWith("image/")) {
-      previewUrl = URL.createObjectURL(file);
-      base64 = await fileToBase64(file);
-    }
+      let previewUrl: string | undefined;
+      let base64: string | undefined;
 
-    setAttachment({ file, previewUrl, base64 });
-    setShowFileMenu(false);
-    inputRef.current?.focus();
-  }, []);
+      if (file.type.startsWith("image/")) {
+        previewUrl = URL.createObjectURL(file);
+        base64 = await fileToBase64(file);
+      }
+
+      setAttachment({ file, previewUrl, base64 });
+      setShowFileMenu(false);
+      inputRef.current?.focus();
+    },
+    [selectedModel.supportsVision],
+  );
 
   const handleFilePick = useCallback(
     (accept: string) => {
@@ -223,12 +222,6 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
   };
 
   const canSend = (value.trim() || attachment) && !disabled;
-
-  const handleModelSelect = (model: AIModel) => {
-    onModelChange(model);
-    setShowModelMenu(false);
-    inputRef.current?.focus();
-  };
 
   return (
     <div className="relative">
@@ -275,7 +268,10 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
             )}
             aria-label="Add file"
           >
-            <Plus size={16} className={cn("transition-transform duration-200", showFileMenu && "rotate-45")} />
+            <Plus
+              size={16}
+              className={cn("transition-transform duration-200", showFileMenu && "rotate-45")}
+            />
           </button>
 
           {/* File menu popup */}
@@ -284,19 +280,23 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
               ref={fileMenuRef}
               className="absolute bottom-full left-0 mb-2 w-48 overflow-hidden rounded-xl border border-border bg-surface/95 backdrop-blur-xl shadow-2xl"
             >
-              <button
-                type="button"
-                onClick={() => handleFilePick("image/*")}
-                className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-sm text-foreground/80 hover:bg-white/5 transition-colors"
-              >
-                <div className="grid size-8 place-items-center rounded-lg bg-accent/10">
-                  <Image size={14} className="text-accent" />
-                </div>
-                <div>
-                  <div className="font-medium leading-tight">Add image</div>
-                  <div className="text-[11px] text-muted-foreground/60 leading-tight">Galereya / Kamera</div>
-                </div>
-              </button>
+              {selectedModel.supportsVision && (
+                <button
+                  type="button"
+                  onClick={() => handleFilePick("image/*")}
+                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-sm text-foreground/80 hover:bg-white/5 transition-colors"
+                >
+                  <div className="grid size-8 place-items-center rounded-lg bg-accent/10">
+                    <Image size={14} className="text-accent" />
+                  </div>
+                  <div>
+                    <div className="font-medium leading-tight">Add image</div>
+                    <div className="text-[11px] text-muted-foreground/60 leading-tight">
+                      Galereya / Kamera
+                    </div>
+                  </div>
+                </button>
+              )}
               <div className="mx-3 h-px bg-border" />
               <button
                 type="button"
@@ -308,70 +308,18 @@ export function ChatInput({ onSend, disabled, selectedModel, onModelChange }: Ch
                 </div>
                 <div>
                   <div className="font-medium leading-tight">Add File</div>
-                  <div className="text-[11px] text-muted-foreground/60 leading-tight">Any file type</div>
+                  <div className="text-[11px] text-muted-foreground/60 leading-tight">
+                    Any file type
+                  </div>
                 </div>
               </button>
             </div>
           )}
         </div>
 
-        {/* Models button */}
-        <div className="relative flex shrink-0">
-          <button
-            type="button"
-            onClick={() => setShowModelMenu((v) => !v)}
-            className={cn(
-              "flex items-center gap-2 rounded-xl border px-3 py-2 transition-all duration-200",
-              showModelMenu
-                ? "border-accent/40 bg-accent/10"
-                : "border-border text-muted-foreground hover:text-foreground hover:border-accent/20 hover:bg-accent/5",
-            )}
-          >
-            <selectedModel.icon size={13} className="text-accent" />
-            <span className="text-[11px] font-bold uppercase tracking-wider">{selectedModel.label}</span>
-            <ChevronDown size={11} className={cn("text-muted-foreground/50 transition-transform", showModelMenu && "rotate-180")} />
-          </button>
-
-          {/* Model menu popup */}
-          {showModelMenu && (
-            <div
-              ref={modelMenuRef}
-              className="absolute bottom-full left-0 mb-2 w-56 overflow-hidden rounded-xl border border-border bg-surface/95 backdrop-blur-xl shadow-2xl"
-            >
-              <div className="p-1">
-                {MODELS.map((model) => {
-                  const isSelected = model.id === selectedModel.id;
-                  return (
-                    <button
-                      key={model.id}
-                      type="button"
-                      onClick={() => handleModelSelect(model)}
-                      className={cn(
-                        "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition-colors",
-                        isSelected
-                          ? "bg-accent/10 text-accent"
-                          : "text-foreground/70 hover:bg-white/5",
-                      )}
-                    >
-                      <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-accent/10">
-                        <model.icon size={15} className="text-accent" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-sm font-medium leading-tight">{model.label}</span>
-                          <span className="text-[10px] text-muted-foreground/40 font-mono">{model.shortLabel}</span>
-                          {isSelected && <Check size={12} className="shrink-0 text-accent" />}
-                        </div>
-                        <div className="mt-0.5 text-[11px] text-muted-foreground/60 leading-tight truncate">
-                          {model.description}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+        {/* Hidden model badge — always VAEL, no selector shown */}
+        <div className="hidden shrink-0">
+          <selectedModel.icon size={13} className="text-accent" />
         </div>
 
         <textarea
