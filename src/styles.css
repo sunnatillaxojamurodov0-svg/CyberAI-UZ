@@ -5,99 +5,186 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-surface-3: var(--surface-3);
-  --color-border: var(--border);
-  --color-border-strong: var(--border-strong);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-emerald: var(--emerald);
-  --color-emerald-foreground: var(--emerald-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-card: var(--surface);
-  --color-card-foreground: var(--foreground);
-  --color-popover: var(--surface);
-  --color-popover-foreground: var(--foreground);
-  --color-input: var(--border-strong);
-  --color-ring: var(--primary);
-  --color-secondary: var(--surface-2);
-  --color-secondary-foreground: var(--foreground);
-  --color-destructive: oklch(0.62 0.22 25);
-  --color-destructive-foreground: oklch(0.98 0 0);
+/* ═══════════════════════════════════════════════════════════════════
+   STITCH DESIGN SYSTEM — CyberAI Sovereign Terminal
+   Material Design 3 Token System
+   ═══════════════════════════════════════════════════════════════════ */
 
+@theme inline {
+  /* ─── Color Tokens ─── */
+  --color-background: var(--stitch-background);
+  --color-foreground: var(--stitch-on-surface);
+
+  /* Surface tokens */
+  --color-surface: var(--stitch-surface);
+  --color-surface-2: var(--stitch-surface-container);
+  --color-surface-3: var(--stitch-surface-container-high);
+
+  /* Border tokens */
+  --color-border: var(--stitch-outline-variant);
+  --color-border-strong: var(--stitch-outline);
+
+  /* Primary — Cyber Green */
+  --color-primary: var(--stitch-primary-container);
+  --color-primary-foreground: var(--stitch-void);
+
+  /* Accent — Signal Blue */
+  --color-accent: var(--stitch-secondary);
+  --color-accent-foreground: var(--stitch-on-surface);
+
+  /* Emerald — kept for compatibility */
+  --color-emerald: var(--stitch-primary-fixed-dim);
+  --color-emerald-foreground: var(--stitch-void);
+
+  /* Muted */
+  --color-muted: var(--stitch-surface-container-high);
+  --color-muted-foreground: var(--stitch-on-surface-variant);
+
+  /* Card & Popover */
+  --color-card: var(--stitch-surface-container-low);
+  --color-card-foreground: var(--stitch-on-surface);
+  --color-popover: var(--stitch-surface-container);
+  --color-popover-foreground: var(--stitch-on-surface);
+
+  /* Input & Ring */
+  --color-input: var(--stitch-outline-variant);
+  --color-ring: var(--stitch-primary-container);
+
+  /* Secondary */
+  --color-secondary: var(--stitch-surface-container);
+  --color-secondary-foreground: var(--stitch-on-surface);
+
+  /* Destructive — Threat Red */
+  --color-destructive: var(--stitch-error);
+  --color-destructive-foreground: var(--stitch-void);
+
+  /* ─── Typography ─── */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+
   --font-display: "Inter", ui-sans-serif, system-ui, sans-serif;
+
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --radius: 0.75rem;
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 12px);
-  --radius-3xl: calc(var(--radius) + 20px);
+  /* ─── Border Radius (4px base) ─── */
+  --radius: 0.25rem;          /* 4px — default */
+  --radius-sm: 0.125rem;      /* 2px */
+  --radius-md: 0.25rem;       /* 4px */
+  --radius-lg: 0.5rem;        /* 8px */
+  --radius-xl: 0.75rem;       /* 12px */
+  --radius-2xl: 1rem;         /* 16px */
+  --radius-3xl: 1.5rem;       /* 24px */
 
-  --shadow-glow-primary: 0 0 40px -10px color-mix(in oklab, var(--primary) 60%, transparent);
-  --shadow-glow-accent: 0 0 40px -10px color-mix(in oklab, var(--accent) 60%, transparent);
-  --shadow-glow-emerald: 0 0 40px -10px color-mix(in oklab, var(--emerald) 60%, transparent);
+  /* ─── Glow Shadows ─── */
+  --shadow-glow-primary: 0 0 20px rgba(0, 245, 160, 0.2);
+  --shadow-glow-accent: 0 0 20px rgba(0, 166, 224, 0.2);
+  --shadow-glow-emerald: 0 0 20px rgba(0, 226, 147, 0.2);
 
-  --gradient-hero: linear-gradient(
-    135deg,
-    var(--primary) 0%,
-    var(--emerald) 50%,
-    var(--accent) 100%
-  );
+  /* ─── Gradients ─── */
+  --gradient-hero: linear-gradient(90deg, #00f5a0, #00a6e0);
   --gradient-glass: linear-gradient(
     135deg,
-    oklch(1 0 0 / 0.06) 0%,
-    oklch(1 0 0 / 0.015) 50%,
-    oklch(1 0 0 / 0.04) 100%
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.015) 50%,
+    rgba(255, 255, 255, 0.04) 100%
   );
 }
 
 :root {
-  --background: oklch(0.07 0.008 250);
-  --surface: oklch(0.12 0.012 252);
-  --surface-2: oklch(0.16 0.016 254);
-  --surface-3: oklch(0.2 0.018 254);
-  --foreground: oklch(0.985 0 0);
-  --muted: oklch(0.18 0.014 252);
-  --muted-foreground: oklch(0.7 0.018 250);
-  --border: oklch(1 0 0 / 0.07);
-  --border-strong: oklch(1 0 0 / 0.13);
-  --primary: oklch(0.82 0.16 195);
-  --primary-foreground: oklch(0.07 0.008 250);
-  --accent: oklch(0.7 0.14 175);
-  --accent-foreground: oklch(0.985 0 0);
-  --emerald: oklch(0.72 0.19 165);
-  --emerald-foreground: oklch(0.07 0.008 250);
+  /* ═══════════════════════════════════════════════════════════════════
+     STITCH COLOR TOKENS — Material Design 3
+     ═══════════════════════════════════════════════════════════════════ */
 
-  --sidebar: var(--surface);
-  --sidebar-foreground: var(--foreground);
-  --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: var(--primary-foreground);
-  --sidebar-accent: var(--surface-2);
-  --sidebar-accent-foreground: var(--foreground);
-  --sidebar-border: var(--border);
-  --sidebar-ring: var(--primary);
+  /* Surface hierarchy (darkest → lightest) */
+  --stitch-void: #020408;
+  --stitch-background: #0c141f;
+  --stitch-surface-dim: #0c141f;
+  --stitch-surface: #151c27;
+  --stitch-surface-container-lowest: #070e19;
+  --stitch-surface-container-low: #151c27;
+  --stitch-surface-container: #19202c;
+  --stitch-surface-container-high: #232a36;
+  --stitch-surface-container-highest: #2e3541;
+  --stitch-surface-variant: #2e3541;
+  --stitch-surface-bright: #323946;
 
-  --chart-1: var(--primary);
-  --chart-2: var(--accent);
-  --chart-3: var(--emerald);
-  --chart-4: oklch(0.65 0.18 320);
-  --chart-5: oklch(0.55 0.16 260);
+  /* Text colors */
+  --stitch-on-surface: #dce3f3;
+  --stitch-on-background: #dce3f3;
+  --stitch-on-surface-variant: #b9cbbd;
+  --stitch-inverse-surface: #dce3f3;
+
+  /* Outline */
+  --stitch-outline: #849588;
+  --stitch-outline-variant: #3b4a40;
+
+  /* Primary — Cyber Green (#00f5a0) */
+  --stitch-primary: #cdffde;
+  --stitch-primary-container: #00f5a0;
+  --stitch-on-primary-container: #006b43;
+  --stitch-primary-fixed-dim: #00e293;
+  --stitch-surface-tint: #00e293;
+
+  /* Secondary — Signal Blue (#00a6e0) */
+  --stitch-secondary: #7bd0ff;
+  --stitch-secondary-container: #00a6e0;
+  --stitch-on-secondary-container: #003348;
+
+  /* Tertiary — Intel Purple */
+  --stitch-tertiary: #f8f1ff;
+  --stitch-tertiary-container: #ded0ff;
+  --stitch-tertiary-fixed-dim: #cebdff;
+
+  /* Error — Threat Red (#ffb4ab) */
+  --stitch-error: #ffb4ab;
+  --stitch-error-container: #93000a;
+  --stitch-on-error: #690005;
+
+  /* Warning — Amber */
+  --stitch-warning: #ff8e00;
+
+  /* ─── Keep existing CSS variables for compatibility ─── */
+  --background: var(--stitch-background);
+  --foreground: var(--stitch-on-surface);
+  --surface: var(--stitch-surface);
+  --surface-2: var(--stitch-surface-container);
+  --surface-3: var(--stitch-surface-container-high);
+  --foreground-muted: var(--stitch-on-surface-variant);
+  --muted: var(--stitch-surface-container-high);
+  --muted-foreground: var(--stitch-on-surface-variant);
+  --border: var(--stitch-outline-variant);
+  --border-strong: var(--stitch-outline);
+  --primary: var(--stitch-primary-container);
+  --primary-foreground: var(--stitch-void);
+  --accent: var(--stitch-secondary);
+  --accent-foreground: var(--stitch-on-surface);
+  --emerald: var(--stitch-primary-fixed-dim);
+  --emerald-foreground: var(--stitch-void);
+
+  /* Sidebar */
+  --sidebar: var(--stitch-surface-container-lowest);
+  --sidebar-foreground: var(--stitch-on-surface);
+  --sidebar-primary: var(--stitch-primary-container);
+  --sidebar-primary-foreground: var(--stitch-void);
+  --sidebar-accent: var(--stitch-surface-container);
+  --sidebar-accent-foreground: var(--stitch-on-surface);
+  --sidebar-border: var(--stitch-outline-variant);
+  --sidebar-ring: var(--stitch-primary-container);
+
+  /* Charts */
+  --chart-1: var(--stitch-primary-container);
+  --chart-2: var(--stitch-secondary);
+  --chart-3: var(--stitch-tertiary);
+  --chart-4: var(--stitch-warning);
+  --chart-5: var(--stitch-error);
 }
 
 .dark {
   color-scheme: dark;
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   BASE STYLES
+   ═══════════════════════════════════════════════════════════════════ */
 
 @layer base {
   * {
@@ -115,174 +202,201 @@
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: color-mix(in oklab, var(--primary) 35%, transparent);
-    color: oklch(0.985 0 0);
+    background: color-mix(in oklab, var(--stitch-primary-container) 35%, transparent);
+    color: var(--stitch-void);
   }
   .font-mono {
     font-family: var(--font-mono);
   }
+  .font-display {
+    font-family: var(--font-display);
+  }
 }
 
+/* ═══════════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════════ */
+
 @layer utilities {
+  /* ─── Glass Panels ─── */
   .glass-panel {
-    background: var(--gradient-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(12, 20, 31, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(0, 226, 147, 0.2);
     box-shadow:
-      inset 0 1px 1px 0 oklch(1 0 0 / 0.06),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.06),
       0 8px 32px -12px rgba(0, 0, 0, 0.5);
   }
   .glass-panel-strong {
-    background: linear-gradient(135deg, oklch(1 0 0 / 0.08) 0%, oklch(1 0 0 / 0.02) 100%);
+    background: rgba(7, 14, 25, 0.92);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(0, 226, 147, 0.25);
     box-shadow:
-      inset 0 1px 1px 0 oklch(1 0 0 / 0.08),
+      inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
       0 12px 48px -16px rgba(0, 0, 0, 0.6);
   }
   .glass-panel-cyan {
     background: linear-gradient(
       135deg,
-      color-mix(in oklab, var(--primary) 8%, transparent) 0%,
-      oklch(1 0 0 / 0.01) 100%
+      rgba(0, 166, 224, 0.08) 0%,
+      rgba(255, 255, 255, 0.01) 100%
     );
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(0, 166, 224, 0.2);
     box-shadow:
-      inset 0 1px 1px 0 color-mix(in oklab, var(--primary) 20%, transparent),
-      0 0 40px -12px color-mix(in oklab, var(--primary) 25%, transparent);
-    border-color: color-mix(in oklab, var(--primary) 20%, transparent);
+      inset 0 1px 1px 0 rgba(0, 166, 224, 0.2),
+      0 0 40px -12px rgba(0, 166, 224, 0.25);
   }
+
+  /* ─── Glow Effects ─── */
   .glow-hover {
     transition:
-      box-shadow 0.5s ease,
-      border-color 0.5s ease,
-      transform 0.5s ease;
+      box-shadow 0.3s ease-out,
+      border-color 0.3s ease-out,
+      transform 0.3s ease-out;
   }
   .glow-hover:hover {
-    box-shadow: 0 0 40px -10px color-mix(in oklab, var(--primary) 55%, transparent);
-    border-color: color-mix(in oklab, var(--primary) 35%, transparent);
+    box-shadow: 0 0 20px rgba(0, 245, 160, 0.15);
+    border-color: rgba(0, 245, 160, 0.3);
   }
+
+  /* ─── Gradient Text ─── */
   .gradient-text {
-    background: var(--gradient-hero);
+    background: linear-gradient(90deg, #00f5a0, #00a6e0);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
   }
+
+  /* ─── Background Patterns ─── */
   .grid-bg {
     background-image:
-      linear-gradient(to right, oklch(1 0 0 / 0.04) 1px, transparent 1px),
-      linear-gradient(to bottom, oklch(1 0 0 / 0.04) 1px, transparent 1px);
-    background-size: 44px 44px;
+      radial-gradient(circle at center, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 24px 24px;
   }
   .noise {
-    background-image: radial-gradient(oklch(1 0 0 / 0.03) 1px, transparent 1px);
-    background-size: 3px 3px;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 4px;
+  }
+  .dot-grid {
+    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* ─── Focus Ring (Accessibility) ─── */
+  .focus-cyber:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--stitch-background), 0 0 0 4px var(--stitch-primary-container);
+  }
+
+  /* ─── Scanline Effect ─── */
+  .scanline-overlay {
+    position: relative;
+    overflow: hidden;
+  }
+  .scanline-overlay::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 100% 4px;
+    pointer-events: none;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════════════════════════ */
 
 @keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
+
 @keyframes pulse-soft {
-  0%,
-  100% {
-    opacity: 0.4;
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.85; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(0, 245, 160, 0.3);
   }
   50% {
-    opacity: 0.85;
-  }
-}
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
-}
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-@keyframes marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
+    box-shadow: 0 0 20px rgba(0, 245, 160, 0.6);
   }
 }
 
-.animate-float {
-  animation: float 6s ease-in-out infinite;
+@keyframes scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
 }
-.animate-pulse-soft {
-  animation: pulse-soft 2.4s ease-in-out infinite;
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
 }
-.animate-marquee {
-  animation: marquee 40s linear infinite;
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 @keyframes blink {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
 }
+
 @keyframes blink-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.3;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
 }
+
 @keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  20%,
-  60% {
-    transform: translateX(-4px);
-  }
-  40%,
-  80% {
-    transform: translateX(4px);
-  }
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-4px); }
+  40%, 80% { transform: translateX(4px); }
 }
 
-.animate-blink {
-  animation: blink 1s step-end infinite;
-}
-.animate-blink-pulse {
-  animation: blink-pulse 1.4s ease-in-out infinite;
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
 }
 
-/* Console / VAEL floating helpers */
-.size-15 {
-  width: 3.75rem;
-  height: 3.75rem;
+@keyframes pulse-dots {
+  0%, 20% { opacity: 0; }
+  50% { opacity: 1; }
+  80%, 100% { opacity: 0; }
 }
+
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+.animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+.animate-marquee { animation: marquee 30s linear infinite; }
+.animate-blink { animation: blink 1s step-end infinite; }
+.animate-blink-pulse { animation: blink-pulse 1.4s ease-in-out infinite; }
+.animate-scan { animation: scan 8s linear infinite; }
+
+/* Typing dots */
+.animate-dot-1 { animation: pulse-dots 1.5s infinite 0s; }
+.animate-dot-2 { animation: pulse-dots 1.5s infinite 0.2s; }
+.animate-dot-3 { animation: pulse-dots 1.5s infinite 0.4s; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCROLLBAR
+   ═══════════════════════════════════════════════════════════════════ */
 
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in oklab, var(--accent) 40%, transparent) transparent;
+  scrollbar-color: rgba(0, 245, 160, 0.3) transparent;
 }
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
@@ -292,12 +406,16 @@
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: color-mix(in oklab, var(--accent) 35%, transparent);
+  background: rgba(0, 245, 160, 0.3);
   border-radius: 9999px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: color-mix(in oklab, var(--accent) 55%, transparent);
+  background: rgba(0, 245, 160, 0.5);
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   REDUCED MOTION
+   ═══════════════════════════════════════════════════════════════════ */
 
 @media (prefers-reduced-motion: reduce) {
   *,

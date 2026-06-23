@@ -1,0 +1,105 @@
+.gooey-nav-container {
+  /* Stitch Design Tokens */
+  --color-1: #00f5a0;  /* Cyber Green — primary */
+  --color-2: #00a6e0;  /* Signal Blue — secondary */
+  --color-3: #cebdff;  /* Intel Purple — tertiary */
+  --color-4: #ffb4ab;  /* Threat Red — error */
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.gooey-nav-container nav ul {
+  list-style: none;
+  display: flex;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+}
+
+.gooey-nav-container nav ul li {
+  position: relative;
+  z-index: 2;
+}
+
+.gooey-nav-container nav ul li a {
+  display: block;
+  padding: 0.5rem 1rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: #b9cbbd;
+  text-decoration: none;
+  border-radius: 0.25rem;
+  transition: color 0.2s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.gooey-nav-container nav ul li a:hover {
+  color: #dce3f3;
+}
+
+.gooey-nav-container nav ul li.active a {
+  color: #dce3f3;
+}
+
+.gooey-nav-container .effect {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 0.25rem;
+  transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              top 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gooey-nav-container .effect.filter {
+  background: rgba(0, 245, 160, 0.15);
+  z-index: 0;
+  border-radius: 0.25rem;
+}
+
+.gooey-nav-container .effect.filter.animating {
+  animation: gooey-pulse 0.6s ease-out;
+}
+
+@keyframes gooey-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.gooey-nav-container .particle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color, white);
+  pointer-events: none;
+  z-index: 10;
+  animation: gooey-particle var(--time, 600ms) ease-out forwards;
+  transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(var(--scale, 1)) rotate(var(--rotate, 0deg));
+}
+
+.gooey-nav-container .particle .point {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+}
+
+@keyframes gooey-particle {
+  0% {
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(var(--scale, 1)) rotate(var(--rotate, 0deg));
+    opacity: 1;
+  }
+  50% { opacity: 0.8; }
+  100% {
+    transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(0) rotate(calc(var(--rotate, 0deg) + 180deg));
+    opacity: 0;
+  }
+}

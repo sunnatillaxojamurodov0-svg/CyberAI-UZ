@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { signInWithGoogle, setSessionCookie } from "@/lib/auth/auth-server";
+import { getEnv } from "@/lib/db";
 
 export const Route = createFileRoute("/api/auth/google/callback")({
   server: {
@@ -27,6 +28,19 @@ export const Route = createFileRoute("/api/auth/google/callback")({
                 headers: { "Content-Type": "application/json" },
               },
             );
+          }
+
+          const env = getEnv();
+          const onboarding = env.USER_ONBOARDING as { create: (opts: { id: string; params: Record<string, unknown> }) => Promise<unknown> } | undefined;
+          if (onboarding && result.user?.id) {
+            onboarding.create({
+              id: `onboard-${result.user.id}`,
+              params: {
+                userId: result.user.id,
+                email: result.user.email,
+                name: result.user.name ?? "User",
+              },
+            }).catch(() => {});
           }
 
           return new Response(JSON.stringify({ ok: true, user: result.user }), {

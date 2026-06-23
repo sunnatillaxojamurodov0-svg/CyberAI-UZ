@@ -1,4 +1,4 @@
-import { requireDb } from "../db";
+import { getEnv, requireDb } from "../db";
 
 interface D1PreparedStatement {
   bind(...args: unknown[]): D1PreparedStatement;
@@ -8,6 +8,10 @@ interface D1PreparedStatement {
 
 interface D1Database {
   prepare(sql: string): D1PreparedStatement;
+}
+
+interface RateLimiterBinding {
+  limit(opts: { key: string }): Promise<{ success: boolean }>;
 }
 
 export interface RateLimitConfig {
@@ -21,10 +25,32 @@ const DEFAULTS: Record<string, RateLimitConfig> = {
   chat: { windowSeconds: 60, maxRequests: 20 },
 };
 
+const EDGE_BINDING: Record<string, string> = {
+  chat: "MY_RATE_LIMITER_CHAT",
+  auth: "MY_RATE_LIMITER_AUTH",
+};
+
+import { writeAnalytics } from "../analytics";
+
 export async function checkRateLimit(
   key: string,
   category: keyof typeof DEFAULTS = "auth",
 ): Promise<{ allowed: boolean; remaining: number; resetAt: number }> {
+  const bindingName = EDGE_BINDING[category];
+  if (bindingName) {
+    try {
+      const env = getEnv();
+      const limiter = env[bindingName] as RateLimiterBinding | undefined;
+      if (limiter) {
+        const { success } = await limiter.limit({ key });
+        const config = DEFAULTS[category];
+        const now = Math.floor(Date.now() / 1000);
+        const windowEnd = Math.ceil(now / config.windowSeconds) * config.windowSeconds;
+        return { allowed: success, remaining: success ? config.maxRequests - 1 : 0, resetAt: windowEnd };
+      }
+    } catch { /* fall through to D1 */ }
+  }
+
   try {
     const db = requireDb<D1Database>();
     const config = DEFAULTS[category];

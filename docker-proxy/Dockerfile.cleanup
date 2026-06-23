@@ -1,0 +1,8 @@
+FROM alpine:3.18
+
+RUN apk add --no-cache curl jq docker-cli
+
+COPY cleanup.sh /cleanup.sh
+RUN chmod +x /cleanup.sh
+
+CMD ["/cleanup.sh"]

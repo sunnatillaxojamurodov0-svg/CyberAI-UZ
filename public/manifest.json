@@ -1,0 +1,23 @@
+{
+  "name": "CyberAI - Autonomous Defense for the Synthetic Era",
+  "short_name": "CyberAI",
+  "description": "Sovereign AI cybersecurity platform for high-stakes infrastructure.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020408",
+  "theme_color": "#020408",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

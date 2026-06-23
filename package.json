@@ -6,18 +6,26 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build && node -e \"const fs=require('fs'); const path=require('path'); const srv='dist/server'; const out='.output/server'; fs.rmSync(out,{recursive:true,force:true}); fs.mkdirSync(out,{recursive:true}); for(const e of fs.readdirSync(srv)){const s=path.join(srv,e); const d=path.join(out,e); if(fs.statSync(s).isDirectory()){fs.cpSync(s,path.join(out,e),{recursive:true})}else{fs.copyFileSync(s,d)}} fs.renameSync(path.join(out,'server.js'),path.join(out,'index.mjs')); for(const f of fs.readdirSync(path.join(out,'assets'))){const fp=path.join(out,'assets',f); if(f.endsWith('.js')){let c=fs.readFileSync(fp,'utf8'); if(c.includes('../server.js')){c=c.replaceAll('../server.js','../index.mjs'); fs.writeFileSync(fp,c)}}} let idx=fs.readFileSync(path.join(out,'index.mjs'),'utf8'); idx=idx.replace(/\\n  db as d,/g,'\\n'); fs.writeFileSync(path.join(out,'index.mjs'),idx); console.log('copied -> .output/server')\"",
+    "build": "vite build && node scripts/copy-output.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "start": "npx serve -s dist/client",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
     "@google/generative-ai": "^0.24.1",
     "@google/stitch-sdk": "^0.3.5",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@react-three/fiber": "^9.6.1",
+    "@sentry/react": "^10.59.0",
+    "@sentry/vite-plugin": "^5.3.0",
     "@tailwindcss/vite": "^4.2.1",
     "@tanstack/react-query": "^5.83.0",
     "@tanstack/react-router": "^1.168.25",
@@ -26,6 +34,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.40.0",
+    "gsap": "^3.15.0",
     "highlight.js": "^11.11.1",
     "lucide-react": "^1.16.0",
     "react": "^19.2.0",
@@ -33,6 +42,7 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^4.2.1",
+    "three": "^0.184.0",
     "tw-animate-css": "^1.3.4",
     "vite-tsconfig-paths": "^6.0.2",
     "zod": "^3.24.2"
@@ -40,9 +50,13 @@
   "devDependencies": {
     "@eslint/js": "^9.32.0",
     "@lovable.dev/vite-tanstack-config": "^1.7.0",
+    "@playwright/test": "^1.61.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@types/node": "^22.16.5",
     "@types/react": "^19.2.0",
     "@types/react-dom": "^19.2.0",
+    "@types/three": "^0.184.1",
     "@vitejs/plugin-react": "^5.0.4",
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.1",
@@ -50,9 +64,11 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
+    "jsdom": "^29.1.1",
     "prettier": "^3.7.3",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1",
-    "vite": "^7.3.1"
+    "vite": "^7.3.1",
+    "vitest": "^4.1.9"
   }
 }

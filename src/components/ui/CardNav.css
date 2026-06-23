@@ -1,0 +1,141 @@
+.card-nav-container {
+  position: relative;
+  width: 100%;
+}
+
+.card-nav {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.card-nav.open {
+  box-shadow: 0 25px 50px -12px oklch(0 0 0 / 0.5);
+}
+
+.card-nav-top {
+  display: none;
+}
+
+.hamburger-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  padding: 4px;
+  width: 28px;
+}
+
+.hamburger-line {
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  border-radius: 2px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.hamburger-menu.open .hamburger-line:first-child {
+  transform: translateY(3.5px) rotate(45deg);
+}
+
+.hamburger-menu.open .hamburger-line:last-child {
+  transform: translateY(-3.5px) rotate(-45deg);
+}
+
+.logo-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.logo {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
+.card-nav-cta-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.card-nav-cta-button:hover {
+  transform: scale(1.02);
+  opacity: 0.9;
+}
+
+.card-nav-content {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  padding: 0 1rem 1rem;
+  visibility: hidden;
+  pointer-events: none;
+  position: absolute;
+  height: 0;
+  overflow: hidden;
+}
+
+.card-nav.open .card-nav-content {
+  visibility: visible;
+  pointer-events: auto;
+  position: static;
+  height: auto;
+}
+
+.nav-card {
+  padding: 1rem;
+  border-radius: 0.75rem;
+  min-height: 120px;
+}
+
+.nav-card-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.6;
+  margin-bottom: 0.75rem;
+}
+
+.nav-card-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-card-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.nav-card-link:hover {
+  opacity: 1;
+}
+
+.nav-card-link-icon {
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .card-nav-content {
+    grid-template-columns: 1fr;
+  }
+}

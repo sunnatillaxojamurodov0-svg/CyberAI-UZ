@@ -1,0 +1,13 @@
+services:
+  proxy:
+    ports:
+      - "127.0.0.1:2377:2377"
+      - "127.0.0.1:9229:9229"
+    environment:
+      - NODE_ENV=development
+      - DEBUG=cyberai:*
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["node", "--watch", "--inspect=0.0.0.0:9229", "server.js"]

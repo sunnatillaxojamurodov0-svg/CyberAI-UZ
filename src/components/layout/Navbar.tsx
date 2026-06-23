@@ -1,17 +1,57 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, useNavigate, useMatches } from "@tanstack/react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useState } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { Menu, X, LogOut } from "lucide-react";
 import { UserAvatar } from "@/components/shared/UserAvatar";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useProfile";
 import brandLogo from "@/assets/brand-logo.png";
 import { cn } from "@/lib/utils";
+import GooeyNav from "@/components/ui/GooeyNav";
 
-const NAV = [
-  { label: "Platform", to: "/" },
+const NAV_MAIN = [
   { label: "Console", to: "/console" },
   { label: "Chat", to: "/chat" },
+  { label: "Leaderboard", to: "/leaderboard" },
+  { label: "Dashboard", to: "/dashboard" },
+];
+
+const NAV_CARD_ITEMS = [
+  {
+    label: "Tools",
+    bgColor: "#19202c",
+    textColor: "#dce3f3",
+    links: [
+      { label: "Targets", href: "/targets" },
+      { label: "Threats", href: "/threats" },
+      { label: "ZKP", href: "/zkp" },
+    ],
+  },
+  {
+    label: "Resources",
+    bgColor: "#19202c",
+    textColor: "#dce3f3",
+    links: [
+      { label: "Projects", href: "/projects" },
+      { label: "Prompts", href: "/prompts" },
+    ],
+  },
+  {
+    label: "Info",
+    bgColor: "#19202c",
+    textColor: "#dce3f3",
+    links: [
+      { label: "About", href: "/about" },
+    ],
+  },
+];
+
+const NAV_ALL = [
+  { label: "Home", to: "/" },
+  ...NAV_MAIN,
+  { label: "Targets", to: "/targets" },
+  { label: "Threats", to: "/threats" },
+  { label: "ZKP", to: "/zkp" },
   { label: "Projects", to: "/projects" },
   { label: "Prompts", to: "/prompts" },
   { label: "About", to: "/about" },
@@ -21,12 +61,42 @@ export function Navbar() {
   const { user, signOut, openAuthModal } = useAuth();
   const { profile } = useProfile();
   const navigate = useNavigate();
+  const matches = useMatches();
+  const moreRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
+  const [showCardNav, setShowCardNav] = useState(false);
 
   const goProfile = () => navigate({ to: "/profile" });
   const { scrollY } = useScroll();
   const bg = useTransform(scrollY, [0, 80], ["rgba(2, 4, 8, 0.4)", "rgba(2, 4, 8, 0.82)"]);
   const blur = useTransform(scrollY, [0, 80], ["blur(6px)", "blur(16px)"]);
-  const [open, setOpen] = useState(false);
+
+  const gooeyItems = NAV_MAIN.map((n) => ({ label: n.label, href: n.to }));
+
+  const currentRouteIndex = useMemo(() => {
+    const currentPath = matches[matches.length - 1]?.pathname ?? "/";
+    const idx = NAV_MAIN.findIndex((n) => currentPath.startsWith(n.to));
+    return idx >= 0 ? idx : 0;
+  }, [matches]);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
+        setShowCardNav(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleGooeyNavigate = (href: string) => {
+    navigate({ to: href as "/" });
+  };
+
+  const handleCardNavigate = (href: string) => {
+    navigate({ to: href as "/" });
+    setShowCardNav(false);
+  };
 
   return (
     <motion.nav
@@ -48,15 +118,54 @@ export function Navbar() {
         </Link>
 
         <div className="hidden items-center gap-1 md:flex">
-          {NAV.map((n) => (
-            <Link
-              key={n.label}
-              to={n.to}
-              className="relative rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          <GooeyNav
+            items={gooeyItems}
+            initialActiveIndex={currentRouteIndex}
+            onNavigate={handleGooeyNavigate}
+            colors={[1, 2, 3, 4]}
+          />
+
+          <div className="relative" ref={moreRef}>
+            <button
+              type="button"
+              onClick={() => setShowCardNav(!showCardNav)}
+              className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
-              {n.label}
-            </Link>
-          ))}
+              More
+              <span className="text-xs">{showCardNav ? '▲' : '▼'}</span>
+            </button>
+
+            {showCardNav && (
+              <motion.div
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 top-full mt-2 w-64 overflow-hidden rounded-xl border border-border bg-surface/95 shadow-xl shadow-black/20 backdrop-blur-xl"
+              >
+                {NAV_CARD_ITEMS.map((section) => (
+                  <div key={section.label} className="p-3">
+                    <div className="mb-2 font-mono text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
+                      {section.label}
+                    </div>
+                    <div className="space-y-1">
+                      {section.links.map((link) => (
+                        <Link
+                          key={link.href}
+                          to={link.href}
+                          onClick={() => setShowCardNav(false)}
+                          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground"
+                        >
+                          <span className="text-xs text-muted-foreground/50">↗</span>
+                          {link.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
+          </div>
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
@@ -110,10 +219,11 @@ export function Navbar() {
         )}
       >
         <div className="flex flex-col gap-1 p-4">
-          {NAV.map((n) => (
+          {NAV_ALL.map((n) => (
             <Link
               key={n.label}
               to={n.to}
+              onClick={() => setOpen(false)}
               className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-white/5 hover:text-foreground"
             >
               {n.label}

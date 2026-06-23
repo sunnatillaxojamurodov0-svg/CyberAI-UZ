@@ -23,6 +23,79 @@
       "head_sampling_rate": 1
     }
   },
+  "queues": {
+    "producers": [
+      { "queue": "ai-usage-queue", "binding": "AI_USAGE_QUEUE" }
+    ],
+    "consumers": [
+      { "queue": "ai-usage-queue" }
+    ]
+  },
+  "workflows": [
+    {
+      "name": "challenge-generator",
+      "binding": "CHALLENGE_WORKFLOW",
+      "class_name": "ChallengeGenerator",
+      "script_name": "app"
+    },
+    {
+      "name": "user-onboarding",
+      "binding": "ONBOARDING_WORKFLOW",
+      "class_name": "UserOnboarding",
+      "script_name": "app"
+    },
+    {
+      "name": "console-analysis",
+      "binding": "CONSOLE_WORKFLOW",
+      "class_name": "ConsoleAnalysis",
+      "script_name": "app"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "CHAT_SESSION_DO", "class_name": "ChatSessionDO" },
+      { "name": "CONSOLE_SESSION_DO", "class_name": "ConsoleSessionDO" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["ChatSessionDO", "ConsoleSessionDO"] }
+  ],
+  "analytics_engine_datasets": [
+    { "binding": "ANALYTICS", "dataset": "cyberai_analytics" }
+  ],
+  "ratelimits": [
+    {
+      "name": "MY_RATE_LIMITER_CHAT",
+      "namespace_id": "1001",
+      "simple": { "limit": 20, "period": 60 }
+    },
+    {
+      "name": "MY_RATE_LIMITER_AUTH",
+      "namespace_id": "1002",
+      "simple": { "limit": 5, "period": 60 }
+    }
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE_INDEX",
+      "index_name": "cyberai-vectors"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "r2_buckets": [
+    {
+      "binding": "MY_BUCKET",
+      "bucket_name": "cyberai-bucket"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CYBERAI_KV",
+      "id": "31c6e4512cd34d97b2c27839f558b100"
+    }
+  ],
   "d1_databases": [
     {
       "binding": "cyberai_db",

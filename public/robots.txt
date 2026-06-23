@@ -1,4 +1,9 @@
 User-agent: *
-Allow: /
+Disallow: /api/
+Disallow: /.env
+Disallow: /.git/
+Disallow: /.dev.vars
+Disallow: /admin/
+Disallow: /debug/
 
-Sitemap: https://cyberaiuz.lovable.app/sitemap.xml
+Sitemap: https://app.cyberaiuz.workers.dev/sitemap.xml
