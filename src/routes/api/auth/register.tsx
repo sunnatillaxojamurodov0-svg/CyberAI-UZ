@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { registerUser, setSessionCookie } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
+import { writeAnalytics } from "@/lib/analytics";
+import { getEnv } from "@/lib/db";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -11,8 +13,10 @@ export const Route = createFileRoute("/api/auth/register")({
       POST: async ({ request }) => {
         try {
           const ip = request.headers.get("cf-connecting-ip") || "unknown";
+          const startTime = Date.now();
           const rl = await checkRateLimit(rateLimitKey(ip, "register"), "register");
           if (!rl.allowed) {
+            writeAnalytics("register", "denied", null, "/api/auth/register", Date.now() - startTime);
             return new Response(
               JSON.stringify({
                 ok: false,
@@ -46,6 +50,7 @@ export const Route = createFileRoute("/api/auth/register")({
           const name = body.name?.trim().slice(0, 100) || undefined;
           const result = await registerUser(email, body.password, name);
           if (!result.ok || !result.token) {
+            writeAnalytics("register", "denied", null, "/api/auth/register", Date.now() - startTime);
             return new Response(
               JSON.stringify({ ok: false, error: result.error ?? "Registration failed." }),
               {
@@ -54,6 +59,21 @@ export const Route = createFileRoute("/api/auth/register")({
               },
             );
           }
+          writeAnalytics("register", "success", result.user?.id ?? null, "/api/auth/register", Date.now() - startTime);
+
+          const env = getEnv();
+          const onboarding = env.USER_ONBOARDING as { create: (opts: { id: string; params: Record<string, unknown> }) => Promise<unknown> } | undefined;
+          if (onboarding && result.user?.id) {
+            onboarding.create({
+              id: `onboard-${result.user.id}`,
+              params: {
+                userId: result.user.id,
+                email: email,
+                name: name ?? "User",
+              },
+            }).catch(() => {});
+          }
+
           return new Response(JSON.stringify({ ok: true, user: result.user }), {
             status: 200,
             headers: {

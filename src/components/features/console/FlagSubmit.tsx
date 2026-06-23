@@ -6,7 +6,7 @@ import type { CTFChallenge, ScoreBreakdown } from "@/lib/console/types";
 
 interface FlagSubmitProps {
   challenge: CTFChallenge;
-  onSubmit: (flag: string) => { correct: boolean; score?: ScoreBreakdown; points?: number };
+  onSubmit: (flag: string) => Promise<{ correct: boolean; score?: ScoreBreakdown; points?: number }>;
 }
 
 export function FlagSubmit({ challenge, onSubmit }: FlagSubmitProps) {
@@ -15,9 +15,9 @@ export function FlagSubmit({ challenge, onSubmit }: FlagSubmitProps) {
   const [score, setScore] = useState<ScoreBreakdown | null>(null);
   const [points, setPoints] = useState(0);
 
-  const handle = () => {
+  const handle = async () => {
     if (!value.trim()) return;
-    const res = onSubmit(value.trim());
+    const res = await onSubmit(value.trim());
     if (res.correct) {
       setStatus("correct");
       setScore(res.score ?? null);

@@ -1,0 +1,20 @@
+# Cloudflare Tunnel Configuration
+# This securely exposes your local Docker proxy to the internet
+
+# Tunnel name
+tunnel: cyberai-docker-proxy
+
+# Credentials file (download from Cloudflare dashboard)
+credentials-file: C:\Users\sunna\.cloudflared\credentials.json
+
+# Ingress rules
+ingress:
+  # Docker Proxy API
+  - hostname: docker.cyberaiuz.workers.dev
+    service: https://127.0.0.1:2377
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 30s
+      
+  # Catch-all rule (required)
+  - service: http_status:404

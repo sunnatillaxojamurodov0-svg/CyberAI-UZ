@@ -9,16 +9,32 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ZkpRouteImport } from './routes/zkp'
+import { Route as ThreatsRouteImport } from './routes/threats'
+import { Route as TargetsRouteImport } from './routes/targets'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PromptsRouteImport } from './routes/prompts'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConsoleRouteImport } from './routes/console'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
+import { Route as ApiZkpRouteImport } from './routes/api/zkp'
+import { Route as ApiWorkflowsRouteImport } from './routes/api/workflows'
+import { Route as ApiThreatsRouteImport } from './routes/api/threats'
+import { Route as ApiTargetsRouteImport } from './routes/api/targets'
+import { Route as ApiLeaderboardRouteImport } from './routes/api/leaderboard'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
+import { Route as ApiBillingRouteImport } from './routes/api/billing'
+import { Route as ApiWorkflowsOnboardingRouteImport } from './routes/api/workflows/onboarding'
+import { Route as ApiWorkflowsChallengeRouteImport } from './routes/api/workflows/challenge'
+import { Route as ApiWorkflowsAnalysisRouteImport } from './routes/api/workflows/analysis'
+import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as ApiDashboardStatsRouteImport } from './routes/api/dashboard/stats'
 import { Route as ApiConsoleHintRouteImport } from './routes/api/console/hint'
 import { Route as ApiAuthRegisterRouteImport } from './routes/api/auth/register'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
@@ -29,6 +45,21 @@ import { Route as ApiAuthGithubRouteImport } from './routes/api/auth/github'
 import { Route as ApiAuthGoogleCallbackRouteImport } from './routes/api/auth/google/callback'
 import { Route as ApiAuthGithubCallbackRouteImport } from './routes/api/auth/github/callback'
 
+const ZkpRoute = ZkpRouteImport.update({
+  id: '/zkp',
+  path: '/zkp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ThreatsRoute = ThreatsRouteImport.update({
+  id: '/threats',
+  path: '/threats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TargetsRoute = TargetsRouteImport.update({
+  id: '/targets',
+  path: '/targets',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
@@ -47,6 +78,16 @@ const ProjectsRoute = ProjectsRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ConsoleRoute = ConsoleRouteImport.update({
@@ -74,9 +115,64 @@ const AuthCallbackRoute = AuthCallbackRouteImport.update({
   path: '/auth/callback',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiZkpRoute = ApiZkpRouteImport.update({
+  id: '/api/zkp',
+  path: '/api/zkp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWorkflowsRoute = ApiWorkflowsRouteImport.update({
+  id: '/api/workflows',
+  path: '/api/workflows',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiThreatsRoute = ApiThreatsRouteImport.update({
+  id: '/api/threats',
+  path: '/api/threats',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiTargetsRoute = ApiTargetsRouteImport.update({
+  id: '/api/targets',
+  path: '/api/targets',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiLeaderboardRoute = ApiLeaderboardRouteImport.update({
+  id: '/api/leaderboard',
+  path: '/api/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBillingRoute = ApiBillingRouteImport.update({
+  id: '/api/billing',
+  path: '/api/billing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiWorkflowsOnboardingRoute = ApiWorkflowsOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => ApiWorkflowsRoute,
+} as any)
+const ApiWorkflowsChallengeRoute = ApiWorkflowsChallengeRouteImport.update({
+  id: '/challenge',
+  path: '/challenge',
+  getParentRoute: () => ApiWorkflowsRoute,
+} as any)
+const ApiWorkflowsAnalysisRoute = ApiWorkflowsAnalysisRouteImport.update({
+  id: '/analysis',
+  path: '/analysis',
+  getParentRoute: () => ApiWorkflowsRoute,
+} as any)
+const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
+  id: '/api/webhooks/stripe',
+  path: '/api/webhooks/stripe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDashboardStatsRoute = ApiDashboardStatsRouteImport.update({
+  id: '/api/dashboard/stats',
+  path: '/api/dashboard/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiConsoleHintRoute = ApiConsoleHintRouteImport.update({
@@ -130,11 +226,22 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutRoute
   '/chat': typeof ChatRoute
   '/console': typeof ConsoleRoute
+  '/dashboard': typeof DashboardRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
   '/prompts': typeof PromptsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/targets': typeof TargetsRoute
+  '/threats': typeof ThreatsRoute
+  '/zkp': typeof ZkpRoute
+  '/api/billing': typeof ApiBillingRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/leaderboard': typeof ApiLeaderboardRoute
+  '/api/targets': typeof ApiTargetsRoute
+  '/api/threats': typeof ApiThreatsRoute
+  '/api/workflows': typeof ApiWorkflowsRouteWithChildren
+  '/api/zkp': typeof ApiZkpRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
@@ -143,6 +250,11 @@ export interface FileRoutesByFullPath {
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
   '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/workflows/analysis': typeof ApiWorkflowsAnalysisRoute
+  '/api/workflows/challenge': typeof ApiWorkflowsChallengeRoute
+  '/api/workflows/onboarding': typeof ApiWorkflowsOnboardingRoute
   '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
   '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
 }
@@ -151,11 +263,22 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/chat': typeof ChatRoute
   '/console': typeof ConsoleRoute
+  '/dashboard': typeof DashboardRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
   '/prompts': typeof PromptsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/targets': typeof TargetsRoute
+  '/threats': typeof ThreatsRoute
+  '/zkp': typeof ZkpRoute
+  '/api/billing': typeof ApiBillingRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/leaderboard': typeof ApiLeaderboardRoute
+  '/api/targets': typeof ApiTargetsRoute
+  '/api/threats': typeof ApiThreatsRoute
+  '/api/workflows': typeof ApiWorkflowsRouteWithChildren
+  '/api/zkp': typeof ApiZkpRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
@@ -164,6 +287,11 @@ export interface FileRoutesByTo {
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
   '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/workflows/analysis': typeof ApiWorkflowsAnalysisRoute
+  '/api/workflows/challenge': typeof ApiWorkflowsChallengeRoute
+  '/api/workflows/onboarding': typeof ApiWorkflowsOnboardingRoute
   '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
   '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
 }
@@ -173,11 +301,22 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/chat': typeof ChatRoute
   '/console': typeof ConsoleRoute
+  '/dashboard': typeof DashboardRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/profile': typeof ProfileRoute
   '/projects': typeof ProjectsRoute
   '/prompts': typeof PromptsRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/targets': typeof TargetsRoute
+  '/threats': typeof ThreatsRoute
+  '/zkp': typeof ZkpRoute
+  '/api/billing': typeof ApiBillingRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/leaderboard': typeof ApiLeaderboardRoute
+  '/api/targets': typeof ApiTargetsRoute
+  '/api/threats': typeof ApiThreatsRoute
+  '/api/workflows': typeof ApiWorkflowsRouteWithChildren
+  '/api/zkp': typeof ApiZkpRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
@@ -186,6 +325,11 @@ export interface FileRoutesById {
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
   '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
+  '/api/workflows/analysis': typeof ApiWorkflowsAnalysisRoute
+  '/api/workflows/challenge': typeof ApiWorkflowsChallengeRoute
+  '/api/workflows/onboarding': typeof ApiWorkflowsOnboardingRoute
   '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
   '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
 }
@@ -196,11 +340,22 @@ export interface FileRouteTypes {
     | '/about'
     | '/chat'
     | '/console'
+    | '/dashboard'
+    | '/leaderboard'
     | '/profile'
     | '/projects'
     | '/prompts'
     | '/sitemap.xml'
+    | '/targets'
+    | '/threats'
+    | '/zkp'
+    | '/api/billing'
     | '/api/chat'
+    | '/api/leaderboard'
+    | '/api/targets'
+    | '/api/threats'
+    | '/api/workflows'
+    | '/api/zkp'
     | '/auth/callback'
     | '/api/auth/github'
     | '/api/auth/google'
@@ -209,6 +364,11 @@ export interface FileRouteTypes {
     | '/api/auth/me'
     | '/api/auth/register'
     | '/api/console/hint'
+    | '/api/dashboard/stats'
+    | '/api/webhooks/stripe'
+    | '/api/workflows/analysis'
+    | '/api/workflows/challenge'
+    | '/api/workflows/onboarding'
     | '/api/auth/github/callback'
     | '/api/auth/google/callback'
   fileRoutesByTo: FileRoutesByTo
@@ -217,11 +377,22 @@ export interface FileRouteTypes {
     | '/about'
     | '/chat'
     | '/console'
+    | '/dashboard'
+    | '/leaderboard'
     | '/profile'
     | '/projects'
     | '/prompts'
     | '/sitemap.xml'
+    | '/targets'
+    | '/threats'
+    | '/zkp'
+    | '/api/billing'
     | '/api/chat'
+    | '/api/leaderboard'
+    | '/api/targets'
+    | '/api/threats'
+    | '/api/workflows'
+    | '/api/zkp'
     | '/auth/callback'
     | '/api/auth/github'
     | '/api/auth/google'
@@ -230,6 +401,11 @@ export interface FileRouteTypes {
     | '/api/auth/me'
     | '/api/auth/register'
     | '/api/console/hint'
+    | '/api/dashboard/stats'
+    | '/api/webhooks/stripe'
+    | '/api/workflows/analysis'
+    | '/api/workflows/challenge'
+    | '/api/workflows/onboarding'
     | '/api/auth/github/callback'
     | '/api/auth/google/callback'
   id:
@@ -238,11 +414,22 @@ export interface FileRouteTypes {
     | '/about'
     | '/chat'
     | '/console'
+    | '/dashboard'
+    | '/leaderboard'
     | '/profile'
     | '/projects'
     | '/prompts'
     | '/sitemap.xml'
+    | '/targets'
+    | '/threats'
+    | '/zkp'
+    | '/api/billing'
     | '/api/chat'
+    | '/api/leaderboard'
+    | '/api/targets'
+    | '/api/threats'
+    | '/api/workflows'
+    | '/api/zkp'
     | '/auth/callback'
     | '/api/auth/github'
     | '/api/auth/google'
@@ -251,6 +438,11 @@ export interface FileRouteTypes {
     | '/api/auth/me'
     | '/api/auth/register'
     | '/api/console/hint'
+    | '/api/dashboard/stats'
+    | '/api/webhooks/stripe'
+    | '/api/workflows/analysis'
+    | '/api/workflows/challenge'
+    | '/api/workflows/onboarding'
     | '/api/auth/github/callback'
     | '/api/auth/google/callback'
   fileRoutesById: FileRoutesById
@@ -260,11 +452,22 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ChatRoute: typeof ChatRoute
   ConsoleRoute: typeof ConsoleRoute
+  DashboardRoute: typeof DashboardRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   ProfileRoute: typeof ProfileRoute
   ProjectsRoute: typeof ProjectsRoute
   PromptsRoute: typeof PromptsRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TargetsRoute: typeof TargetsRoute
+  ThreatsRoute: typeof ThreatsRoute
+  ZkpRoute: typeof ZkpRoute
+  ApiBillingRoute: typeof ApiBillingRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiLeaderboardRoute: typeof ApiLeaderboardRoute
+  ApiTargetsRoute: typeof ApiTargetsRoute
+  ApiThreatsRoute: typeof ApiThreatsRoute
+  ApiWorkflowsRoute: typeof ApiWorkflowsRouteWithChildren
+  ApiZkpRoute: typeof ApiZkpRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
   ApiAuthGithubRoute: typeof ApiAuthGithubRouteWithChildren
   ApiAuthGoogleRoute: typeof ApiAuthGoogleRouteWithChildren
@@ -273,10 +476,33 @@ export interface RootRouteChildren {
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthRegisterRoute: typeof ApiAuthRegisterRoute
   ApiConsoleHintRoute: typeof ApiConsoleHintRoute
+  ApiDashboardStatsRoute: typeof ApiDashboardStatsRoute
+  ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/zkp': {
+      id: '/zkp'
+      path: '/zkp'
+      fullPath: '/zkp'
+      preLoaderRoute: typeof ZkpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/threats': {
+      id: '/threats'
+      path: '/threats'
+      fullPath: '/threats'
+      preLoaderRoute: typeof ThreatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/targets': {
+      id: '/targets'
+      path: '/targets'
+      fullPath: '/targets'
+      preLoaderRoute: typeof TargetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/sitemap.xml': {
       id: '/sitemap.xml'
       path: '/sitemap.xml'
@@ -303,6 +529,20 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/console': {
@@ -340,11 +580,88 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/zkp': {
+      id: '/api/zkp'
+      path: '/api/zkp'
+      fullPath: '/api/zkp'
+      preLoaderRoute: typeof ApiZkpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/workflows': {
+      id: '/api/workflows'
+      path: '/api/workflows'
+      fullPath: '/api/workflows'
+      preLoaderRoute: typeof ApiWorkflowsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/threats': {
+      id: '/api/threats'
+      path: '/api/threats'
+      fullPath: '/api/threats'
+      preLoaderRoute: typeof ApiThreatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/targets': {
+      id: '/api/targets'
+      path: '/api/targets'
+      fullPath: '/api/targets'
+      preLoaderRoute: typeof ApiTargetsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/leaderboard': {
+      id: '/api/leaderboard'
+      path: '/api/leaderboard'
+      fullPath: '/api/leaderboard'
+      preLoaderRoute: typeof ApiLeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
       fullPath: '/api/chat'
       preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/billing': {
+      id: '/api/billing'
+      path: '/api/billing'
+      fullPath: '/api/billing'
+      preLoaderRoute: typeof ApiBillingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/workflows/onboarding': {
+      id: '/api/workflows/onboarding'
+      path: '/onboarding'
+      fullPath: '/api/workflows/onboarding'
+      preLoaderRoute: typeof ApiWorkflowsOnboardingRouteImport
+      parentRoute: typeof ApiWorkflowsRoute
+    }
+    '/api/workflows/challenge': {
+      id: '/api/workflows/challenge'
+      path: '/challenge'
+      fullPath: '/api/workflows/challenge'
+      preLoaderRoute: typeof ApiWorkflowsChallengeRouteImport
+      parentRoute: typeof ApiWorkflowsRoute
+    }
+    '/api/workflows/analysis': {
+      id: '/api/workflows/analysis'
+      path: '/analysis'
+      fullPath: '/api/workflows/analysis'
+      preLoaderRoute: typeof ApiWorkflowsAnalysisRouteImport
+      parentRoute: typeof ApiWorkflowsRoute
+    }
+    '/api/webhooks/stripe': {
+      id: '/api/webhooks/stripe'
+      path: '/api/webhooks/stripe'
+      fullPath: '/api/webhooks/stripe'
+      preLoaderRoute: typeof ApiWebhooksStripeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dashboard/stats': {
+      id: '/api/dashboard/stats'
+      path: '/api/dashboard/stats'
+      fullPath: '/api/dashboard/stats'
+      preLoaderRoute: typeof ApiDashboardStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/console/hint': {
@@ -413,6 +730,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ApiWorkflowsRouteChildren {
+  ApiWorkflowsAnalysisRoute: typeof ApiWorkflowsAnalysisRoute
+  ApiWorkflowsChallengeRoute: typeof ApiWorkflowsChallengeRoute
+  ApiWorkflowsOnboardingRoute: typeof ApiWorkflowsOnboardingRoute
+}
+
+const ApiWorkflowsRouteChildren: ApiWorkflowsRouteChildren = {
+  ApiWorkflowsAnalysisRoute: ApiWorkflowsAnalysisRoute,
+  ApiWorkflowsChallengeRoute: ApiWorkflowsChallengeRoute,
+  ApiWorkflowsOnboardingRoute: ApiWorkflowsOnboardingRoute,
+}
+
+const ApiWorkflowsRouteWithChildren = ApiWorkflowsRoute._addFileChildren(
+  ApiWorkflowsRouteChildren,
+)
+
 interface ApiAuthGithubRouteChildren {
   ApiAuthGithubCallbackRoute: typeof ApiAuthGithubCallbackRoute
 }
@@ -442,11 +775,22 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ChatRoute: ChatRoute,
   ConsoleRoute: ConsoleRoute,
+  DashboardRoute: DashboardRoute,
+  LeaderboardRoute: LeaderboardRoute,
   ProfileRoute: ProfileRoute,
   ProjectsRoute: ProjectsRoute,
   PromptsRoute: PromptsRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  TargetsRoute: TargetsRoute,
+  ThreatsRoute: ThreatsRoute,
+  ZkpRoute: ZkpRoute,
+  ApiBillingRoute: ApiBillingRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiLeaderboardRoute: ApiLeaderboardRoute,
+  ApiTargetsRoute: ApiTargetsRoute,
+  ApiThreatsRoute: ApiThreatsRoute,
+  ApiWorkflowsRoute: ApiWorkflowsRouteWithChildren,
+  ApiZkpRoute: ApiZkpRoute,
   AuthCallbackRoute: AuthCallbackRoute,
   ApiAuthGithubRoute: ApiAuthGithubRouteWithChildren,
   ApiAuthGoogleRoute: ApiAuthGoogleRouteWithChildren,
@@ -455,6 +799,8 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthRegisterRoute: ApiAuthRegisterRoute,
   ApiConsoleHintRoute: ApiConsoleHintRoute,
+  ApiDashboardStatsRoute: ApiDashboardStatsRoute,
+  ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

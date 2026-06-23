@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { loginUser, setSessionCookie } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
+import { writeAnalytics } from "@/lib/analytics";
 
 export const Route = createFileRoute("/api/auth/login")({
   server: {
@@ -9,8 +10,10 @@ export const Route = createFileRoute("/api/auth/login")({
       POST: async ({ request }) => {
         try {
           const ip = request.headers.get("cf-connecting-ip") || "unknown";
+          const startTime = Date.now();
           const rl = await checkRateLimit(rateLimitKey(ip, "login"), "auth");
           if (!rl.allowed) {
+            writeAnalytics("login", "denied", null, "/api/auth/login", Date.now() - startTime);
             return new Response(
               JSON.stringify({
                 ok: false,
@@ -38,6 +41,7 @@ export const Route = createFileRoute("/api/auth/login")({
           }
           const result = await loginUser(body.email, body.password);
           if (!result.ok || !result.token) {
+            writeAnalytics("login", "denied", null, "/api/auth/login", Date.now() - startTime);
             return new Response(
               JSON.stringify({ ok: false, error: result.error ?? "Login failed." }),
               {
@@ -46,6 +50,7 @@ export const Route = createFileRoute("/api/auth/login")({
               },
             );
           }
+          writeAnalytics("login", "success", result.user?.id ?? null, "/api/auth/login", Date.now() - startTime);
           return new Response(JSON.stringify({ ok: true, user: result.user }), {
             status: 200,
             headers: {

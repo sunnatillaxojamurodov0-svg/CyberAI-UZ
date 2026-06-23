@@ -15,9 +15,11 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { cn } from "@/lib/utils";
+import SpotlightCard from "@/components/ui/SpotlightCard";
+import Folder from "@/components/ui/Folder";
+import BlurText from "@/components/ui/BlurText";
 
 /* ── Project data ──────────────────────────────────────── */
 
@@ -200,7 +202,14 @@ function ProjectCard({
 }) {
   const Icon = project.icon;
   const accent = project.accent;
-  const mainColor = accent ? "accent" : "primary";
+
+  const getProjectColor = () => {
+    if (project.id === "orbital-sentinel") return "#7c3aed";
+    if (project.id === "cyber-pilot") return "#a855f7";
+    if (project.id === "policy-mesh") return "#10b981";
+    if (project.id === "neural-topology") return "#06b6d4";
+    return "#f59e0b";
+  };
 
   return (
     <motion.div
@@ -211,8 +220,8 @@ function ProjectCard({
       className="group cursor-pointer"
       onClick={onSelect}
     >
-      <GlassPanel
-        hoverGlow
+      <SpotlightCard
+        spotlightColor={accent ? "rgba(0, 255, 148, 0.15)" : "rgba(0, 200, 255, 0.15)"}
         className="relative flex h-full min-h-[380px] flex-col overflow-hidden p-7 transition-all duration-500"
       >
         {/* Gradient background overlay */}
@@ -263,24 +272,15 @@ function ProjectCard({
           {project.tagline}
         </p>
 
-        {/* Tech tags */}
-        <div className="relative mt-4 flex flex-wrap gap-1.5">
-          {project.tech.slice(0, 3).map((t) => (
-            <span
-              key={t}
-              className={cn(
-                "rounded-md px-2 py-0.5 font-mono text-[9px] font-medium",
-                accent ? "bg-accent/8 text-accent/80" : "bg-primary/8 text-primary/80",
-              )}
-            >
-              {t}
-            </span>
-          ))}
-          {project.tech.length > 3 && (
-            <span className="font-mono text-[9px] text-muted-foreground/50">
-              +{project.tech.length - 3}
-            </span>
-          )}
+        {/* Tech Folder */}
+        <div className="relative mt-4">
+          <Folder
+            color={getProjectColor()}
+            size={0.7}
+            items={project.tech.slice(0, 3).map((t) => (
+              <span key={t} className="font-mono text-[8px]">{t}</span>
+            ))}
+          />
         </div>
 
         {/* Spacer + CTA */}
@@ -323,7 +323,7 @@ function ProjectCard({
             accent ? "bg-accent" : "bg-primary",
           )}
         />
-      </GlassPanel>
+      </SpotlightCard>
     </motion.div>
   );
 }
@@ -513,8 +513,13 @@ export function ProjectsShowcase() {
         >
           <StatusPill tone="accent">Active Projects</StatusPill>
           <h2 className="max-w-3xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
-            Sovereign infrastructure{" "}
-            <span className="text-muted-foreground">for the autonomous era.</span>
+            <BlurText
+              text="Sovereign infrastructure for the autonomous era."
+              animateBy="words"
+              direction="top"
+              delay={150}
+              stepDuration={0.3}
+            />
           </h2>
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
             Every CyberAI project is built to one spec: silent strength at machine speed. Click any

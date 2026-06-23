@@ -1,4 +1,6 @@
 import { requireDb } from "../db";
+import { getUserSubscription, getPlanLimits } from "../stripe";
+import type { Plan } from "../stripe";
 
 interface D1PreparedStatement {
   bind(...args: unknown[]): D1PreparedStatement;
@@ -10,7 +12,6 @@ interface D1Database {
   prepare(sql: string): D1PreparedStatement;
 }
 
-const DAILY_LIMIT = 100;
 const ANONYMOUS_KEY = "__anonymous__";
 
 function today(): string {
@@ -24,11 +25,25 @@ function quotaKey(userId: string | null): string {
 
 export async function checkAiQuota(
   userId: string | null,
-): Promise<{ allowed: boolean; remaining: number }> {
+): Promise<{ allowed: boolean; remaining: number; plan: Plan }> {
   try {
     const db = requireDb<D1Database>();
     const date = today();
     const key = quotaKey(userId);
+
+    let plan: Plan = "free";
+    if (userId) {
+      const subscription = await getUserSubscription(userId);
+      if (subscription?.status === "active") {
+        plan = subscription.plan;
+      }
+    }
+
+    const limits = getPlanLimits(plan);
+
+    if (limits.aiMessagesPerDay === -1) {
+      return { allowed: true, remaining: -1, plan };
+    }
 
     const row = await db
       .prepare("SELECT count FROM ai_usage WHERE user_id = ? AND date = ?")
@@ -36,9 +51,9 @@ export async function checkAiQuota(
       .first<{ count: number }>();
 
     const used = row?.count ?? 0;
-    return { allowed: used < DAILY_LIMIT, remaining: Math.max(0, DAILY_LIMIT - used) };
+    return { allowed: used < limits.aiMessagesPerDay, remaining: Math.max(0, limits.aiMessagesPerDay - used), plan };
   } catch {
-    return { allowed: true, remaining: 1 };
+    return { allowed: true, remaining: 1, plan: "free" };
   }
 }
 

@@ -33,7 +33,7 @@ export function ConsolePage() {
 
   /* Flag submission -> engine check + scoring */
   const handleFlagSubmit = useCallback(
-    (flag: string): { correct: boolean; score?: ScoreBreakdown; points?: number } => {
+    async (flag: string): Promise<{ correct: boolean; score?: ScoreBreakdown; points?: number }> => {
       const state = terminalRef.current?.getState();
       if (!state || !active) return { correct: false };
 
@@ -43,6 +43,26 @@ export function ConsolePage() {
       const score = scoreSolve(active, state.telemetry);
       const points = pointsEarned(active, score);
       recordSolve(active.id, score, points);
+
+      // Submit to leaderboard
+      try {
+        const timeSeconds = Math.floor((Date.now() - state.telemetry.startedAt) / 1000);
+        await fetch("/api/leaderboard", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            challenge_id: active.id,
+            score: score.total,
+            time_seconds: timeSeconds,
+            tools_used: state.telemetry.toolsUsed,
+            hints_used: state.telemetry.hintsUsed,
+          }),
+        });
+      } catch {
+        // Non-fatal: leaderboard submission failed
+      }
+
       return { correct: true, score, points };
     },
     [active, recordSolve],

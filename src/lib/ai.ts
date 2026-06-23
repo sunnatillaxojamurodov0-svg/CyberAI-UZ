@@ -227,6 +227,7 @@ export async function* streamChat(opts: StreamChatOptions): AsyncGenerator<strin
       history: opts.history,
       message: opts.message,
       systemPrompt,
+      model: model.modelName,
       imageBase64: opts.imageBase64,
       imageMimeType: opts.imageMimeType,
     }),

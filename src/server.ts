@@ -2,7 +2,11 @@ import "./lib/error-capture";
 
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
-import { initDb } from "./lib/db";
+import { initDb, requireDb } from "./lib/db";
+import { processAiUsageBatch } from "./queues/ai-usage";
+import { initMonitoring, monitoring } from "./lib/monitoring";
+export { ChatSessionDO, ConsoleSessionDO } from "./durable-objects";
+export { ChallengeGenerator, UserOnboarding, ConsoleAnalysis } from "./workflows/workflows";
 
 type ServerEntry = {
   fetch: (request: Request, env: unknown, ctx: unknown) => Promise<Response> | Response;
@@ -12,7 +16,7 @@ const CSP = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-  "img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.googleusercontent.com",
+  "img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://storage.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "form-action 'self'",
   "base-uri 'self'",
@@ -26,7 +30,12 @@ const SECURITY_HEADERS: Record<string, string> = {
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
   "Content-Security-Policy": CSP,
   "Referrer-Policy": "strict-origin-when-cross-origin",
-  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
+  "X-XSS-Protection": "1; mode=block",
+  "X-Permitted-Cross-Domain-Policies": "none",
+  "Cross-Origin-Embedder-Policy": "require-corp",
+  "Cross-Origin-Opener-Policy": "same-origin",
+  "Cross-Origin-Resource-Policy": "same-origin",
 };
 
 function addSecurityHeaders(response: Response): Response {
@@ -97,17 +106,38 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
 
 export default {
   async fetch(request: Request, env: unknown, ctx: unknown) {
+    const startTime = Date.now();
     try {
       const e = env as Record<string, unknown> | undefined;
       if (e?.cyberai_db) {
         initDb(e.cyberai_db, e);
+        initMonitoring(e);
       }
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
+      const duration = Date.now() - startTime;
+      monitoring.trackRequest(new URL(request.url).pathname, request.method, response.status, duration);
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
+      monitoring.trackError(error instanceof Error ? error : new Error(String(error)));
       console.error(error);
       return brandedErrorResponse();
+    }
+  },
+
+  async queue(
+    batch: { messages: { body: unknown }[] },
+    env: unknown,
+  ): Promise<void> {
+    const e = env as Record<string, unknown> | undefined;
+    if (e?.cyberai_db) {
+      initDb(e.cyberai_db, e);
+      initMonitoring(e);
+      const db = requireDb();
+      await processAiUsageBatch(
+        batch.messages as { body: { userId: string; date: string } }[],
+        db,
+      );
     }
   },
 };

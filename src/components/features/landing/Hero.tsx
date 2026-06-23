@@ -7,6 +7,9 @@ import { MagneticButton } from "@/components/shared/MagneticButton";
 import { AnimatedGrid } from "@/components/shared/AnimatedGrid";
 import { useAuth } from "@/lib/auth-context";
 import { AboutMe } from "./AboutMe";
+import BlurText from "@/components/ui/BlurText";
+import Silk from "@/components/ui/Silk";
+import DotField from "@/components/ui/DotField";
 
 export function Hero() {
   const navigate = useNavigate();
@@ -22,7 +25,29 @@ export function Hero() {
 
   return (
     <section className="relative min-h-[921px] flex items-center justify-center px-6 pt-20 overflow-hidden">
+      {/* AnimatedGrid - asosiy fon */}
       <AnimatedGrid />
+
+      {/* Silk - binafsharang ipak fon */}
+      <div className="absolute inset-0 z-0 opacity-25">
+        <Silk
+          speed={5}
+          scale={1}
+          color="#7B2FBE"
+          noiseIntensity={1.5}
+          rotation={0}
+        />
+      </div>
+
+      {/* DotField - nuqtalar tarmog'i */}
+      <div className="absolute inset-0 z-0">
+        <DotField
+          dotColor="rgba(123, 47, 190, 0.2)"
+          dotSize={1.5}
+          gridGap={40}
+        />
+      </div>
+
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-[600px] h-[600px] bg-accent/10 rounded-full blur-[150px] pointer-events-none" />
       <div className="relative z-10 mx-auto max-w-7xl w-full">
@@ -39,8 +64,14 @@ export function Hero() {
             </div>
 
             <h1 className="font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-[1.1] tracking-[-0.04em] text-balance">
-              Secure the{" "}
-              <span className="gradient-text">Synthetic Era</span>
+              <BlurText
+                text="Secure the Synthetic Era"
+                animateBy="words"
+                direction="top"
+                delay={200}
+                stepDuration={0.35}
+                className="gradient-text"
+              />
             </h1>
 
             <p className="text-base md:text-xl text-muted-foreground max-w-xl">

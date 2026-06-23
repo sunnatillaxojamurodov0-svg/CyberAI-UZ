@@ -1,9 +1,9 @@
 # CyberAI
 
-> Sovereign AI cybersecurity platform delivering predictive threat intelligence, conversational defense, and autonomous remediation for high-stakes infrastructure and orbital assets.
+> Sovereign AI cybersecurity platform.
 
-CyberAI is a next-generation AI + cybersecurity ecosystem built for governments, defense, and critical infrastructure operators. It combines a command-center bento interface with an AI assistant, real-time telemetry, and autonomous response.
+CyberAI is a next-generation AI + cybersecurity ecosystem built for governments, defense, and critical infrastructure operators.
 
 ## Pages
 
-- [Home](/): Platform overview, command center, capabilities, and AI assistant teaser.
+- [Home](/): Platform overview and capabilities.

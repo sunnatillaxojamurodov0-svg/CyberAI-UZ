@@ -33,7 +33,7 @@ function ChatRoute() {
     <div className="relative min-h-screen bg-background text-foreground">
       <CursorSpotlight />
       <Navbar />
-      <main className="relative z-10">
+      <main className="relative z-10 pt-16 h-[calc(100vh-4rem)]">
         <ChatPage />
       </main>
       <Footer />
