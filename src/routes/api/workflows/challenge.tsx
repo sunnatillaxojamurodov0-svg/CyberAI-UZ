@@ -8,7 +8,9 @@ export const Route = createFileRoute("/api/workflows/challenge")({
       POST: async ({ request }) => {
         try {
           const env = getEnv();
-          const workflow = env.CHALLENGE_GENERATOR as { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> } | undefined;
+          const workflow = env.CHALLENGE_GENERATOR as
+            | { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> }
+            | undefined;
           if (!workflow) {
             return new Response("Challenge Generator workflow not available.", { status: 503 });
           }
@@ -22,7 +24,9 @@ export const Route = createFileRoute("/api/workflows/challenge")({
           };
 
           if (!body.challengeName || !body.category || !body.scenario) {
-            return new Response("challengeName, category, and scenario are required.", { status: 400 });
+            return new Response("challengeName, category, and scenario are required.", {
+              status: 400,
+            });
           }
 
           const instance = await workflow.create({
@@ -41,10 +45,16 @@ export const Route = createFileRoute("/api/workflows/challenge")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Workflow failed" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Workflow failed",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            },
+          );
         }
       },
     },

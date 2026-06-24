@@ -16,7 +16,9 @@ export const users = sqliteTable("users", {
 
 export const sessions = sqliteTable("sessions", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: integer("created_at").notNull(),
   expiresAt: integer("expires_at").notNull(),
 });
@@ -31,7 +33,9 @@ export const chatSessions = sqliteTable("chat_sessions", {
 
 export const chatMessages = sqliteTable("chat_messages", {
   id: text("id").primaryKey(),
-  sessionId: text("session_id").notNull().references(() => chatSessions.id, { onDelete: "cascade" }),
+  sessionId: text("session_id")
+    .notNull()
+    .references(() => chatSessions.id, { onDelete: "cascade" }),
   role: text("role").notNull(),
   content: text("content").notNull(),
   createdAt: integer("created_at").notNull(),
@@ -50,8 +54,12 @@ export const challenges = sqliteTable("challenges", {
 });
 
 export const userChallenges = sqliteTable("user_challenges", {
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  challengeId: text("challenge_id").notNull().references(() => challenges.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  challengeId: text("challenge_id")
+    .notNull()
+    .references(() => challenges.id, { onDelete: "cascade" }),
   assignedAt: integer("assigned_at").notNull(),
   completedAt: integer("completed_at"),
   status: text("status").notNull().default("pending"),
@@ -79,8 +87,12 @@ export const consoleSessions = sqliteTable("console_sessions", {
 
 export const leaderboard = sqliteTable("leaderboard", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
-  challengeId: text("challenge_id").notNull().references(() => challenges.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  challengeId: text("challenge_id")
+    .notNull()
+    .references(() => challenges.id, { onDelete: "cascade" }),
   score: integer("score").notNull().default(0),
   timeSeconds: integer("time_seconds").notNull().default(0),
   toolsUsed: text("tools_used").notNull().default("[]"),
@@ -121,7 +133,9 @@ export const aiTokenUsage = sqliteTable("ai_token_usage", {
 
 export const emailVerifications = sqliteTable("email_verifications", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   tokenHash: text("token_hash").notNull(),
   expiresAt: integer("expires_at").notNull(),
   createdAt: integer("created_at").notNull(),
@@ -129,7 +143,9 @@ export const emailVerifications = sqliteTable("email_verifications", {
 
 export const passwordResets = sqliteTable("password_resets", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   tokenHash: text("token_hash").notNull(),
   expiresAt: integer("expires_at").notNull(),
   used: integer("used").notNull().default(0),
@@ -138,7 +154,10 @@ export const passwordResets = sqliteTable("password_resets", {
 
 export const user2fa = sqliteTable("user_2fa", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" })
+    .unique(),
   secret: text("secret").notNull(),
   enabled: integer("enabled").notNull().default(0),
   createdAt: integer("created_at").notNull(),
@@ -154,7 +173,9 @@ export const loginAttempts = sqliteTable("login_attempts", {
 
 export const userFlags = sqliteTable("user_flags", {
   id: text("id").primaryKey(),
-  challengeId: text("challenge_id").notNull().references(() => challenges.id, { onDelete: "cascade" }),
+  challengeId: text("challenge_id")
+    .notNull()
+    .references(() => challenges.id, { onDelete: "cascade" }),
   userId: text("user_id").notNull(),
   dynamicFlag: text("dynamic_flag").notNull(),
   createdAt: integer("created_at").notNull(),

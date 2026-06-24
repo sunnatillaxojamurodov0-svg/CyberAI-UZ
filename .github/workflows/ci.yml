@@ -181,9 +181,9 @@ jobs:
             const status = '${{ needs.deploy-production.result }}';
             const color = status === 'success' ? 'good' : 'danger';
             const emoji = status === 'success' ? '✅' : '❌';
-            
+
             console.log(`${emoji} Deployment ${status}`);
-            
+
             // Add Slack/Discord notification here if needed
             // await fetch(process.env.SLACK_WEBHOOK, {
             //   method: 'POST',

@@ -17,7 +17,11 @@ export const Route = createFileRoute("/api/auth/reset-password")({
             );
           }
 
-          const body = (await request.json()) as { email?: string; token?: string; newPassword?: string };
+          const body = (await request.json()) as {
+            email?: string;
+            token?: string;
+            newPassword?: string;
+          };
 
           if (body.token && body.newPassword) {
             const { resetPassword } = await import("@/lib/auth/auth-server");
@@ -29,10 +33,10 @@ export const Route = createFileRoute("/api/auth/reset-password")({
           }
 
           if (!body.email) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Email is required." }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Email is required." }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const result = await createPasswordResetToken(body.email);
@@ -41,14 +45,17 @@ export const Route = createFileRoute("/api/auth/reset-password")({
           }
 
           return new Response(
-            JSON.stringify({ ok: true, message: "If an account exists, a reset link has been sent." }),
+            JSON.stringify({
+              ok: true,
+              message: "If an account exists, a reset link has been sent.",
+            }),
             { status: 200, headers: { "Content-Type": "application/json" } },
           );
         } catch (err) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Internal server error." }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },

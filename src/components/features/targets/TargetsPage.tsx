@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
-import { 
-  Server, 
-  Shield, 
-  Cpu, 
-  Globe, 
-  Database, 
-  Mail, 
+import {
+  Server,
+  Shield,
+  Cpu,
+  Globe,
+  Database,
+  Mail,
   Terminal,
   Play,
   RefreshCw,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -140,9 +140,7 @@ export function TargetsPage() {
                       <div className="font-mono text-sm font-medium text-foreground">
                         {target.template.name}
                       </div>
-                      <div className="font-mono text-[10px] text-muted-foreground">
-                        {target.ip}
-                      </div>
+                      <div className="font-mono text-[10px] text-muted-foreground">{target.ip}</div>
                     </div>
                   </div>
                   <StatusPill tone="emerald">Running</StatusPill>
@@ -201,7 +199,7 @@ export function TargetsPage() {
               "rounded-full border px-4 py-1.5 font-mono text-xs transition-colors",
               filter === f.value
                 ? "border-accent/50 bg-accent/10 text-accent"
-                : "border-border bg-surface text-muted-foreground hover:border-accent/30 hover:text-foreground"
+                : "border-border bg-surface text-muted-foreground hover:border-accent/30 hover:text-foreground",
             )}
           >
             {f.label}
@@ -219,18 +217,23 @@ export function TargetsPage() {
             <div className="flex items-start justify-between">
               <div className="flex items-center gap-3">
                 <div className="grid size-10 place-items-center rounded-xl bg-accent/10">
-                  {CATEGORY_ICONS[template.category] ?? <Server size={18} className="text-accent" />}
+                  {CATEGORY_ICONS[template.category] ?? (
+                    <Server size={18} className="text-accent" />
+                  )}
                 </div>
                 <div>
                   <div className="font-mono text-sm font-medium text-foreground">
                     {template.name}
                   </div>
-                  <div className="font-mono text-[10px] text-muted-foreground">
-                    {template.os}
-                  </div>
+                  <div className="font-mono text-[10px] text-muted-foreground">{template.os}</div>
                 </div>
               </div>
-              <span className={cn("font-mono text-xs font-bold", DIFFICULTY_COLORS[template.difficulty])}>
+              <span
+                className={cn(
+                  "font-mono text-xs font-bold",
+                  DIFFICULTY_COLORS[template.difficulty],
+                )}
+              >
                 {getDifficultyLabel(template.difficulty)}
               </span>
             </div>
@@ -258,7 +261,7 @@ export function TargetsPage() {
                 "mt-4 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-mono text-xs font-bold transition-all",
                 spawning === template.id
                   ? "bg-accent/20 text-accent"
-                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none"
+                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
               )}
             >
               {spawning === template.id ? (

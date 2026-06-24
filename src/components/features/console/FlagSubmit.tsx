@@ -6,7 +6,9 @@ import type { CTFChallenge, ScoreBreakdown } from "@/lib/console/types";
 
 interface FlagSubmitProps {
   challenge: CTFChallenge;
-  onSubmit: (flag: string) => Promise<{ correct: boolean; score?: ScoreBreakdown; points?: number }>;
+  onSubmit: (
+    flag: string,
+  ) => Promise<{ correct: boolean; score?: ScoreBreakdown; points?: number }>;
 }
 
 export function FlagSubmit({ challenge, onSubmit }: FlagSubmitProps) {

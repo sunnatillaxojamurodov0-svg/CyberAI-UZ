@@ -2,10 +2,10 @@
 
 /**
  * Restore Script
- * 
+ *
  * Usage:
  *   node scripts/restore.mjs <backup-file>
- * 
+ *
  * Examples:
  *   node scripts/restore.mjs ./backups/cyberai-db-20240101.sql
  *   node scripts/restore.mjs ./backups/config-20240101.tar.gz
@@ -64,7 +64,7 @@ async function restore() {
   } else {
     console.error("Unsupported backup format. Use .sql or .tar.gz");
   }
-  
+
   console.log("\n✅ Restore completed!");
 }
 

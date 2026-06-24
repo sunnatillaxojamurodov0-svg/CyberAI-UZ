@@ -1,6 +1,7 @@
 ## About Route — CyberAI Story & Cinematic Glass Sections
 
 ### Goal
+
 Create a new `/about` route that tells the CyberAI origin story through immersive, cinematic glass-panel sections, staying fully consistent with the existing dark-luxury design system.
 
 ### Files to Create
@@ -47,11 +48,11 @@ Create a new `/about` route that tells the CyberAI origin story through immersiv
    - Reuses `MagneticButton` patterns
 
 2. **`src/components/features/about/AboutHero.tsx`**
-2. **`src/components/features/about/OriginStory.tsx`**
-2. **`src/components/features/about/Mission.tsx`**
-2. **`src/components/features/about/Timeline.tsx`**
-2. **`src/components/features/about/Values.tsx`**
-2. **`src/components/features/about/AboutCTA.tsx`**
+3. **`src/components/features/about/OriginStory.tsx`**
+4. **`src/components/features/about/Mission.tsx`**
+5. **`src/components/features/about/Timeline.tsx`**
+6. **`src/components/features/about/Values.tsx`**
+7. **`src/components/features/about/AboutCTA.tsx`**
 
 ### Files to Modify
 
@@ -60,6 +61,7 @@ Create a new `/about` route that tells the CyberAI origin story through immersiv
 2. **`src/components/layout/Navbar.tsx`** — Change the "About" nav link `to: "/"` → `to: "/about"`
 
 ### Design Constraints
+
 - All colors via CSS tokens (`--primary`, `--accent`, `--surface`, etc.)
 - Typography: `font-display` for headings, `font-mono` for labels/pills
 - Glass panels use existing `.glass-panel` / `.glass-panel-strong` utilities
@@ -68,12 +70,14 @@ Create a new `/about` route that tells the CyberAI origin story through immersiv
 - Responsive: works on mobile (663px viewport) through desktop
 
 ### Technical Details
+
 - Route file follows the exact same wrapper pattern as `src/routes/index.tsx`
 - All section components are purely presentational (no data fetching)
 - `head()` meta is unique to `/about` — not copied from home page
 - No `og:image` added (follows existing rule: only leaf routes with meaningful images)
 
 ### Acceptance Criteria
+
 - `/about` renders correctly in the preview
 - Navbar "About" link navigates to `/about`
 - Sitemap includes `/about`

@@ -28,8 +28,18 @@ const DIFFICULTIES = [
 ];
 
 const STATUS_CONFIG = {
-  pending: { icon: Clock, color: "text-yellow-400", bg: "bg-yellow-500/10", label: "Pending Review" },
-  approved: { icon: CheckCircle, color: "text-emerald-400", bg: "bg-emerald-500/10", label: "Approved" },
+  pending: {
+    icon: Clock,
+    color: "text-yellow-400",
+    bg: "bg-yellow-500/10",
+    label: "Pending Review",
+  },
+  approved: {
+    icon: CheckCircle,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    label: "Approved",
+  },
   rejected: { icon: XCircle, color: "text-red-400", bg: "bg-red-500/10", label: "Rejected" },
 };
 
@@ -88,7 +98,16 @@ export function ChallengeSubmit() {
       if (data.ok) {
         setMessage({ type: "success", text: "Challenge submitted for review!" });
         setShowForm(false);
-        setForm({ name: "", category: "web", difficulty: 1, scenario: "", objectives: "", flag: "", hints: "", writeup: "" });
+        setForm({
+          name: "",
+          category: "web",
+          difficulty: 1,
+          scenario: "",
+          objectives: "",
+          flag: "",
+          hints: "",
+          writeup: "",
+        });
         fetchSubmissions();
       } else {
         setMessage({ type: "error", text: data.error || "Failed to submit" });
@@ -153,14 +172,19 @@ export function ChallengeSubmit() {
               <h4 className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
                 Submit New Challenge
               </h4>
-              <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground">
+              <button
+                onClick={() => setShowForm(false)}
+                className="text-muted-foreground hover:text-foreground"
+              >
                 ×
               </button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Name *</label>
+                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Name *
+                </label>
                 <input
                   type="text"
                   value={form.name}
@@ -171,29 +195,43 @@ export function ChallengeSubmit() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Category</label>
+                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Category
+                </label>
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono focus:border-accent/40 outline-none"
                 >
-                  {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                  {CATEGORIES.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Difficulty</label>
+                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Difficulty
+                </label>
                 <select
                   value={form.difficulty}
                   onChange={(e) => setForm({ ...form, difficulty: Number(e.target.value) })}
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm font-mono focus:border-accent/40 outline-none"
                 >
-                  {DIFFICULTIES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
+                  {DIFFICULTIES.map((d) => (
+                    <option key={d.value} value={d.value}>
+                      {d.label}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Flag *</label>
+                <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                  Flag *
+                </label>
                 <input
                   type="text"
                   value={form.flag}
@@ -205,7 +243,9 @@ export function ChallengeSubmit() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Scenario *</label>
+              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Scenario *
+              </label>
               <textarea
                 value={form.scenario}
                 onChange={(e) => setForm({ ...form, scenario: e.target.value })}
@@ -216,7 +256,9 @@ export function ChallengeSubmit() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Objectives (one per line)</label>
+              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Objectives (one per line)
+              </label>
               <textarea
                 value={form.objectives}
                 onChange={(e) => setForm({ ...form, objectives: e.target.value })}
@@ -227,7 +269,9 @@ export function ChallengeSubmit() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Hints (optional, one per line)</label>
+              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Hints (optional, one per line)
+              </label>
               <textarea
                 value={form.hints}
                 onChange={(e) => setForm({ ...form, hints: e.target.value })}
@@ -238,7 +282,9 @@ export function ChallengeSubmit() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">Writeup / Solution (optional)</label>
+              <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+                Writeup / Solution (optional)
+              </label>
               <textarea
                 value={form.writeup}
                 onChange={(e) => setForm({ ...form, writeup: e.target.value })}
@@ -272,21 +318,31 @@ export function ChallengeSubmit() {
             const statusConfig = STATUS_CONFIG[sub.status];
             const StatusIcon = statusConfig.icon;
             return (
-              <div key={sub.id} className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface/30 hover:bg-surface/50 transition-colors">
+              <div
+                key={sub.id}
+                className="flex items-center justify-between p-3 rounded-lg border border-border bg-surface/30 hover:bg-surface/50 transition-colors"
+              >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm font-medium">{sub.name}</span>
-                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono uppercase">{sub.category}</span>
+                    <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] font-mono uppercase">
+                      {sub.category}
+                    </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-1 truncate">{sub.scenario}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-mono ${statusConfig.bg} ${statusConfig.color}`}>
+                  <span
+                    className={`flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-mono ${statusConfig.bg} ${statusConfig.color}`}
+                  >
                     <StatusIcon size={10} />
                     {statusConfig.label}
                   </span>
                   {sub.review_notes && (
-                    <span className="text-xs text-muted-foreground max-w-[200px] truncate" title={sub.review_notes}>
+                    <span
+                      className="text-xs text-muted-foreground max-w-[200px] truncate"
+                      title={sub.review_notes}
+                    >
                       {sub.review_notes}
                     </span>
                   )}

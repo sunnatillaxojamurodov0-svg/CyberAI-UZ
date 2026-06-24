@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import * as THREE from 'three';
-import './LaserFlow.css';
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+import "./LaserFlow.css";
 
 interface LaserFlowProps {
   className?: string;
@@ -213,7 +213,7 @@ const LaserFlow = ({
   decay = 1.1,
   falloffStart = 1.2,
   fogFallSpeed = 0.6,
-  color = '#00c8ff',
+  color = "#00c8ff",
 }: LaserFlowProps) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -231,12 +231,12 @@ const LaserFlow = ({
 
   const hexToRGB = (hex: string) => {
     let c = hex.trim();
-    if (c[0] === '#') c = c.slice(1);
+    if (c[0] === "#") c = c.slice(1);
     if (c.length === 3)
       c = c
-        .split('')
+        .split("")
         .map((x) => x + x)
-        .join('');
+        .join("");
     const n = parseInt(c, 16) || 0xffffff;
     return { r: ((n >> 16) & 255) / 255, g: ((n >> 8) & 255) / 255, b: (n & 255) / 255 };
   };
@@ -250,7 +250,7 @@ const LaserFlow = ({
       alpha: false,
       depth: false,
       stencil: false,
-      powerPreference: 'high-performance',
+      powerPreference: "high-performance",
       premultipliedAlpha: false,
       preserveDrawingBuffer: false,
       failIfMajorPerformanceCaveat: false,
@@ -266,16 +266,19 @@ const LaserFlow = ({
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     renderer.setClearColor(0x000000, 1);
     const canvas = renderer.domElement;
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.display = 'block';
+    canvas.style.width = "100%";
+    canvas.style.height = "100%";
+    canvas.style.display = "block";
     mount.appendChild(canvas);
 
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
 
     const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3));
+    geometry.setAttribute(
+      "position",
+      new THREE.BufferAttribute(new Float32Array([-1, -1, 0, 3, -1, 0, -1, 3, 0]), 3),
+    );
 
     const uniforms = {
       iTime: { value: 0 },
@@ -366,7 +369,7 @@ const LaserFlow = ({
     const onVis = () => {
       pausedRef.current = document.hidden;
     };
-    document.addEventListener('visibilitychange', onVis, { passive: true });
+    document.addEventListener("visibilitychange", onVis, { passive: true });
 
     const updateMouse = (clientX: number, clientY: number) => {
       const rect = rectRef.current;
@@ -379,10 +382,10 @@ const LaserFlow = ({
     };
     const onMove = (ev: PointerEvent) => updateMouse(ev.clientX, ev.clientY);
     const onLeave = () => mouseTarget.set(0, 0);
-    canvas.addEventListener('pointermove', onMove, { passive: true });
-    canvas.addEventListener('pointerdown', onMove, { passive: true });
-    canvas.addEventListener('pointerenter', onMove, { passive: true });
-    canvas.addEventListener('pointerleave', onLeave, { passive: true });
+    canvas.addEventListener("pointermove", onMove, { passive: true });
+    canvas.addEventListener("pointerdown", onMove, { passive: true });
+    canvas.addEventListener("pointerenter", onMove, { passive: true });
+    canvas.addEventListener("pointerleave", onLeave, { passive: true });
 
     const onCtxLost = (e: Event) => {
       e.preventDefault();
@@ -392,8 +395,8 @@ const LaserFlow = ({
       pausedRef.current = false;
       scheduleResize();
     };
-    canvas.addEventListener('webglcontextlost', onCtxLost, false);
-    canvas.addEventListener('webglcontextrestored', onCtxRestored, false);
+    canvas.addEventListener("webglcontextlost", onCtxLost, false);
+    canvas.addEventListener("webglcontextrestored", onCtxRestored, false);
 
     let raf = 0;
 
@@ -424,7 +427,10 @@ const LaserFlow = ({
         next = clamp(currentDprRef.current * 1.1, dprFloor, base);
       }
 
-      if (Math.abs(next - currentDprRef.current) > 0.01 && now - lastDprChangeRef > dprChangeCooldown) {
+      if (
+        Math.abs(next - currentDprRef.current) > 0.01 &&
+        now - lastDprChangeRef > dprChangeCooldown
+      ) {
         currentDprRef.current = next;
         lastDprChangeRef = now;
         setSizeNow();
@@ -476,13 +482,13 @@ const LaserFlow = ({
       cancelAnimationFrame(raf);
       ro.disconnect();
       io.disconnect();
-      document.removeEventListener('visibilitychange', onVis);
-      canvas.removeEventListener('pointermove', onMove);
-      canvas.removeEventListener('pointerdown', onMove);
-      canvas.removeEventListener('pointerenter', onMove);
-      canvas.removeEventListener('pointerleave', onLeave);
-      canvas.removeEventListener('webglcontextlost', onCtxLost);
-      canvas.removeEventListener('webglcontextrestored', onCtxRestored);
+      document.removeEventListener("visibilitychange", onVis);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerdown", onMove);
+      canvas.removeEventListener("pointerenter", onMove);
+      canvas.removeEventListener("pointerleave", onLeave);
+      canvas.removeEventListener("webglcontextlost", onCtxLost);
+      canvas.removeEventListener("webglcontextrestored", onCtxRestored);
       geometry.dispose();
       material.dispose();
       renderer.dispose();
@@ -512,7 +518,7 @@ const LaserFlow = ({
     uniforms.uFalloffStart.value = falloffStart;
     uniforms.uFogFallSpeed.value = fogFallSpeed;
 
-    const { r, g, b } = hexToRGB(color || '#FFFFFF');
+    const { r, g, b } = hexToRGB(color || "#FFFFFF");
     uniforms.uColor.value.set(r, g, b);
   }, [
     wispDensity,
@@ -533,7 +539,7 @@ const LaserFlow = ({
     color,
   ]);
 
-  return <div ref={mountRef} className={`laser-flow-container ${className || ''}`} style={style} />;
+  return <div ref={mountRef} className={`laser-flow-container ${className || ""}`} style={style} />;
 };
 
 export default LaserFlow;

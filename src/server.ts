@@ -107,9 +107,12 @@ function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boole
   );
 }
 
-async function normalizeCatastrophicSsrResponse(response: Response, nonce: string): Promise<Response> {
+async function normalizeCatastrophicSsrResponse(
+  response: Response,
+  nonce: string,
+): Promise<Response> {
   const contentType = response.headers.get("content-type") ?? "";
-  
+
   if (contentType.includes("text/html")) {
     const body = await response.clone().text();
     const newBody = injectNonceIntoHtml(body, nonce);
@@ -118,7 +121,7 @@ async function normalizeCatastrophicSsrResponse(response: Response, nonce: strin
   }
 
   if (response.status < 500) return addSecurityHeaders(response, nonce);
-  
+
   if (!contentType.includes("application/json")) {
     return addSecurityHeaders(response, nonce);
   }
@@ -146,7 +149,20 @@ export default {
       const ip = request.headers.get("cf-connecting-ip") || "unknown";
       const url = new URL(request.url);
 
-      const staticExtensions = [".js", ".css", ".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".eot"];
+      const staticExtensions = [
+        ".js",
+        ".css",
+        ".png",
+        ".jpg",
+        ".jpeg",
+        ".gif",
+        ".svg",
+        ".ico",
+        ".woff",
+        ".woff2",
+        ".ttf",
+        ".eot",
+      ];
       const isStatic = staticExtensions.some((ext) => url.pathname.endsWith(ext));
 
       if (!isStatic && !url.pathname.startsWith("/api/")) {
@@ -157,7 +173,7 @@ export default {
             status: 429,
             headers: {
               "Content-Type": "text/plain",
-              "Retry-After": String(Math.ceil((rl.resetAt - Date.now() / 1000))),
+              "Retry-After": String(Math.ceil(rl.resetAt - Date.now() / 1000)),
               "X-RateLimit-Limit": "500",
               "X-RateLimit-Remaining": "0",
               "X-RateLimit-Reset": String(rl.resetAt),
@@ -178,19 +194,13 @@ export default {
     }
   },
 
-  async queue(
-    batch: { messages: { body: unknown }[] },
-    env: unknown,
-  ): Promise<void> {
+  async queue(batch: { messages: { body: unknown }[] }, env: unknown): Promise<void> {
     const e = env as Record<string, unknown> | undefined;
     if (e?.cyberai_db) {
       initDb(e.cyberai_db, e);
       initMonitoring(e);
       const db = requireDb();
-      await processAiUsageBatch(
-        batch.messages as { body: { userId: string; date: string } }[],
-        db,
-      );
+      await processAiUsageBatch(batch.messages as { body: { userId: string; date: string } }[], db);
     }
   },
 };

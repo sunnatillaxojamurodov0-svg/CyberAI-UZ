@@ -524,7 +524,8 @@ export const SKILLS: Skill[] = [
     id: "ui-ux",
     label: "UI/UX Design",
     icon: Palette,
-    description: "Design systems, color palettes, typography, accessibility, and component patterns",
+    description:
+      "Design systems, color palettes, typography, accessibility, and component patterns",
     promptPrefix: UI_UX_PROMPT,
   },
   {

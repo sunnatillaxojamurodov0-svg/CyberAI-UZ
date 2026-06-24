@@ -6,23 +6,23 @@ Staging environment mirrors production for testing before deployment.
 
 ## Environments
 
-| Environment | URL | Branch | Purpose |
-|-------------|-----|--------|---------|
-| Development | `localhost:5173` | feature/* | Local development |
-| Staging | `app-staging.cyberaiuz.workers.dev` | develop | Pre-production testing |
-| Production | `app.cyberaiuz.workers.dev` | main | Live environment |
+| Environment | URL                                 | Branch     | Purpose                |
+| ----------- | ----------------------------------- | ---------- | ---------------------- |
+| Development | `localhost:5173`                    | feature/\* | Local development      |
+| Staging     | `app-staging.cyberaiuz.workers.dev` | develop    | Pre-production testing |
+| Production  | `app.cyberaiuz.workers.dev`         | main       | Live environment       |
 
 ## Staging vs Production
 
-| Feature | Staging | Production |
-|---------|---------|------------|
-| Database | `cyberai-db-staging` | `cyberai-db` |
-| KV | `staging-kv` | `cyberai-kv` |
-| R2 | `cyberai-bucket-staging` | `cyberai-bucket` |
-| Analytics | `cyberai_analytics_staging` | `cyberai_analytics` |
-| Queue | `ai-usage-queue-staging` | `ai-usage-queue` |
-| Vectorize | `cyberai-vectors-staging` | `cyberai-vectors` |
-| Rate Limits | Same | Same |
+| Feature     | Staging                     | Production          |
+| ----------- | --------------------------- | ------------------- |
+| Database    | `cyberai-db-staging`        | `cyberai-db`        |
+| KV          | `staging-kv`                | `cyberai-kv`        |
+| R2          | `cyberai-bucket-staging`    | `cyberai-bucket`    |
+| Analytics   | `cyberai_analytics_staging` | `cyberai_analytics` |
+| Queue       | `ai-usage-queue-staging`    | `ai-usage-queue`    |
+| Vectorize   | `cyberai-vectors-staging`   | `cyberai-vectors`   |
+| Rate Limits | Same                        | Same                |
 
 ## Deployment Flow
 
@@ -66,6 +66,7 @@ npx wrangler queues create ai-usage-queue-staging
 Staging uses the same secrets as production but with separate resources.
 
 Set via Cloudflare Dashboard or CLI:
+
 ```bash
 # Staging secrets
 npx wrangler secret put OPENROUTER_API_KEY --config wrangler.staging.jsonc

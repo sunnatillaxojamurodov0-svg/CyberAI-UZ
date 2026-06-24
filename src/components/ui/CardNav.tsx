@@ -1,6 +1,6 @@
-import { useLayoutEffect, useRef, useState } from 'react';
-import { gsap } from 'gsap';
-import './CardNav.css';
+import { useLayoutEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import "./CardNav.css";
 
 interface CardNavLink {
   label: string;
@@ -30,14 +30,14 @@ interface CardNavProps {
 
 const CardNav = ({
   logo,
-  logoAlt = 'Logo',
+  logoAlt = "Logo",
   items,
-  className = '',
-  ease = 'power3.out',
-  baseColor = '#19202c',
+  className = "",
+  ease = "power3.out",
+  baseColor = "#19202c",
   menuColor,
-  buttonBgColor = '#00f5a0',
-  buttonTextColor = '#020408',
+  buttonBgColor = "#00f5a0",
+  buttonTextColor = "#020408",
   onNavigate,
 }: CardNavProps) => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
@@ -50,21 +50,21 @@ const CardNav = ({
     const navEl = navRef.current;
     if (!navEl) return 260;
 
-    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
     if (isMobile) {
-      const contentEl = navEl.querySelector('.card-nav-content') as HTMLElement;
+      const contentEl = navEl.querySelector(".card-nav-content") as HTMLElement;
       if (contentEl) {
         const wasVisible = contentEl.style.visibility;
         const wasPointerEvents = contentEl.style.pointerEvents;
         const wasPosition = contentEl.style.position;
         const wasHeight = contentEl.style.height;
 
-        contentEl.style.visibility = 'visible';
-        contentEl.style.pointerEvents = 'auto';
-        contentEl.style.position = 'static';
-        contentEl.style.height = 'auto';
+        contentEl.style.visibility = "visible";
+        contentEl.style.pointerEvents = "auto";
+        contentEl.style.position = "static";
+        contentEl.style.height = "auto";
 
-        contentEl.offsetHeight;
+        void contentEl.offsetHeight;
 
         const topBar = 60;
         const padding = 16;
@@ -85,7 +85,7 @@ const CardNav = ({
     const navEl = navRef.current;
     if (!navEl) return null;
 
-    gsap.set(navEl, { height: 60, overflow: 'hidden' });
+    gsap.set(navEl, { height: 60, overflow: "hidden" });
     gsap.set(cardsRef.current, { y: 50, opacity: 0 });
 
     const tl = gsap.timeline({ paused: true });
@@ -96,7 +96,7 @@ const CardNav = ({
       ease,
     });
 
-    tl.to(cardsRef.current, { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 }, '-=0.1');
+    tl.to(cardsRef.current, { y: 0, opacity: 1, duration: 0.4, ease, stagger: 0.08 }, "-=0.1");
 
     return tl;
   };
@@ -135,8 +135,8 @@ const CardNav = ({
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isExpanded]);
 
@@ -149,7 +149,7 @@ const CardNav = ({
       tl.play(0);
     } else {
       setIsHamburgerOpen(false);
-      tl.eventCallback('onReverseComplete', () => setIsExpanded(false));
+      tl.eventCallback("onReverseComplete", () => setIsExpanded(false));
       tl.reverse();
     }
   };
@@ -160,21 +160,25 @@ const CardNav = ({
 
   return (
     <div className={`card-nav-container ${className}`}>
-      <nav ref={navRef} className={`card-nav ${isExpanded ? 'open' : ''}`} style={{ backgroundColor: baseColor }}>
+      <nav
+        ref={navRef}
+        className={`card-nav ${isExpanded ? "open" : ""}`}
+        style={{ backgroundColor: baseColor }}
+      >
         <div className="card-nav-top">
           <div
-            className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
+            className={`hamburger-menu ${isHamburgerOpen ? "open" : ""}`}
             onClick={toggleMenu}
             role="button"
-            aria-label={isExpanded ? 'Close menu' : 'Open menu'}
+            aria-label={isExpanded ? "Close menu" : "Open menu"}
             tabIndex={0}
             onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
+              if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
                 toggleMenu();
               }
             }}
-            style={{ color: menuColor || '#dce3f3' }}
+            style={{ color: menuColor || "#dce3f3" }}
           >
             <div className="hamburger-line" />
             <div className="hamburger-line" />
@@ -201,7 +205,10 @@ const CardNav = ({
               key={`${item.label}-${idx}`}
               className="nav-card"
               ref={setCardRef(idx)}
-              style={{ backgroundColor: item.bgColor || '#19202c', color: item.textColor || '#dce3f3' }}
+              style={{
+                backgroundColor: item.bgColor || "#19202c",
+                color: item.textColor || "#dce3f3",
+              }}
             >
               <div className="nav-card-label">{item.label}</div>
               <div className="nav-card-links">

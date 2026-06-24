@@ -42,9 +42,7 @@ const NAV_CARD_ITEMS = [
     label: "Info",
     bgColor: "#19202c",
     textColor: "#dce3f3",
-    links: [
-      { label: "About", href: "/about" },
-    ],
+    links: [{ label: "About", href: "/about" }],
   },
 ];
 
@@ -137,7 +135,7 @@ export function Navbar() {
               className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               More
-              <span className="text-xs">{showCardNav ? '▲' : '▼'}</span>
+              <span className="text-xs">{showCardNav ? "▲" : "▼"}</span>
             </button>
 
             {showCardNav && (

@@ -112,7 +112,9 @@ export function PricingSection() {
 
               <div className="flex items-center gap-3 mb-6">
                 <div className={`p-2 rounded-lg ${plan.popular ? "bg-primary/10" : "bg-muted"}`}>
-                  <plan.icon className={`w-5 h-5 ${plan.popular ? "text-primary" : "text-muted-foreground"}`} />
+                  <plan.icon
+                    className={`w-5 h-5 ${plan.popular ? "text-primary" : "text-muted-foreground"}`}
+                  />
                 </div>
                 <h3 className="text-xl font-semibold">{plan.name}</h3>
               </div>

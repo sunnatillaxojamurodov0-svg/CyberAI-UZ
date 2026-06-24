@@ -43,7 +43,10 @@ export const Route = createFileRoute("/api/leaderboard")({
           query += " LIMIT ?";
           params.push(limit);
 
-          const results = await db.prepare(query).bind(...params).all();
+          const results = await db
+            .prepare(query)
+            .bind(...params)
+            .all();
 
           return new Response(
             JSON.stringify({
@@ -57,7 +60,10 @@ export const Route = createFileRoute("/api/leaderboard")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to load leaderboard" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to load leaderboard",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
@@ -70,10 +76,10 @@ export const Route = createFileRoute("/api/leaderboard")({
           const session = token ? await verifySession(token) : null;
 
           if (!session?.ok || !session.user?.id) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Authentication required" }),
-              { status: 401, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const body = (await request.json()) as {
@@ -85,16 +91,16 @@ export const Route = createFileRoute("/api/leaderboard")({
           };
 
           if (!body.challenge_id || typeof body.score !== "number") {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Invalid request body" }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Invalid request body" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const result = await db
             .prepare(
               `INSERT INTO leaderboard (user_id, challenge_id, score, time_seconds, tools_used, hints_used)
-               VALUES (?, ?, ?, ?, ?, ?)`
+               VALUES (?, ?, ?, ?, ?, ?)`,
             )
             .bind(
               session.user.id,
@@ -102,7 +108,7 @@ export const Route = createFileRoute("/api/leaderboard")({
               body.score,
               body.time_seconds ?? 0,
               JSON.stringify(body.tools_used ?? []),
-              body.hints_used ?? 0
+              body.hints_used ?? 0,
             )
             .run();
 
@@ -118,7 +124,10 @@ export const Route = createFileRoute("/api/leaderboard")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to submit score" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to submit score",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }

@@ -28,7 +28,9 @@ function generateCacheKey(messages: { role: string; content: string }[], model: 
 async function getCacheEntry(key: string): Promise<CacheEntry | null> {
   try {
     const env = getEnv();
-    const kv = env.CYBERAI_KV as { get: (key: string, type?: string) => Promise<string | null> } | undefined;
+    const kv = env.CYBERAI_KV as
+      | { get: (key: string, type?: string) => Promise<string | null> }
+      | undefined;
     if (!kv) return null;
 
     const cached = await kv.get(key, "json");
@@ -52,7 +54,9 @@ async function getCacheEntry(key: string): Promise<CacheEntry | null> {
 async function setCacheEntry(key: string, response: string, model: string): Promise<void> {
   try {
     const env = getEnv();
-    const kv = env.CYBERAI_KV as { put: (key: string, value: string, opts?: { expirationTtl?: number }) => Promise<void> } | undefined;
+    const kv = env.CYBERAI_KV as
+      | { put: (key: string, value: string, opts?: { expirationTtl?: number }) => Promise<void> }
+      | undefined;
     if (!kv) return;
 
     const entry: CacheEntry = {

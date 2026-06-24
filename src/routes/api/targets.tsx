@@ -99,7 +99,10 @@ export const Route = createFileRoute("/api/targets")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to load targets" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to load targets",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
@@ -109,33 +112,35 @@ export const Route = createFileRoute("/api/targets")({
         try {
           const env = getEnv();
           const dockerApiKey = (env as Record<string, unknown>).DOCKER_API_KEY as string;
-          const dockerProxyUrl = (env as Record<string, unknown>).DOCKER_PROXY_URL as string || DOCKER_PROXY_URL_DEFAULT;
+          const dockerProxyUrl =
+            ((env as Record<string, unknown>).DOCKER_PROXY_URL as string) ||
+            DOCKER_PROXY_URL_DEFAULT;
 
           const token = getSessionToken(request);
           const session = token ? await verifySession(token) : null;
 
           if (!session?.ok || !session.user?.id) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Authentication required" }),
-              { status: 401, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const body = (await request.json()) as { template_id: string };
 
           if (!body.template_id) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Template ID required" }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Template ID required" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const template = TARGET_TEMPLATES.find((t) => t.id === body.template_id);
           if (!template) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Template not found" }),
-              { status: 404, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Template not found" }), {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           // If Docker API key is configured, use real Docker proxy
@@ -145,7 +150,7 @@ export const Route = createFileRoute("/api/targets")({
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
-                  "Authorization": `Bearer ${dockerApiKey}`,
+                  Authorization: `Bearer ${dockerApiKey}`,
                 },
                 body: JSON.stringify({
                   template_id: body.template_id,
@@ -161,20 +166,20 @@ export const Route = createFileRoute("/api/targets")({
                 await db
                   .prepare(
                     `INSERT INTO console_sessions (id, user_id, challenge_id, command_history)
-                     VALUES (?, ?, ?, ?)`
+                     VALUES (?, ?, ?, ?)`,
                   )
                   .bind(
                     dockerData.data.id,
                     session.user.id,
                     template.id,
-                    JSON.stringify({ ...dockerData.data, template, created_at: Date.now() })
+                    JSON.stringify({ ...dockerData.data, template, created_at: Date.now() }),
                   )
                   .run();
 
-                return new Response(
-                  JSON.stringify({ ok: true, data: dockerData.data }),
-                  { status: 201, headers: { "Content-Type": "application/json" } },
-                );
+                return new Response(JSON.stringify({ ok: true, data: dockerData.data }), {
+                  status: 201,
+                  headers: { "Content-Type": "application/json" },
+                });
               }
             } catch (dockerErr) {
               console.error("Docker proxy error:", dockerErr);
@@ -190,13 +195,13 @@ export const Route = createFileRoute("/api/targets")({
           await db
             .prepare(
               `INSERT INTO console_sessions (id, user_id, challenge_id, command_history)
-               VALUES (?, ?, ?, ?)`
+               VALUES (?, ?, ?, ?)`,
             )
             .bind(
               targetId,
               session.user.id,
               template.id,
-              JSON.stringify({ ip, template, created_at: Date.now(), simulated: true })
+              JSON.stringify({ ip, template, created_at: Date.now(), simulated: true }),
             )
             .run();
 
@@ -219,7 +224,10 @@ export const Route = createFileRoute("/api/targets")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to create target" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to create target",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }

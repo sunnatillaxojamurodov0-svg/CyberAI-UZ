@@ -98,7 +98,6 @@ function ModelSidebar({
                     >
                       {model.label}
                     </div>
-
                   </div>
                 </div>
                 {isActive && (
@@ -113,8 +112,6 @@ function ModelSidebar({
             );
           })}
         </div>
-
-
       </div>
     </div>
   );
@@ -294,9 +291,7 @@ export function ChatPage() {
                 <PanelLeft size={18} />
               </button>
             )}
-            <StatusPill tone="accent">
-              {selectedModel.label} · Active
-            </StatusPill>
+            <StatusPill tone="accent">{selectedModel.label} · Active</StatusPill>
           </div>
           {hasMessages && (
             <button
@@ -314,14 +309,17 @@ export function ChatPage() {
           <div className="mx-6 mb-4 flex items-center gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3">
             <AlertTriangle size={16} className="text-destructive shrink-0" />
             <div className="text-xs text-muted-foreground">
-              <span className="font-semibold text-foreground">AI service is not configured.</span> The
-              server OPENROUTER_API_KEY is missing. Contact the administrator.
+              <span className="font-semibold text-foreground">AI service is not configured.</span>{" "}
+              The server OPENROUTER_API_KEY is missing. Contact the administrator.
             </div>
           </div>
         )}
 
         {hasMessages ? (
-          <div className="flex-1 overflow-y-auto pr-2 px-6 scrollbar-thin min-h-0" ref={containerRef}>
+          <div
+            className="flex-1 overflow-y-auto pr-2 px-6 scrollbar-thin min-h-0"
+            ref={containerRef}
+          >
             <div className="space-y-5 py-4">
               {messages.map((msg) => (
                 <ChatMessage

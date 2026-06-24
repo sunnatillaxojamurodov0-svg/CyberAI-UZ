@@ -11,19 +11,19 @@ export const Route = createFileRoute("/api/auth/verify")({
           const token = url.searchParams.get("token");
 
           if (!token) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Token is required." }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Token is required." }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const result = await verifyEmail(token);
 
           if (!result.ok) {
-            return new Response(
-              JSON.stringify({ ok: false, error: result.error }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: result.error }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           return new Response(
@@ -31,10 +31,10 @@ export const Route = createFileRoute("/api/auth/verify")({
             { status: 200, headers: { "Content-Type": "application/json" } },
           );
         } catch (err) {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Internal server error." }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },

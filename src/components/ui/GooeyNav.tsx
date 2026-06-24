@@ -1,5 +1,5 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
-import './GooeyNav.css';
+import { useRef, useEffect, useState, useCallback } from "react";
+import "./GooeyNav.css";
 
 interface GooeyNavItem {
   label: string;
@@ -64,19 +64,19 @@ const GooeyNav = ({
         const p = createParticle(i, t, d, r);
 
         setTimeout(() => {
-          const particle = document.createElement('span');
-          const point = document.createElement('span');
-          particle.classList.add('particle');
-          particle.style.setProperty('--start-x', `${p.start[0]}px`);
-          particle.style.setProperty('--start-y', `${p.start[1]}px`);
-          particle.style.setProperty('--end-x', `${p.end[0]}px`);
-          particle.style.setProperty('--end-y', `${p.end[1]}px`);
-          particle.style.setProperty('--time', `${p.time}ms`);
-          particle.style.setProperty('--scale', `${p.scale}`);
-          particle.style.setProperty('--color', `var(--color-${p.color}, white)`);
-          particle.style.setProperty('--rotate', `${p.rotate}deg`);
+          const particle = document.createElement("span");
+          const point = document.createElement("span");
+          particle.classList.add("particle");
+          particle.style.setProperty("--start-x", `${p.start[0]}px`);
+          particle.style.setProperty("--start-y", `${p.start[1]}px`);
+          particle.style.setProperty("--end-x", `${p.end[0]}px`);
+          particle.style.setProperty("--end-y", `${p.end[1]}px`);
+          particle.style.setProperty("--time", `${p.time}ms`);
+          particle.style.setProperty("--scale", `${p.scale}`);
+          particle.style.setProperty("--color", `var(--color-${p.color}, white)`);
+          particle.style.setProperty("--rotate", `${p.rotate}deg`);
 
-          point.classList.add('point');
+          point.classList.add("point");
           particle.appendChild(point);
           element.appendChild(particle);
 
@@ -93,19 +93,16 @@ const GooeyNav = ({
     [animationTime, particleCount, particleDistances, particleR, timeVariance, colors],
   );
 
-  const updateEffectPosition = useCallback(
-    (element: HTMLElement) => {
-      if (!containerRef.current || !filterRef.current) return;
-      const containerRect = containerRef.current.getBoundingClientRect();
-      const pos = element.getBoundingClientRect();
+  const updateEffectPosition = useCallback((element: HTMLElement) => {
+    if (!containerRef.current || !filterRef.current) return;
+    const containerRect = containerRef.current.getBoundingClientRect();
+    const pos = element.getBoundingClientRect();
 
-      filterRef.current.style.left = `${pos.x - containerRect.x}px`;
-      filterRef.current.style.top = `${pos.y - containerRect.y}px`;
-      filterRef.current.style.width = `${pos.width}px`;
-      filterRef.current.style.height = `${pos.height}px`;
-    },
-    [],
-  );
+    filterRef.current.style.left = `${pos.x - containerRect.x}px`;
+    filterRef.current.style.top = `${pos.y - containerRect.y}px`;
+    filterRef.current.style.width = `${pos.width}px`;
+    filterRef.current.style.height = `${pos.height}px`;
+  }, []);
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLAnchorElement>, index: number) => {
@@ -118,7 +115,7 @@ const GooeyNav = ({
 
       if (filterRef.current) {
         // Remove old particles
-        const particles = filterRef.current.querySelectorAll('.particle');
+        const particles = filterRef.current.querySelectorAll(".particle");
         particles.forEach((p) => filterRef.current!.removeChild(p));
 
         // Start particle animation
@@ -126,25 +123,36 @@ const GooeyNav = ({
         makeParticles(filterRef.current);
 
         // Stop animation after particles finish
-        setTimeout(() => {
-          setIsAnimating(false);
-        }, animationTime * 2 + timeVariance);
+        setTimeout(
+          () => {
+            setIsAnimating(false);
+          },
+          animationTime * 2 + timeVariance,
+        );
       }
 
       onNavigate?.(items[index].href);
     },
-    [activeIndex, updateEffectPosition, makeParticles, onNavigate, items, animationTime, timeVariance],
+    [
+      activeIndex,
+      updateEffectPosition,
+      makeParticles,
+      onNavigate,
+      items,
+      animationTime,
+      timeVariance,
+    ],
   );
 
   useEffect(() => {
     if (!navRef.current || !containerRef.current) return;
-    const activeLi = navRef.current.querySelectorAll('li')[activeIndex];
+    const activeLi = navRef.current.querySelectorAll("li")[activeIndex];
     if (activeLi) {
       updateEffectPosition(activeLi as HTMLElement);
     }
 
     const resizeObserver = new ResizeObserver(() => {
-      const currentActiveLi = navRef.current?.querySelectorAll('li')[activeIndex];
+      const currentActiveLi = navRef.current?.querySelectorAll("li")[activeIndex];
       if (currentActiveLi) {
         updateEffectPosition(currentActiveLi as HTMLElement);
       }
@@ -159,7 +167,7 @@ const GooeyNav = ({
       <nav>
         <ul ref={navRef}>
           {items.map((item, index) => (
-            <li key={index} className={activeIndex === index ? 'active' : ''}>
+            <li key={index} className={activeIndex === index ? "active" : ""}>
               <a href={item.href} onClick={(e) => handleClick(e, index)}>
                 {item.label}
               </a>
@@ -167,10 +175,7 @@ const GooeyNav = ({
           ))}
         </ul>
       </nav>
-      <span
-        className={`effect filter ${isAnimating ? 'animating' : ''}`}
-        ref={filterRef}
-      />
+      <span className={`effect filter ${isAnimating ? "animating" : ""}`} ref={filterRef} />
     </div>
   );
 };

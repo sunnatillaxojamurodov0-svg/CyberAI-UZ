@@ -68,12 +68,12 @@ async function generateTOTP(secret: string, timeStep: number = 30): Promise<stri
 
   const hmac = await hmacSha1(key, new Uint8Array(timeBuffer));
   const offset = hmac[hmac.length - 1] & 0x0f;
-  const code = (
-    ((hmac[offset] & 0x7f) << 24) |
-    ((hmac[offset + 1] & 0xff) << 16) |
-    ((hmac[offset + 2] & 0xff) << 8) |
-    (hmac[offset + 3] & 0xff)
-  ) % 1000000;
+  const code =
+    (((hmac[offset] & 0x7f) << 24) |
+      ((hmac[offset + 1] & 0xff) << 16) |
+      ((hmac[offset + 2] & 0xff) << 8) |
+      (hmac[offset + 3] & 0xff)) %
+    1000000;
 
   return code.toString().padStart(6, "0");
 }
@@ -91,12 +91,12 @@ async function verifyTOTP(secret: string, token: string, window: number = 1): Pr
 
     const hmac = await hmacSha1(key, new Uint8Array(timeBuffer));
     const offset = hmac[hmac.length - 1] & 0x0f;
-    const code = (
-      ((hmac[offset] & 0x7f) << 24) |
-      ((hmac[offset + 1] & 0xff) << 16) |
-      ((hmac[offset + 2] & 0xff) << 8) |
-      (hmac[offset + 3] & 0xff)
-    ) % 1000000;
+    const code =
+      (((hmac[offset] & 0x7f) << 24) |
+        ((hmac[offset + 1] & 0xff) << 16) |
+        ((hmac[offset + 2] & 0xff) << 8) |
+        (hmac[offset + 3] & 0xff)) %
+      1000000;
 
     if (code.toString().padStart(6, "0") === token) {
       return true;
@@ -113,10 +113,7 @@ export async function setup2FA(userId: string): Promise<{ secret: string; qrCode
   const secret = await generateSecret();
   const now = Math.floor(Date.now() / 1000);
 
-  await db
-    .prepare("DELETE FROM user_2fa WHERE user_id = ?")
-    .bind(userId)
-    .run();
+  await db.prepare("DELETE FROM user_2fa WHERE user_id = ?").bind(userId).run();
 
   await db
     .prepare(
@@ -132,7 +129,10 @@ export async function setup2FA(userId: string): Promise<{ secret: string; qrCode
   return { secret, qrCodeUrl };
 }
 
-export async function enable2FA(userId: string, token: string): Promise<{ ok: boolean; error?: string }> {
+export async function enable2FA(
+  userId: string,
+  token: string,
+): Promise<{ ok: boolean; error?: string }> {
   const db = requireDb<D1Database>();
 
   const row = await db
@@ -149,15 +149,15 @@ export async function enable2FA(userId: string, token: string): Promise<{ ok: bo
     return { ok: false, error: "Invalid verification code." };
   }
 
-  await db
-    .prepare("UPDATE user_2fa SET enabled = 1 WHERE user_id = ?")
-    .bind(userId)
-    .run();
+  await db.prepare("UPDATE user_2fa SET enabled = 1 WHERE user_id = ?").bind(userId).run();
 
   return { ok: true };
 }
 
-export async function disable2FA(userId: string, token: string): Promise<{ ok: boolean; error?: string }> {
+export async function disable2FA(
+  userId: string,
+  token: string,
+): Promise<{ ok: boolean; error?: string }> {
   const db = requireDb<D1Database>();
 
   const row = await db
@@ -174,15 +174,15 @@ export async function disable2FA(userId: string, token: string): Promise<{ ok: b
     return { ok: false, error: "Invalid verification code." };
   }
 
-  await db
-    .prepare("DELETE FROM user_2fa WHERE user_id = ?")
-    .bind(userId)
-    .run();
+  await db.prepare("DELETE FROM user_2fa WHERE user_id = ?").bind(userId).run();
 
   return { ok: true };
 }
 
-export async function verify2FA(userId: string, token: string): Promise<{ ok: boolean; error?: string }> {
+export async function verify2FA(
+  userId: string,
+  token: string,
+): Promise<{ ok: boolean; error?: string }> {
   const db = requireDb<D1Database>();
 
   const row = await db

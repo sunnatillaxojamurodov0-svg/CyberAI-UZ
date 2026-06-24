@@ -118,13 +118,17 @@ export function BillingDashboard() {
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="text-sm text-muted-foreground mb-1">AI Messages</div>
             <div className="text-lg font-semibold">
-              {billing.limits.aiMessagesPerDay === -1 ? "Unlimited" : `${billing.limits.aiMessagesPerDay}/day`}
+              {billing.limits.aiMessagesPerDay === -1
+                ? "Unlimited"
+                : `${billing.limits.aiMessagesPerDay}/day`}
             </div>
           </div>
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="text-sm text-muted-foreground mb-1">AI Tokens</div>
             <div className="text-lg font-semibold">
-              {billing.limits.maxTokensPerDay === -1 ? "Unlimited" : `${(billing.limits.maxTokensPerDay / 1000).toFixed(0)}K/day`}
+              {billing.limits.maxTokensPerDay === -1
+                ? "Unlimited"
+                : `${(billing.limits.maxTokensPerDay / 1000).toFixed(0)}K/day`}
             </div>
             {billing.tokenUsage && (
               <div className="text-xs text-muted-foreground mt-1">
@@ -135,13 +139,17 @@ export function BillingDashboard() {
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="text-sm text-muted-foreground mb-1">CTF Challenges</div>
             <div className="text-lg font-semibold">
-              {billing.limits.challengesPerDay === -1 ? "Unlimited" : `${billing.limits.challengesPerDay}/day`}
+              {billing.limits.challengesPerDay === -1
+                ? "Unlimited"
+                : `${billing.limits.challengesPerDay}/day`}
             </div>
           </div>
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="text-sm text-muted-foreground mb-1">Chat History</div>
             <div className="text-lg font-semibold">
-              {billing.limits.maxHistory === -1 ? "Unlimited" : `${billing.limits.maxHistory} messages`}
+              {billing.limits.maxHistory === -1
+                ? "Unlimited"
+                : `${billing.limits.maxHistory} messages`}
             </div>
           </div>
         </div>

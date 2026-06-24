@@ -1,7 +1,7 @@
-import '@testing-library/jest-dom';
-import { expect, vi } from 'vitest';
+import "@testing-library/jest-dom";
+import { expect, vi } from "vitest";
 
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
     matches: false,
@@ -15,10 +15,10 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-Object.defineProperty(window, 'getComputedStyle', {
+Object.defineProperty(window, "getComputedStyle", {
   writable: true,
   value: vi.fn().mockImplementation(() => ({
-    getPropertyValue: vi.fn().mockReturnValue(''),
+    getPropertyValue: vi.fn().mockReturnValue(""),
   })),
 });
 
@@ -50,12 +50,12 @@ global.fetch = vi.fn().mockImplementation(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve({}),
-    text: () => Promise.resolve(''),
+    text: () => Promise.resolve(""),
     headers: new Headers(),
-  })
+  }),
 );
 
-vi.mock('@tanstack/react-router', () => ({
+vi.mock("@tanstack/react-router", () => ({
   createFileRoute: vi.fn(() => ({
     component: vi.fn(),
     loader: vi.fn(),
@@ -69,8 +69,8 @@ vi.mock('@tanstack/react-router', () => ({
     head: vi.fn(),
   })),
   Link: vi.fn(({ children, ...props }) => {
-    const { createElement } = require('react');
-    return createElement('a', props, children);
+    const React = await import("react");
+    return React.createElement("a", props, children);
   }),
   Outlet: vi.fn(() => null),
   useRouter: vi.fn(() => ({

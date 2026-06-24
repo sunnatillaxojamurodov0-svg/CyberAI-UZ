@@ -139,7 +139,9 @@ export async function recordLoginAttempt(
   }
 }
 
-export async function isAccountLocked(email: string): Promise<{ locked: boolean; lockoutExpires?: number }> {
+export async function isAccountLocked(
+  email: string,
+): Promise<{ locked: boolean; lockoutExpires?: number }> {
   try {
     const db = requireDb<D1Database>();
     const now = Math.floor(Date.now() / 1000);
@@ -168,10 +170,7 @@ export async function isAccountLocked(email: string): Promise<{ locked: boolean;
 export async function clearLoginAttempts(email: string): Promise<void> {
   try {
     const db = requireDb<D1Database>();
-    await db
-      .prepare("DELETE FROM login_attempts WHERE email = ?")
-      .bind(email)
-      .run();
+    await db.prepare("DELETE FROM login_attempts WHERE email = ?").bind(email).run();
   } catch {
     // non-fatal
   }
@@ -330,10 +329,7 @@ export async function createVerificationToken(userId: string): Promise<string> {
   const now = Math.floor(Date.now() / 1000);
   const expiresAt = now + VERIFICATION_TTL;
 
-  await db
-    .prepare("DELETE FROM email_verifications WHERE user_id = ?")
-    .bind(userId)
-    .run();
+  await db.prepare("DELETE FROM email_verifications WHERE user_id = ?").bind(userId).run();
 
   await db
     .prepare(
@@ -367,10 +363,7 @@ export async function verifyEmail(token: string): Promise<{ ok: boolean; error?:
       .bind(now, row.user_id)
       .run();
 
-    await db
-      .prepare("DELETE FROM email_verifications WHERE id = ?")
-      .bind(row.id)
-      .run();
+    await db.prepare("DELETE FROM email_verifications WHERE id = ?").bind(row.id).run();
 
     return { ok: true };
   } catch (err) {
@@ -396,7 +389,9 @@ export async function sendVerificationEmail(email: string, token: string): Promi
   const resendKey = env.RESEND_API_KEY as string;
 
   if (!resendKey) {
-    console.log(`[DEV] Verification link: ${env.APP_URL || "http://localhost:5173"}/auth/verify?token=${token}`);
+    console.log(
+      `[DEV] Verification link: ${env.APP_URL || "http://localhost:5173"}/auth/verify?token=${token}`,
+    );
     return;
   }
 
@@ -432,7 +427,9 @@ export async function sendVerificationEmail(email: string, token: string): Promi
 
 const RESET_TTL = 60 * 60; // 1 hour
 
-export async function createPasswordResetToken(email: string): Promise<{ ok: boolean; token?: string; error?: string }> {
+export async function createPasswordResetToken(
+  email: string,
+): Promise<{ ok: boolean; token?: string; error?: string }> {
   try {
     const db = requireDb<D1Database>();
 
@@ -450,10 +447,7 @@ export async function createPasswordResetToken(email: string): Promise<{ ok: boo
     const now = Math.floor(Date.now() / 1000);
     const expiresAt = now + RESET_TTL;
 
-    await db
-      .prepare("DELETE FROM password_resets WHERE user_id = ?")
-      .bind(user.id)
-      .run();
+    await db.prepare("DELETE FROM password_resets WHERE user_id = ?").bind(user.id).run();
 
     await db
       .prepare(
@@ -464,11 +458,17 @@ export async function createPasswordResetToken(email: string): Promise<{ ok: boo
 
     return { ok: true, token };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Failed to create reset token." };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Failed to create reset token.",
+    };
   }
 }
 
-export async function resetPassword(token: string, newPassword: string): Promise<{ ok: boolean; error?: string }> {
+export async function resetPassword(
+  token: string,
+  newPassword: string,
+): Promise<{ ok: boolean; error?: string }> {
   try {
     const db = requireDb<D1Database>();
     const tokenHash = await sha256(token);
@@ -497,15 +497,9 @@ export async function resetPassword(token: string, newPassword: string): Promise
       .bind(passwordHash, now, row.user_id)
       .run();
 
-    await db
-      .prepare("UPDATE password_resets SET used = 1 WHERE id = ?")
-      .bind(row.id)
-      .run();
+    await db.prepare("UPDATE password_resets SET used = 1 WHERE id = ?").bind(row.id).run();
 
-    await db
-      .prepare("DELETE FROM sessions WHERE user_id = ?")
-      .bind(row.user_id)
-      .run();
+    await db.prepare("DELETE FROM sessions WHERE user_id = ?").bind(row.user_id).run();
 
     return { ok: true };
   } catch (err) {
@@ -518,7 +512,9 @@ export async function sendPasswordResetEmail(email: string, token: string): Prom
   const resendKey = env.RESEND_API_KEY as string;
 
   if (!resendKey) {
-    console.log(`[DEV] Reset link: ${env.APP_URL || "http://localhost:5173"}/auth/reset-password?token=${token}`);
+    console.log(
+      `[DEV] Reset link: ${env.APP_URL || "http://localhost:5173"}/auth/reset-password?token=${token}`,
+    );
     return;
   }
 

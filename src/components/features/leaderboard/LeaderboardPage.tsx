@@ -61,7 +61,9 @@ export function LeaderboardPage() {
     if (index === 0) return <Trophy size={18} className="text-yellow-400" />;
     if (index === 1) return <Medal size={18} className="text-gray-300" />;
     if (index === 2) return <Medal size={18} className="text-amber-600" />;
-    return <span className="font-mono text-sm text-muted-foreground w-5 text-center">{index + 1}</span>;
+    return (
+      <span className="font-mono text-sm text-muted-foreground w-5 text-center">{index + 1}</span>
+    );
   };
 
   const getRankBadge = (index: number) => {
@@ -152,9 +154,7 @@ export function LeaderboardPage() {
                 key={entry.id}
                 className={`grid grid-cols-[60px_1fr_120px_100px_100px_80px] gap-4 px-6 py-4 transition-colors hover:bg-surface/50 ${getRankBadge(index)}`}
               >
-                <div className="flex items-center">
-                  {getRankIcon(index)}
-                </div>
+                <div className="flex items-center">{getRankIcon(index)}</div>
                 <div className="flex items-center gap-3">
                   <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 font-mono text-xs font-bold text-primary">
                     {(entry.user_name ?? entry.user_email).charAt(0).toUpperCase()}
@@ -181,9 +181,7 @@ export function LeaderboardPage() {
                   </div>
                 </div>
                 <div className="flex items-center justify-end">
-                  <span className="font-mono text-lg font-bold text-accent">
-                    {entry.score}
-                  </span>
+                  <span className="font-mono text-lg font-bold text-accent">{entry.score}</span>
                 </div>
                 <div className="flex items-center justify-end gap-1.5">
                   <Clock size={12} className="text-muted-foreground" />

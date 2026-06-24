@@ -2,10 +2,10 @@
 
 /**
  * Load Testing Script
- * 
+ *
  * Usage:
  *   node scripts/load-test.mjs [options]
- * 
+ *
  * Options:
  *   --url <url>      Target URL (default: http://localhost:5173)
  *   --concurrent <n> Concurrent requests (default: 10)
@@ -13,16 +13,16 @@
  *   --endpoint <path> Endpoint to test (default: /)
  */
 
-import http from 'http';
-import { parseArgs } from 'util';
+import http from "http";
+import { parseArgs } from "util";
 
 const { values } = parseArgs({
   args: process.argv.slice(2),
   options: {
-    url: { type: 'string', default: 'http://localhost:5173' },
-    concurrent: { type: 'string', default: '10' },
-    duration: { type: 'string', default: '30' },
-    endpoint: { type: 'string', default: '/' },
+    url: { type: "string", default: "http://localhost:5173" },
+    concurrent: { type: "string", default: "10" },
+    duration: { type: "string", default: "30" },
+    endpoint: { type: "string", default: "/" },
   },
 });
 
@@ -41,11 +41,13 @@ function makeRequest() {
   return new Promise((resolve) => {
     const start = Date.now();
     const url = new URL(`${TARGET_URL}${ENDPOINT}`);
-    
+
     const req = http.get(url, (res) => {
-      let data = '';
-      res.on('data', (chunk) => { data += chunk; });
-      res.on('end', () => {
+      let data = "";
+      res.on("data", (chunk) => {
+        data += chunk;
+      });
+      res.on("end", () => {
         const latency = Date.now() - start;
         totalRequests++;
         successfulRequests++;
@@ -55,7 +57,7 @@ function makeRequest() {
       });
     });
 
-    req.on('error', () => {
+    req.on("error", () => {
       totalRequests++;
       failedRequests++;
       resolve({ status: 0, latency: Date.now() - start });
@@ -71,12 +73,12 @@ function makeRequest() {
 }
 
 async function runLoadTest() {
-  console.log('🔥 Load Test Starting');
-  console.log('═══════════════════════════════════════');
+  console.log("🔥 Load Test Starting");
+  console.log("═══════════════════════════════════════");
   console.log(`Target: ${TARGET_URL}${ENDPOINT}`);
   console.log(`Concurrent: ${CONCURRENT}`);
   console.log(`Duration: ${DURATION / 1000}s`);
-  console.log('═══════════════════════════════════════\n');
+  console.log("═══════════════════════════════════════\n");
 
   const startTime = Date.now();
   const promises = [];
@@ -87,7 +89,7 @@ async function runLoadTest() {
         while (Date.now() - startTime < DURATION) {
           await makeRequest();
         }
-      })()
+      })(),
     );
   }
 
@@ -100,9 +102,9 @@ async function runLoadTest() {
   const p95 = sortedLatencies[Math.floor(sortedLatencies.length * 0.95)];
   const p99 = sortedLatencies[Math.floor(sortedLatencies.length * 0.99)];
 
-  console.log('\n═══════════════════════════════════════');
-  console.log('📊 Load Test Results');
-  console.log('═══════════════════════════════════════');
+  console.log("\n═══════════════════════════════════════");
+  console.log("📊 Load Test Results");
+  console.log("═══════════════════════════════════════");
   console.log(`Duration:       ${duration.toFixed(1)}s`);
   console.log(`Total Requests:  ${totalRequests}`);
   console.log(`Successful:      ${successfulRequests}`);
@@ -113,13 +115,13 @@ async function runLoadTest() {
   console.log(`P95 Latency:     ${p95}ms`);
   console.log(`P99 Latency:     ${p99}ms`);
   console.log(`Success Rate:    ${((successfulRequests / totalRequests) * 100).toFixed(1)}%`);
-  console.log('═══════════════════════════════════════\n');
+  console.log("═══════════════════════════════════════\n");
 
   if (failedRequests > 0) {
     console.log(`⚠️  ${failedRequests} requests failed`);
   }
   if (avgLatency > 1000) {
-    console.log('⚠️  Average latency is high (>1s)');
+    console.log("⚠️  Average latency is high (>1s)");
   }
 }
 

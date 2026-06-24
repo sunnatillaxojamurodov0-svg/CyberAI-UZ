@@ -36,17 +36,17 @@ paths:
                   type: string
                   description: 2FA code (if enabled)
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '401':
+                $ref: "#/components/schemas/AuthResponse"
+        "401":
           description: Invalid credentials
-        '403':
+        "403":
           description: Email not verified or 2FA required
-        '423':
+        "423":
           description: Account locked
 
   /api/auth/register:
@@ -70,7 +70,7 @@ paths:
                 name:
                   type: string
       responses:
-        '200':
+        "200":
           description: Registration successful, verification email sent
 
   /api/auth/verify:
@@ -84,7 +84,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Email verified
 
   /api/auth/reset-password:
@@ -104,7 +104,7 @@ paths:
                 newPassword:
                   type: string
       responses:
-        '200':
+        "200":
           description: Reset link sent
 
   /api/auth/2fa:
@@ -112,7 +112,7 @@ paths:
       summary: Get 2FA status
       tags: [Authentication]
       responses:
-        '200':
+        "200":
           description: 2FA status
     post:
       summary: Setup/Enable/Disable 2FA
@@ -129,7 +129,7 @@ paths:
                 token:
                   type: string
       responses:
-        '200':
+        "200":
           description: 2FA action completed
 
   /api/chat:
@@ -159,15 +159,15 @@ paths:
                       content:
                         type: string
       responses:
-        '200':
+        "200":
           description: Streaming AI response
           content:
             text/plain:
               schema:
                 type: string
-        '429':
+        "429":
           description: Rate limit exceeded
-        '502':
+        "502":
           description: AI service error
 
   /api/billing:
@@ -175,7 +175,7 @@ paths:
       summary: Get billing information
       tags: [Billing]
       responses:
-        '200':
+        "200":
           description: Billing info
     post:
       summary: Create checkout or portal session
@@ -193,7 +193,7 @@ paths:
                   type: string
                   enum: [pro, enterprise]
       responses:
-        '200':
+        "200":
           description: Session URL
 
   /api/admin/challenges:
@@ -201,7 +201,7 @@ paths:
       summary: List all challenges
       tags: [Admin]
       responses:
-        '200':
+        "200":
           description: Challenge list
     post:
       summary: Create challenge
@@ -210,9 +210,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Challenge'
+              $ref: "#/components/schemas/Challenge"
       responses:
-        '201':
+        "201":
           description: Challenge created
 
   /api/challenges/verify:
@@ -231,9 +231,9 @@ paths:
                 flag:
                   type: string
       responses:
-        '200':
+        "200":
           description: Flag valid
-        '400':
+        "400":
           description: Invalid flag
 
   /api/challenges/submit:
@@ -244,9 +244,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ChallengeSubmission'
+              $ref: "#/components/schemas/ChallengeSubmission"
       responses:
-        '201':
+        "201":
           description: Submission created
 
 components:
@@ -257,7 +257,7 @@ components:
         ok:
           type: boolean
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
         error:
           type: string
 

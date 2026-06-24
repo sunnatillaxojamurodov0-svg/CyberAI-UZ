@@ -278,7 +278,9 @@ function ProjectCard({
             color={getProjectColor()}
             size={0.7}
             items={project.tech.slice(0, 3).map((t) => (
-              <span key={t} className="font-mono text-[8px]">{t}</span>
+              <span key={t} className="font-mono text-[8px]">
+                {t}
+              </span>
             ))}
           />
         </div>

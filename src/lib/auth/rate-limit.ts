@@ -50,9 +50,15 @@ export async function checkRateLimit(
         const config = DEFAULTS[category];
         const now = Math.floor(Date.now() / 1000);
         const windowEnd = Math.ceil(now / config.windowSeconds) * config.windowSeconds;
-        return { allowed: success, remaining: success ? config.maxRequests - 1 : 0, resetAt: windowEnd };
+        return {
+          allowed: success,
+          remaining: success ? config.maxRequests - 1 : 0,
+          resetAt: windowEnd,
+        };
       }
-    } catch { /* fall through to D1 */ }
+    } catch {
+      /* fall through to D1 */
+    }
   }
 
   try {

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.1.0] - 2026-06-24
 
 ### Added
+
 - Email verification flow with Resend integration
 - Password reset functionality
 - Two-factor authentication (TOTP)
@@ -36,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changelog
 
 ### Changed
+
 - Upgraded to React 19
 - Upgraded to TanStack Router
 - Upgraded to TailwindCSS 4
@@ -44,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced rate limiting with global limiter
 
 ### Fixed
+
 - CSP inline script blocking
 - Token-based quota tracking
 - UTC-based quota reset time
@@ -52,6 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-05-28
 
 ### Added
+
 - Initial release
 - AI chat with multiple models
 - CTF challenges system

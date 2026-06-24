@@ -51,7 +51,7 @@ export function ThemeToggle() {
             "flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-all",
             theme === value
               ? "bg-accent text-white"
-              : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              : "text-muted-foreground hover:text-foreground hover:bg-muted",
           )}
           title={label}
         >

@@ -4,11 +4,11 @@ on:
   push:
     branches: [main]
     paths:
-      - 'docker-proxy/**'
+      - "docker-proxy/**"
   pull_request:
     branches: [main]
     paths:
-      - 'docker-proxy/**'
+      - "docker-proxy/**"
 
 jobs:
   build:

@@ -366,37 +366,37 @@ export function checkPromptInjection(message: string): InjectionCheckResult {
 
   if (message.length > 5000) {
     score += 10;
-    threats.push('excessive_length');
+    threats.push("excessive_length");
   }
 
   const repeatedChars = /(.)\1{10,}/;
   if (repeatedChars.test(message)) {
     score += 15;
-    threats.push('repeated_characters');
+    threats.push("repeated_characters");
   }
 
   const allCaps = /^[A-Z\s\d!@#$%^&*()]{20,}$/;
   if (allCaps.test(message)) {
     score += 10;
-    threats.push('excessive_caps');
+    threats.push("excessive_caps");
   }
 
   const multipleLanguages = /[\u0400-\u04FF].*[\u0600-\u06FF].*[\u4E00-\u9FFF]/;
   if (multipleLanguages.test(message)) {
     score += 15;
-    threats.push('mixed_scripts');
+    threats.push("mixed_scripts");
   }
 
   const base64Pattern = /^[A-Za-z0-9+/]{100,}={0,2}$/;
   if (base64Pattern.test(message.trim())) {
     score += 40;
-    threats.push('base64_encoded');
+    threats.push("base64_encoded");
   }
 
   const hexPattern = /^[0-9a-fA-F]{100,}$/;
   if (hexPattern.test(message.trim())) {
     score += 30;
-    threats.push('hex_encoded');
+    threats.push("hex_encoded");
   }
 
   return {
@@ -409,9 +409,9 @@ export function checkPromptInjection(message: string): InjectionCheckResult {
 export function sanitizeInput(message: string): string {
   let sanitized = message;
 
-  sanitized = sanitized.replace(/<[^>]*>/g, '');
-  sanitized = sanitized.replace(/javascript:/gi, '');
-  sanitized = sanitized.replace(/on\w+\s*=/gi, '');
+  sanitized = sanitized.replace(/<[^>]*>/g, "");
+  sanitized = sanitized.replace(/javascript:/gi, "");
+  sanitized = sanitized.replace(/on\w+\s*=/gi, "");
 
   if (sanitized.length > 10000) {
     sanitized = sanitized.slice(0, 10000);

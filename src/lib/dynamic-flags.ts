@@ -13,9 +13,9 @@ interface D1Database {
 async function generateUserFlag(challengeId: string, userId: string): Promise<string> {
   const data = `${challengeId}:${userId}:${Date.now()}`;
   const encoder = new TextEncoder();
-  const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(data));
+  const hashBuffer = await crypto.subtle.digest("SHA-256", encoder.encode(data));
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   return `CTF{${hashHex.slice(0, 16)}}`;
 }
 
@@ -52,7 +52,9 @@ export async function getDynamicFlag(
     const now = Math.floor(Date.now() / 1000);
 
     await db
-      .prepare("INSERT INTO user_flags (id, challenge_id, user_id, dynamic_flag, created_at) VALUES (?, ?, ?, ?, ?)")
+      .prepare(
+        "INSERT INTO user_flags (id, challenge_id, user_id, dynamic_flag, created_at) VALUES (?, ?, ?, ?, ?)",
+      )
       .bind(crypto.randomUUID(), challengeId, userId, newFlag, now)
       .run();
 
@@ -84,7 +86,9 @@ export async function verifyFlag(
     if (isDynamic) {
       if (submittedFlag.trim() === correctFlag.trim()) {
         await db
-          .prepare("UPDATE user_challenges SET status = 'completed', completed_at = ? WHERE user_id = ? AND challenge_id = ?")
+          .prepare(
+            "UPDATE user_challenges SET status = 'completed', completed_at = ? WHERE user_id = ? AND challenge_id = ?",
+          )
           .bind(Math.floor(Date.now() / 1000), userId, challengeId)
           .run();
         return { valid: true };
@@ -92,7 +96,9 @@ export async function verifyFlag(
     } else {
       if (submittedFlag.trim() === challenge.flag.trim()) {
         await db
-          .prepare("UPDATE user_challenges SET status = 'completed', completed_at = ? WHERE user_id = ? AND challenge_id = ?")
+          .prepare(
+            "UPDATE user_challenges SET status = 'completed', completed_at = ? WHERE user_id = ? AND challenge_id = ?",
+          )
           .bind(Math.floor(Date.now() / 1000), userId, challengeId)
           .run();
         return { valid: true };
@@ -105,7 +111,9 @@ export async function verifyFlag(
   }
 }
 
-export async function enableDynamicFlags(challengeId: string): Promise<{ ok: boolean; error?: string }> {
+export async function enableDynamicFlags(
+  challengeId: string,
+): Promise<{ ok: boolean; error?: string }> {
   try {
     const db = requireDb<D1Database>();
     await db
@@ -114,11 +122,16 @@ export async function enableDynamicFlags(challengeId: string): Promise<{ ok: boo
       .run();
     return { ok: true };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Failed to enable dynamic flags" };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Failed to enable dynamic flags",
+    };
   }
 }
 
-export async function disableDynamicFlags(challengeId: string): Promise<{ ok: boolean; error?: string }> {
+export async function disableDynamicFlags(
+  challengeId: string,
+): Promise<{ ok: boolean; error?: string }> {
   try {
     const db = requireDb<D1Database>();
     await db
@@ -127,6 +140,9 @@ export async function disableDynamicFlags(challengeId: string): Promise<{ ok: bo
       .run();
     return { ok: true };
   } catch (err) {
-    return { ok: false, error: err instanceof Error ? err.message : "Failed to disable dynamic flags" };
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : "Failed to disable dynamic flags",
+    };
   }
 }

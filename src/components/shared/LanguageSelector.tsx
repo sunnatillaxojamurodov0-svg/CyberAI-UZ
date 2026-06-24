@@ -33,7 +33,7 @@ export function LanguageSelector() {
                 "flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors",
                 language === lang.code
                   ? "bg-accent/10 text-accent"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
             >
               <span className="font-mono text-xs">{lang.code.toUpperCase()}</span>

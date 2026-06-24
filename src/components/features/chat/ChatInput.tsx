@@ -147,29 +147,26 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
     [showPicker, filtered, activeIndex, selectSkill, handleSubmit],
   );
 
-  const processFile = useCallback(
-    async (file: File) => {
-      if (file.size > MAX_FILE_SIZE) {
-        toast.error("File too large", {
-          description: `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is 30 MB.`,
-        });
-        return;
-      }
+  const processFile = useCallback(async (file: File) => {
+    if (file.size > MAX_FILE_SIZE) {
+      toast.error("File too large", {
+        description: `"${file.name}" is ${(file.size / (1024 * 1024)).toFixed(1)} MB. Maximum is 30 MB.`,
+      });
+      return;
+    }
 
-      let previewUrl: string | undefined;
-      let base64: string | undefined;
+    let previewUrl: string | undefined;
+    let base64: string | undefined;
 
-      if (file.type.startsWith("image/")) {
-        previewUrl = URL.createObjectURL(file);
-        base64 = await fileToBase64(file);
-      }
+    if (file.type.startsWith("image/")) {
+      previewUrl = URL.createObjectURL(file);
+      base64 = await fileToBase64(file);
+    }
 
-      setAttachment({ file, previewUrl, base64 });
-      setShowFileMenu(false);
-      inputRef.current?.focus();
-    },
-    [],
-  );
+    setAttachment({ file, previewUrl, base64 });
+    setShowFileMenu(false);
+    inputRef.current?.focus();
+  }, []);
 
   const handleFilePick = useCallback(
     (accept: string) => {
@@ -263,20 +260,20 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
               className="absolute bottom-full left-0 mb-2 w-48 overflow-hidden rounded-xl border border-border bg-surface/95 backdrop-blur-xl shadow-2xl"
             >
               <button
-                  type="button"
-                  onClick={() => handleFilePick("image/*")}
-                  className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-sm text-foreground/80 hover:bg-white/5 transition-colors"
-                >
-                  <div className="grid size-8 place-items-center rounded-lg bg-accent/10">
-                    <Image size={14} className="text-accent" />
+                type="button"
+                onClick={() => handleFilePick("image/*")}
+                className="flex w-full items-center gap-3 px-3.5 py-3 text-left text-sm text-foreground/80 hover:bg-white/5 transition-colors"
+              >
+                <div className="grid size-8 place-items-center rounded-lg bg-accent/10">
+                  <Image size={14} className="text-accent" />
+                </div>
+                <div>
+                  <div className="font-medium leading-tight">Add image</div>
+                  <div className="text-[11px] text-muted-foreground/60 leading-tight">
+                    Galereya / Kamera
                   </div>
-                  <div>
-                    <div className="font-medium leading-tight">Add image</div>
-                    <div className="text-[11px] text-muted-foreground/60 leading-tight">
-                      Galereya / Kamera
-                    </div>
-                  </div>
-                </button>
+                </div>
+              </button>
               <div className="mx-3 h-px bg-border" />
               <button
                 type="button"

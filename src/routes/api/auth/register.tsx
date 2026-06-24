@@ -1,6 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { registerUser, createVerificationToken, sendVerificationEmail } from "@/lib/auth/auth-server";
+import {
+  registerUser,
+  createVerificationToken,
+  sendVerificationEmail,
+} from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { writeAnalytics } from "@/lib/analytics";
 
@@ -15,7 +19,13 @@ export const Route = createFileRoute("/api/auth/register")({
           const startTime = Date.now();
           const rl = await checkRateLimit(rateLimitKey(ip, "register"), "register");
           if (!rl.allowed) {
-            writeAnalytics("register", "denied", null, "/api/auth/register", Date.now() - startTime);
+            writeAnalytics(
+              "register",
+              "denied",
+              null,
+              "/api/auth/register",
+              Date.now() - startTime,
+            );
             return new Response(
               JSON.stringify({
                 ok: false,
@@ -49,7 +59,13 @@ export const Route = createFileRoute("/api/auth/register")({
           const name = body.name?.trim().slice(0, 100) || undefined;
           const result = await registerUser(email, body.password, name);
           if (!result.ok || !result.user) {
-            writeAnalytics("register", "denied", null, "/api/auth/register", Date.now() - startTime);
+            writeAnalytics(
+              "register",
+              "denied",
+              null,
+              "/api/auth/register",
+              Date.now() - startTime,
+            );
             return new Response(
               JSON.stringify({ ok: false, error: result.error ?? "Registration failed." }),
               {
@@ -62,7 +78,13 @@ export const Route = createFileRoute("/api/auth/register")({
           const verificationToken = await createVerificationToken(result.user.id);
           sendVerificationEmail(email, verificationToken).catch(() => {});
 
-          writeAnalytics("register", "success", result.user.id, "/api/auth/register", Date.now() - startTime);
+          writeAnalytics(
+            "register",
+            "success",
+            result.user.id,
+            "/api/auth/register",
+            Date.now() - startTime,
+          );
 
           return new Response(
             JSON.stringify({

@@ -32,7 +32,11 @@ export function optimizeContext(
 ): Message[] {
   const fullConfig = { ...DEFAULT_CONFIG, ...config };
 
-  const availableTokens = fullConfig.maxTokens - fullConfig.systemPromptTokens - fullConfig.currentMessageTokens - fullConfig.reservedTokens;
+  const availableTokens =
+    fullConfig.maxTokens -
+    fullConfig.systemPromptTokens -
+    fullConfig.currentMessageTokens -
+    fullConfig.reservedTokens;
 
   let totalTokens = 0;
   const selectedMessages: Message[] = [];
@@ -120,7 +124,11 @@ export function getContextStats(
   const fullConfig = { ...DEFAULT_CONFIG, ...config };
   const optimized = optimizeContext(history, currentMessage, config);
   const totalTokens = optimized.reduce((acc, msg) => acc + estimateMessageTokens(msg), 0);
-  const availableTokens = fullConfig.maxTokens - fullConfig.systemPromptTokens - fullConfig.currentMessageTokens - fullConfig.reservedTokens;
+  const availableTokens =
+    fullConfig.maxTokens -
+    fullConfig.systemPromptTokens -
+    fullConfig.currentMessageTokens -
+    fullConfig.reservedTokens;
 
   return {
     totalMessages: history.length,

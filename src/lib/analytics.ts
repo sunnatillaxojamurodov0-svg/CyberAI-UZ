@@ -40,7 +40,11 @@ export function writeAnalytics(
 ) {
   try {
     const env = getEnv();
-    const dataset = env.ANALYTICS as { writeDataPoint: (p: { blobs?: string[]; doubles?: number[]; indexes?: string[] }) => void } | undefined;
+    const dataset = env.ANALYTICS as
+      | {
+          writeDataPoint: (p: { blobs?: string[]; doubles?: number[]; indexes?: string[] }) => void;
+        }
+      | undefined;
     if (!dataset) return;
 
     dataset.writeDataPoint({
@@ -79,21 +83,14 @@ export function trackAiUsage(
   success: boolean,
   fallback: boolean = false,
 ) {
-  writeAnalytics(
-    "ai_usage",
-    success ? "success" : "error",
-    userId,
-    "/api/chat",
-    latencyMs,
-    {
-      model,
-      requestedModel,
-      fallback,
-      tokens: tokens.total,
-      promptTokens: tokens.prompt,
-      completionTokens: tokens.completion,
-    },
-  );
+  writeAnalytics("ai_usage", success ? "success" : "error", userId, "/api/chat", latencyMs, {
+    model,
+    requestedModel,
+    fallback,
+    tokens: tokens.total,
+    promptTokens: tokens.prompt,
+    completionTokens: tokens.completion,
+  });
 }
 
 export function trackModelSwitch(
@@ -102,61 +99,29 @@ export function trackModelSwitch(
   toModel: string,
   reason: string,
 ) {
-  writeAnalytics(
-    "model_switch",
-    "warning",
-    userId,
-    "/api/chat",
-    0,
-    {
-      model: toModel,
-      requestedModel: fromModel,
-      fallback: true,
-      error: reason,
-    },
-  );
+  writeAnalytics("model_switch", "warning", userId, "/api/chat", 0, {
+    model: toModel,
+    requestedModel: fromModel,
+    fallback: true,
+    error: reason,
+  });
 }
 
-export function trackInjectionAttempt(
-  userId: string | null,
-  score: number,
-  threats: string[],
-) {
-  writeAnalytics(
-    "injection_blocked",
-    "denied",
-    userId,
-    "/api/chat",
-    0,
-    {
-      score,
-      threats,
-    },
-  );
+export function trackInjectionAttempt(userId: string | null, score: number, threats: string[]) {
+  writeAnalytics("injection_blocked", "denied", userId, "/api/chat", 0, {
+    score,
+    threats,
+  });
 }
 
 export function trackSessionStart(userId: string | null, sessionId: string) {
-  writeAnalytics(
-    "session_start",
-    "success",
-    userId,
-    "/session",
-    0,
-    {
-      error: sessionId,
-    },
-  );
+  writeAnalytics("session_start", "success", userId, "/session", 0, {
+    error: sessionId,
+  });
 }
 
 export function trackSessionEnd(userId: string | null, sessionId: string, durationMs: number) {
-  writeAnalytics(
-    "session_end",
-    "success",
-    userId,
-    "/session",
-    durationMs,
-    {
-      error: sessionId,
-    },
-  );
+  writeAnalytics("session_end", "success", userId, "/session", durationMs, {
+    error: sessionId,
+  });
 }

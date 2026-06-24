@@ -153,7 +153,7 @@ export function ProfileSecurity() {
               "ml-auto rounded-full px-2 py-0.5 font-mono text-[10px] font-bold",
               twoFAEnabled
                 ? "bg-emerald-500/10 text-emerald-400"
-                : "bg-muted text-muted-foreground"
+                : "bg-muted text-muted-foreground",
             )}
           >
             {twoFAEnabled ? "ENABLED" : "DISABLED"}
@@ -174,7 +174,7 @@ export function ProfileSecurity() {
               "mb-4 rounded-lg px-3 py-2 font-mono text-[11px]",
               message.type === "success"
                 ? "border border-emerald-500/20 bg-emerald-500/5 text-emerald-400"
-                : "border border-destructive/20 bg-destructive/5 text-destructive"
+                : "border border-destructive/20 bg-destructive/5 text-destructive",
             )}
           >
             {message.text}
@@ -212,7 +212,10 @@ export function ProfileSecurity() {
                   >
                     {showSecret ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
-                  <button onClick={copySecret} className="text-muted-foreground hover:text-foreground">
+                  <button
+                    onClick={copySecret}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
                     <Copy size={14} />
                   </button>
                 </div>
@@ -237,7 +240,11 @@ export function ProfileSecurity() {
                   disabled={actionLoading || verifyToken.length !== 6}
                   className="rounded-xl bg-emerald-500 px-6 py-3 text-sm font-semibold text-white hover:bg-emerald-600 transition-all disabled:opacity-40"
                 >
-                  {actionLoading ? <Loader2 size={15} className="animate-spin" /> : <Check size={15} />}
+                  {actionLoading ? (
+                    <Loader2 size={15} className="animate-spin" />
+                  ) : (
+                    <Check size={15} />
+                  )}
                 </button>
               </div>
             </div>
@@ -312,7 +319,11 @@ export function ProfileSecurity() {
                 disabled={actionLoading}
                 className="flex items-center gap-2 rounded-xl border border-emerald-500/30 px-4 py-2.5 text-sm font-medium text-emerald-400 hover:bg-emerald-500/5 transition-all"
               >
-                {actionLoading ? <Loader2 size={14} className="animate-spin" /> : <ShieldCheck size={14} />}
+                {actionLoading ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <ShieldCheck size={14} />
+                )}
                 Enable 2FA
               </button>
             )}

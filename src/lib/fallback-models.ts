@@ -83,7 +83,7 @@ export async function fetchWithFallback(
         console.log(`Model ${currentModel} failed (${response.status}), trying next...`);
 
         if (attempt < fullConfig.maxRetries) {
-          await new Promise(resolve => setTimeout(resolve, fullConfig.retryDelay));
+          await new Promise((resolve) => setTimeout(resolve, fullConfig.retryDelay));
         }
         continue;
       }
@@ -100,7 +100,7 @@ export async function fetchWithFallback(
       console.log(`Model ${currentModel} failed (${lastError}), trying next...`);
 
       if (attempt < fullConfig.maxRetries) {
-        await new Promise(resolve => setTimeout(resolve, fullConfig.retryDelay));
+        await new Promise((resolve) => setTimeout(resolve, fullConfig.retryDelay));
       }
       continue;
     }

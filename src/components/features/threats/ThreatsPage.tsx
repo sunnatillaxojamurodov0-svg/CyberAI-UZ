@@ -1,15 +1,15 @@
 import { useState } from "react";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
-import { 
-  Shield, 
-  AlertTriangle, 
-  AlertCircle, 
-  Info, 
+import {
+  Shield,
+  AlertTriangle,
+  AlertCircle,
+  Info,
   CheckCircle2,
   RefreshCw,
   Copy,
-  ExternalLink
+  ExternalLink,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -136,7 +136,7 @@ export function ThreatsPage() {
               "flex items-center gap-2 rounded-lg px-5 py-2.5 font-mono text-xs font-bold transition-all",
               loading
                 ? "bg-accent/20 text-accent"
-                : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none"
+                : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
             )}
           >
             {loading ? (
@@ -196,7 +196,7 @@ export function ThreatsPage() {
               key={threat.id}
               className={cn(
                 "overflow-hidden transition-all",
-                expanded === threat.id && "ring-1 ring-accent/30"
+                expanded === threat.id && "ring-1 ring-accent/30",
               )}
             >
               {/* Header */}
@@ -208,7 +208,7 @@ export function ThreatsPage() {
                   <div
                     className={cn(
                       "grid size-10 shrink-0 place-items-center rounded-xl",
-                      SEVERITY_CONFIG[threat.severity].bg
+                      SEVERITY_CONFIG[threat.severity].bg,
                     )}
                   >
                     <span className={SEVERITY_CONFIG[threat.severity].color}>
@@ -224,7 +224,7 @@ export function ThreatsPage() {
                         className={cn(
                           "rounded-full border px-2 py-0.5 font-mono text-[10px] font-bold uppercase",
                           SEVERITY_CONFIG[threat.severity].bg,
-                          SEVERITY_CONFIG[threat.severity].color
+                          SEVERITY_CONFIG[threat.severity].color,
                         )}
                       >
                         {threat.severity}

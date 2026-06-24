@@ -33,7 +33,9 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             .first<{ total: number }>();
 
           const recentUsers = await db
-            .prepare("SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 5")
+            .prepare(
+              "SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 5",
+            )
             .all<{ id: string; email: string; name: string | null; created_at: number }>();
 
           const challengeCount = await db
@@ -45,12 +47,30 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             .first<{ count: number }>();
 
           const workflowBindings = [
-            { name: "ChallengeGenerator", binding: "CHALLENGE_GENERATOR", available: !!env.CHALLENGE_GENERATOR },
-            { name: "UserOnboarding", binding: "USER_ONBOARDING", available: !!env.USER_ONBOARDING },
-            { name: "ConsoleAnalysis", binding: "CONSOLE_ANALYSIS", available: !!env.CONSOLE_ANALYSIS },
+            {
+              name: "ChallengeGenerator",
+              binding: "CHALLENGE_GENERATOR",
+              available: !!env.CHALLENGE_GENERATOR,
+            },
+            {
+              name: "UserOnboarding",
+              binding: "USER_ONBOARDING",
+              available: !!env.USER_ONBOARDING,
+            },
+            {
+              name: "ConsoleAnalysis",
+              binding: "CONSOLE_ANALYSIS",
+              available: !!env.CONSOLE_ANALYSIS,
+            },
           ];
 
-          writeAnalytics("dashboard", "success", null, "/api/dashboard/stats", Date.now() - startTime);
+          writeAnalytics(
+            "dashboard",
+            "success",
+            null,
+            "/api/dashboard/stats",
+            Date.now() - startTime,
+          );
 
           return new Response(
             JSON.stringify({
@@ -77,7 +97,10 @@ export const Route = createFileRoute("/api/dashboard/stats")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to load dashboard stats" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to load dashboard stats",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
