@@ -69,7 +69,8 @@ vi.mock("@tanstack/react-router", () => ({
     head: vi.fn(),
   })),
   Link: vi.fn(({ children, ...props }) => {
-    const React = await import("react");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const React = require("react");
     return React.createElement("a", props, children);
   }),
   Outlet: vi.fn(() => null),
