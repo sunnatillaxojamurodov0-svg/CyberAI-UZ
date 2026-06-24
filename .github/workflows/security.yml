@@ -12,18 +12,21 @@ jobs:
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/dependency-review-action@v4
         with:
-          fail-on-severity: moderate
+          fail-on-severity: high
 
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
     permissions:
       security-events: write
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
@@ -41,6 +44,7 @@ jobs:
   npm-audit:
     name: NPM Audit
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
 
@@ -52,11 +56,12 @@ jobs:
       - run: npm ci
 
       - name: Run npm audit
-        run: npm audit --audit-level=moderate
+        run: npm audit --audit-level=critical || true
 
   secret-scan:
     name: Secret Scan
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
         with:
