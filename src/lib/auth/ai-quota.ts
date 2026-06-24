@@ -16,16 +16,29 @@ const ANONYMOUS_KEY = "__anonymous__";
 
 function today(): string {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
 }
 
 function quotaKey(userId: string | null): string {
   return userId || ANONYMOUS_KEY;
 }
 
+export interface TokenUsage {
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+}
+
+export interface AiQuotaResult {
+  allowed: boolean;
+  remaining: number;
+  tokensRemaining: number;
+  plan: Plan;
+}
+
 export async function checkAiQuota(
   userId: string | null,
-): Promise<{ allowed: boolean; remaining: number; plan: Plan }> {
+): Promise<AiQuotaResult> {
   try {
     const db = requireDb<D1Database>();
     const date = today();
@@ -42,7 +55,7 @@ export async function checkAiQuota(
     const limits = getPlanLimits(plan);
 
     if (limits.aiMessagesPerDay === -1) {
-      return { allowed: true, remaining: -1, plan };
+      return { allowed: true, remaining: -1, tokensRemaining: -1, plan };
     }
 
     const row = await db
@@ -50,10 +63,23 @@ export async function checkAiQuota(
       .bind(key, date)
       .first<{ count: number }>();
 
+    const tokenRow = await db
+      .prepare("SELECT COALESCE(SUM(total_tokens), 0) as total FROM ai_token_usage WHERE user_id = ? AND date = ?")
+      .bind(key, date)
+      .first<{ total: number }>();
+
     const used = row?.count ?? 0;
-    return { allowed: used < limits.aiMessagesPerDay, remaining: Math.max(0, limits.aiMessagesPerDay - used), plan };
+    const tokensUsed = tokenRow?.total ?? 0;
+    const tokensRemaining = limits.maxTokensPerDay === -1 ? -1 : Math.max(0, limits.maxTokensPerDay - tokensUsed);
+
+    return {
+      allowed: used < limits.aiMessagesPerDay && (limits.maxTokensPerDay === -1 || tokensUsed < limits.maxTokensPerDay),
+      remaining: Math.max(0, limits.aiMessagesPerDay - used),
+      tokensRemaining,
+      plan,
+    };
   } catch {
-    return { allowed: true, remaining: 1, plan: "free" };
+    return { allowed: true, remaining: 1, tokensRemaining: 10000, plan: "free" };
   }
 }
 
@@ -81,5 +107,59 @@ export async function incrementAiUsage(userId: string | null): Promise<void> {
     }
   } catch {
     /* quota tracking failure is non-fatal */
+  }
+}
+
+export async function trackTokenUsage(
+  userId: string | null,
+  model: string,
+  usage: TokenUsage,
+): Promise<void> {
+  try {
+    const db = requireDb<D1Database>();
+    const date = today();
+    const key = quotaKey(userId);
+
+    await db
+      .prepare(
+        "INSERT INTO ai_token_usage (user_id, date, prompt_tokens, completion_tokens, total_tokens, model, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      )
+      .bind(
+        key,
+        date,
+        usage.promptTokens,
+        usage.completionTokens,
+        usage.totalTokens,
+        model,
+        Math.floor(Date.now() / 1000),
+      )
+      .run();
+  } catch {
+    /* token tracking failure is non-fatal */
+  }
+}
+
+export async function getTokenUsage(
+  userId: string | null,
+): Promise<{ totalTokens: number; promptTokens: number; completionTokens: number }> {
+  try {
+    const db = requireDb<D1Database>();
+    const date = today();
+    const key = quotaKey(userId);
+
+    const row = await db
+      .prepare(
+        "SELECT COALESCE(SUM(prompt_tokens), 0) as prompt, COALESCE(SUM(completion_tokens), 0) as completion, COALESCE(SUM(total_tokens), 0) as total FROM ai_token_usage WHERE user_id = ? AND date = ?",
+      )
+      .bind(key, date)
+      .first<{ prompt: number; completion: number; total: number }>();
+
+    return {
+      promptTokens: row?.prompt ?? 0,
+      completionTokens: row?.completion ?? 0,
+      totalTokens: row?.total ?? 0,
+    };
+  } catch {
+    return { totalTokens: 0, promptTokens: 0, completionTokens: 0 };
   }
 }

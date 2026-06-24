@@ -3,6 +3,8 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { Menu, X, LogOut } from "lucide-react";
 import { UserAvatar } from "@/components/shared/UserAvatar";
+import { ThemeToggle } from "@/components/shared/ThemeToggle";
+import { LanguageSelector } from "@/components/shared/LanguageSelector";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useProfile";
 import brandLogo from "@/assets/brand-logo.png";
@@ -125,6 +127,9 @@ export function Navbar() {
             colors={[1, 2, 3, 4]}
           />
 
+          <ThemeToggle />
+          <LanguageSelector />
+
           <div className="relative" ref={moreRef}>
             <button
               type="button"
@@ -229,6 +234,12 @@ export function Navbar() {
               {n.label}
             </Link>
           ))}
+
+          <div className="mt-2 flex justify-center gap-2">
+            <ThemeToggle />
+            <LanguageSelector />
+          </div>
+
           {user ? (
             <div className="mt-2 flex flex-col gap-2">
               <button

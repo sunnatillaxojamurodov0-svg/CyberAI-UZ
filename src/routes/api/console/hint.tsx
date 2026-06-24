@@ -5,6 +5,7 @@ import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { checkAiQuota } from "@/lib/auth/ai-quota";
 import { writeAnalytics } from "@/lib/analytics";
+import { checkPromptInjection, sanitizeInput, createSecureSystemPrompt } from "@/lib/prompt-guard";
 
 const SYSTEM_PROMPT = `You are CyberAI Mentor, a senior cybersecurity educator operating exclusively within authorized Capture The Flag (CTF), cyber range, training lab, and simulation environments.
 
@@ -174,8 +175,8 @@ export const Route = createFileRoute("/api/console/hint")({
             });
           }
 
-          const today = new Date();
-          const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+          const now = new Date();
+          const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
           try {
             const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as { send: (msg: unknown) => Promise<void> };
             await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
@@ -188,8 +189,17 @@ export const Route = createFileRoute("/api/console/hint")({
             `Objectives: ${body.objectives.join(", ")}`,
             `Command history (last 15): ${(body.commandHistory ?? []).slice(-15).join("; ") || "none"}`,
             `Tools used: ${(body.toolsUsed ?? []).join(", ") || "none"}`,
-            `User question: ${body.userMessage}`,
+            `User question: ${sanitizeInput(body.userMessage)}`,
           ].join("\n");
+
+          const injectionCheck = checkPromptInjection(body.userMessage);
+          if (!injectionCheck.safe) {
+            writeAnalytics("hint", "injection_blocked", userId, "/api/console/hint", Date.now() - startTime);
+            return new Response("Your message contains potentially harmful content and has been blocked.", {
+              status: 403,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
 
           const orResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
@@ -202,7 +212,7 @@ export const Route = createFileRoute("/api/console/hint")({
             body: JSON.stringify({
               model: "nvidia/nemotron-3-super-120b-a12b:free",
               messages: [
-                { role: "system", content: SYSTEM_PROMPT },
+                { role: "system", content: createSecureSystemPrompt(SYSTEM_PROMPT) },
                 { role: "user", content: "Here is my current challenge context and question:" },
                 { role: "assistant", content: "Understood. Send me the context and I'll guide you." },
                 { role: "user", content: context },

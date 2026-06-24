@@ -86,6 +86,98 @@ async function sha256(data: string): Promise<string> {
 
 const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
 const MIN_PASSWORD_LENGTH = 8;
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOCKOUT_DURATION = 15 * 60; // 15 minutes
+
+/* ── Login attempt tracking ─────────────────────────────────── */
+
+export async function recordLoginAttempt(
+  email: string,
+  ip: string,
+  success: boolean,
+): Promise<{ locked: boolean; attemptsRemaining: number; lockoutExpires?: number }> {
+  try {
+    const db = requireDb<D1Database>();
+    const now = Math.floor(Date.now() / 1000);
+
+    await db
+      .prepare(
+        "INSERT INTO login_attempts (id, email, ip_address, success, created_at) VALUES (?, ?, ?, ?, ?)",
+      )
+      .bind(crypto.randomUUID(), email, ip, success ? 1 : 0, now)
+      .run();
+
+    if (success) {
+      await db
+        .prepare("DELETE FROM login_attempts WHERE email = ? AND success = 0")
+        .bind(email)
+        .run();
+      return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS };
+    }
+
+    const cutoff = now - LOCKOUT_DURATION;
+    const recentFailed = await db
+      .prepare(
+        "SELECT COUNT(*) as count FROM login_attempts WHERE email = ? AND success = 0 AND created_at > ?",
+      )
+      .bind(email, cutoff)
+      .first<{ count: number }>();
+
+    const failedCount = recentFailed?.count ?? 0;
+
+    if (failedCount >= MAX_LOGIN_ATTEMPTS) {
+      const lockoutExpires = now + LOCKOUT_DURATION;
+      return { locked: true, attemptsRemaining: 0, lockoutExpires };
+    }
+
+    return {
+      locked: false,
+      attemptsRemaining: MAX_LOGIN_ATTEMPTS - failedCount,
+    };
+  } catch {
+    return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS };
+  }
+}
+
+export async function isAccountLocked(email: string): Promise<{ locked: boolean; lockoutExpires?: number }> {
+  try {
+    const db = requireDb<D1Database>();
+    const now = Math.floor(Date.now() / 1000);
+    const cutoff = now - LOCKOUT_DURATION;
+
+    const recentFailed = await db
+      .prepare(
+        "SELECT COUNT(*) as count FROM login_attempts WHERE email = ? AND success = 0 AND created_at > ?",
+      )
+      .bind(email, cutoff)
+      .first<{ count: number }>();
+
+    const failedCount = recentFailed?.count ?? 0;
+
+    if (failedCount >= MAX_LOGIN_ATTEMPTS) {
+      const lockoutExpires = now + LOCKOUT_DURATION;
+      return { locked: true, lockoutExpires };
+    }
+
+    return { locked: false };
+  } catch {
+    return { locked: false };
+  }
+}
+
+export async function clearLoginAttempts(email: string): Promise<void> {
+  try {
+    const db = requireDb<D1Database>();
+    await db
+      .prepare("DELETE FROM login_attempts WHERE email = ?")
+      .bind(email)
+      .run();
+  } catch {
+    // non-fatal
+  }
+}
+
+/* ── Auth operations ────────────────────────────────────────── */
 
 export async function registerUser(
   email: string,
@@ -111,24 +203,14 @@ export async function registerUser(
 
     await db
       .prepare(
-        "INSERT INTO users (id, email, password_hash, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO users (id, email, password_hash, name, email_verified, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
       )
-      .bind(id, email, passwordHash, name ?? null, now, now)
-      .run();
-
-    const token = generateToken();
-    const tokenHash = await sha256(token);
-    const expiresAt = now + SESSION_TTL;
-
-    await db
-      .prepare("INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)")
-      .bind(tokenHash, id, now, expiresAt)
+      .bind(id, email, passwordHash, name ?? null, 0, now, now)
       .run();
 
     return {
       ok: true,
       user: { id, email, name: name ?? null, avatar_url: null },
-      token,
     };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Registration failed." };
@@ -235,6 +317,237 @@ export function setSessionCookie(token: string): string {
 
 export function clearSessionCookie(): string {
   return `cyberai_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
+}
+
+/* ── Email verification ────────────────────────────────────── */
+
+const VERIFICATION_TTL = 24 * 60 * 60; // 24 hours
+
+export async function createVerificationToken(userId: string): Promise<string> {
+  const db = requireDb<D1Database>();
+  const token = generateToken();
+  const tokenHash = await sha256(token);
+  const now = Math.floor(Date.now() / 1000);
+  const expiresAt = now + VERIFICATION_TTL;
+
+  await db
+    .prepare("DELETE FROM email_verifications WHERE user_id = ?")
+    .bind(userId)
+    .run();
+
+  await db
+    .prepare(
+      "INSERT INTO email_verifications (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(crypto.randomUUID(), userId, tokenHash, expiresAt, now)
+    .run();
+
+  return token;
+}
+
+export async function verifyEmail(token: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const db = requireDb<D1Database>();
+    const tokenHash = await sha256(token);
+    const now = Math.floor(Date.now() / 1000);
+
+    const row = await db
+      .prepare(
+        "SELECT id, user_id FROM email_verifications WHERE token_hash = ? AND expires_at > ?",
+      )
+      .bind(tokenHash, now)
+      .first<{ id: string; user_id: string }>();
+
+    if (!row) {
+      return { ok: false, error: "Invalid or expired verification link." };
+    }
+
+    await db
+      .prepare("UPDATE users SET email_verified = 1, updated_at = ? WHERE id = ?")
+      .bind(now, row.user_id)
+      .run();
+
+    await db
+      .prepare("DELETE FROM email_verifications WHERE id = ?")
+      .bind(row.id)
+      .run();
+
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Verification failed." };
+  }
+}
+
+export async function isEmailVerified(userId: string): Promise<boolean> {
+  try {
+    const db = requireDb<D1Database>();
+    const row = await db
+      .prepare("SELECT email_verified FROM users WHERE id = ?")
+      .bind(userId)
+      .first<{ email_verified: number }>();
+    return row?.email_verified === 1;
+  } catch {
+    return false;
+  }
+}
+
+export async function sendVerificationEmail(email: string, token: string): Promise<void> {
+  const env = getEnv();
+  const resendKey = env.RESEND_API_KEY as string;
+
+  if (!resendKey) {
+    console.log(`[DEV] Verification link: ${env.APP_URL || "http://localhost:5173"}/auth/verify?token=${token}`);
+    return;
+  }
+
+  const verifyUrl = `${env.APP_URL || "https://app.cyberaiuz.workers.dev"}/auth/verify?token=${token}`;
+
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "CyberAI <noreply@cyberaiuz.workers.dev>",
+      to: email,
+      subject: "Verify your CyberAI account",
+      html: `
+        <div style="font-family: monospace; max-width: 480px; margin: 0 auto; padding: 32px;">
+          <h2 style="color: #10b981;">Verify your email</h2>
+          <p>Click the button below to verify your CyberAI account:</p>
+          <a href="${verifyUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Verify Email
+          </a>
+          <p style="margin-top: 24px; color: #666; font-size: 12px;">
+            This link expires in 24 hours. If you didn't create an account, ignore this email.
+          </p>
+        </div>
+      `,
+    }),
+  });
+}
+
+/* ── Password reset ────────────────────────────────────────── */
+
+const RESET_TTL = 60 * 60; // 1 hour
+
+export async function createPasswordResetToken(email: string): Promise<{ ok: boolean; token?: string; error?: string }> {
+  try {
+    const db = requireDb<D1Database>();
+
+    const user = await db
+      .prepare("SELECT id FROM users WHERE email = ?")
+      .bind(email)
+      .first<{ id: string }>();
+
+    if (!user) {
+      return { ok: true };
+    }
+
+    const token = generateToken();
+    const tokenHash = await sha256(token);
+    const now = Math.floor(Date.now() / 1000);
+    const expiresAt = now + RESET_TTL;
+
+    await db
+      .prepare("DELETE FROM password_resets WHERE user_id = ?")
+      .bind(user.id)
+      .run();
+
+    await db
+      .prepare(
+        "INSERT INTO password_resets (id, user_id, token_hash, expires_at, created_at) VALUES (?, ?, ?, ?, ?)",
+      )
+      .bind(crypto.randomUUID(), user.id, tokenHash, expiresAt, now)
+      .run();
+
+    return { ok: true, token };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Failed to create reset token." };
+  }
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const db = requireDb<D1Database>();
+    const tokenHash = await sha256(token);
+    const now = Math.floor(Date.now() / 1000);
+
+    const row = await db
+      .prepare(
+        "SELECT id, user_id FROM password_resets WHERE token_hash = ? AND expires_at > ? AND used = 0",
+      )
+      .bind(tokenHash, now)
+      .first<{ id: string; user_id: string }>();
+
+    if (!row) {
+      return { ok: false, error: "Invalid or expired reset link." };
+    }
+
+    if (newPassword.length < MIN_PASSWORD_LENGTH) {
+      return { ok: false, error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters.` };
+    }
+
+    const salt = crypto.randomUUID();
+    const passwordHash = await hashPassword(newPassword, salt);
+
+    await db
+      .prepare("UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?")
+      .bind(passwordHash, now, row.user_id)
+      .run();
+
+    await db
+      .prepare("UPDATE password_resets SET used = 1 WHERE id = ?")
+      .bind(row.id)
+      .run();
+
+    await db
+      .prepare("DELETE FROM sessions WHERE user_id = ?")
+      .bind(row.user_id)
+      .run();
+
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: err instanceof Error ? err.message : "Password reset failed." };
+  }
+}
+
+export async function sendPasswordResetEmail(email: string, token: string): Promise<void> {
+  const env = getEnv();
+  const resendKey = env.RESEND_API_KEY as string;
+
+  if (!resendKey) {
+    console.log(`[DEV] Reset link: ${env.APP_URL || "http://localhost:5173"}/auth/reset-password?token=${token}`);
+    return;
+  }
+
+  const resetUrl = `${env.APP_URL || "https://app.cyberaiuz.workers.dev"}/auth/reset-password?token=${token}`;
+
+  await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "CyberAI <noreply@cyberaiuz.workers.dev>",
+      to: email,
+      subject: "Reset your CyberAI password",
+      html: `
+        <div style="font-family: monospace; max-width: 480px; margin: 0 auto; padding: 32px;">
+          <h2 style="color: #10b981;">Reset your password</h2>
+          <p>Click the button below to reset your password:</p>
+          <a href="${resetUrl}" style="display: inline-block; background: #10b981; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+            Reset Password
+          </a>
+          <p style="margin-top: 24px; color: #666; font-size: 12px;">
+            This link expires in 1 hour. If you didn't request a password reset, ignore this email.
+          </p>
+        </div>
+      `,
+    }),
+  });
 }
 
 /* ── Google OAuth ──────────────────────────────────────────── */

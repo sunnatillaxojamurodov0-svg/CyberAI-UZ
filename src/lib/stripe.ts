@@ -272,15 +272,15 @@ export async function getUserSubscription(userId: string): Promise<{ plan: Plan;
   };
 }
 
-export function getPlanLimits(plan: Plan): { aiMessagesPerDay: number; challengesPerDay: number; maxHistory: number } {
+export function getPlanLimits(plan: Plan): { aiMessagesPerDay: number; challengesPerDay: number; maxHistory: number; maxTokensPerDay: number } {
   switch (plan) {
     case 'enterprise':
-      return { aiMessagesPerDay: -1, challengesPerDay: -1, maxHistory: -1 };
+      return { aiMessagesPerDay: -1, challengesPerDay: -1, maxHistory: -1, maxTokensPerDay: -1 };
     case 'pro':
-      return { aiMessagesPerDay: -1, challengesPerDay: -1, maxHistory: 200 };
+      return { aiMessagesPerDay: -1, challengesPerDay: -1, maxHistory: 200, maxTokensPerDay: 1000000 };
     case 'free':
     default:
-      return { aiMessagesPerDay: 50, challengesPerDay: 3, maxHistory: 50 };
+      return { aiMessagesPerDay: 50, challengesPerDay: 3, maxHistory: 50, maxTokensPerDay: 100000 };
   }
 }
 

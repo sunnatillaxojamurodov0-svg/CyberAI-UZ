@@ -1,0 +1,322 @@
+openapi: 3.0.3
+info:
+  title: CyberAI API
+  description: |
+    Sovereign AI cybersecurity platform API.
+    Provides authentication, AI chat, CTF challenges, and admin management.
+  version: 1.0.0
+  contact:
+    name: CyberAI Support
+    email: support@cyberaiuz.workers.dev
+
+servers:
+  - url: https://app.cyberaiuz.workers.dev
+    description: Production
+
+paths:
+  /api/auth/login:
+    post:
+      summary: User login
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                totpToken:
+                  type: string
+                  description: 2FA code (if enabled)
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Invalid credentials
+        '403':
+          description: Email not verified or 2FA required
+        '423':
+          description: Account locked
+
+  /api/auth/register:
+    post:
+      summary: Register new user
+      tags: [Authentication]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+                name:
+                  type: string
+      responses:
+        '200':
+          description: Registration successful, verification email sent
+
+  /api/auth/verify:
+    get:
+      summary: Verify email address
+      tags: [Authentication]
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Email verified
+
+  /api/auth/reset-password:
+    post:
+      summary: Request password reset
+      tags: [Authentication]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                token:
+                  type: string
+                newPassword:
+                  type: string
+      responses:
+        '200':
+          description: Reset link sent
+
+  /api/auth/2fa:
+    get:
+      summary: Get 2FA status
+      tags: [Authentication]
+      responses:
+        '200':
+          description: 2FA status
+    post:
+      summary: Setup/Enable/Disable 2FA
+      tags: [Authentication]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [setup, enable, disable]
+                token:
+                  type: string
+      responses:
+        '200':
+          description: 2FA action completed
+
+  /api/chat:
+    post:
+      summary: Send chat message to AI
+      tags: [AI]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [message]
+              properties:
+                message:
+                  type: string
+                  maxLength: 10000
+                model:
+                  type: string
+                history:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      role:
+                        type: string
+                      content:
+                        type: string
+      responses:
+        '200':
+          description: Streaming AI response
+          content:
+            text/plain:
+              schema:
+                type: string
+        '429':
+          description: Rate limit exceeded
+        '502':
+          description: AI service error
+
+  /api/billing:
+    get:
+      summary: Get billing information
+      tags: [Billing]
+      responses:
+        '200':
+          description: Billing info
+    post:
+      summary: Create checkout or portal session
+      tags: [Billing]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                action:
+                  type: string
+                  enum: [checkout, portal]
+                plan:
+                  type: string
+                  enum: [pro, enterprise]
+      responses:
+        '200':
+          description: Session URL
+
+  /api/admin/challenges:
+    get:
+      summary: List all challenges
+      tags: [Admin]
+      responses:
+        '200':
+          description: Challenge list
+    post:
+      summary: Create challenge
+      tags: [Admin]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Challenge'
+      responses:
+        '201':
+          description: Challenge created
+
+  /api/challenges/verify:
+    post:
+      summary: Verify CTF flag
+      tags: [Challenges]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [challengeId, flag]
+              properties:
+                challengeId:
+                  type: string
+                flag:
+                  type: string
+      responses:
+        '200':
+          description: Flag valid
+        '400':
+          description: Invalid flag
+
+  /api/challenges/submit:
+    post:
+      summary: Submit community challenge
+      tags: [Community]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChallengeSubmission'
+      responses:
+        '201':
+          description: Submission created
+
+components:
+  schemas:
+    AuthResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/User'
+        error:
+          type: string
+
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        email:
+          type: string
+        name:
+          type: string
+        avatar_url:
+          type: string
+
+    Challenge:
+      type: object
+      required: [name, scenario, flag]
+      properties:
+        name:
+          type: string
+        difficulty:
+          type: integer
+          minimum: 1
+          maximum: 5
+        category:
+          type: string
+          enum: [web, crypto, forensics, reverse, pwn, misc]
+        scenario:
+          type: string
+        objectives:
+          type: string
+        flag:
+          type: string
+
+    ChallengeSubmission:
+      type: object
+      required: [name, scenario, flag]
+      properties:
+        name:
+          type: string
+        category:
+          type: string
+        difficulty:
+          type: integer
+        scenario:
+          type: string
+        objectives:
+          type: string
+        flag:
+          type: string
+        hints:
+          type: string
+        writeup:
+          type: string
+
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: cyberai_session
+      description: Session cookie authentication

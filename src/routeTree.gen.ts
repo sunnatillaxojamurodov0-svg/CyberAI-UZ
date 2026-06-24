@@ -19,9 +19,13 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ConsoleRouteImport } from './routes/console'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthVerifyRouteImport } from './routes/auth/verify'
+import { Route as AuthResetPasswordRouteImport } from './routes/auth/reset-password'
 import { Route as AuthCallbackRouteImport } from './routes/auth/callback'
 import { Route as ApiZkpRouteImport } from './routes/api/zkp'
 import { Route as ApiWorkflowsRouteImport } from './routes/api/workflows'
@@ -36,12 +40,18 @@ import { Route as ApiWorkflowsAnalysisRouteImport } from './routes/api/workflows
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
 import { Route as ApiDashboardStatsRouteImport } from './routes/api/dashboard/stats'
 import { Route as ApiConsoleHintRouteImport } from './routes/api/console/hint'
+import { Route as ApiChallengesVerifyRouteImport } from './routes/api/challenges/verify'
+import { Route as ApiChallengesSubmitRouteImport } from './routes/api/challenges/submit'
+import { Route as ApiAuthVerifyRouteImport } from './routes/api/auth/verify'
+import { Route as ApiAuthResetPasswordRouteImport } from './routes/api/auth/reset-password'
 import { Route as ApiAuthRegisterRouteImport } from './routes/api/auth/register'
 import { Route as ApiAuthMeRouteImport } from './routes/api/auth/me'
 import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthGoogleRouteImport } from './routes/api/auth/google'
 import { Route as ApiAuthGithubRouteImport } from './routes/api/auth/github'
+import { Route as ApiAuth2faRouteImport } from './routes/api/auth/2fa'
+import { Route as ApiAdminChallengesRouteImport } from './routes/api/admin/challenges'
 import { Route as ApiAuthGoogleCallbackRouteImport } from './routes/api/auth/google/callback'
 import { Route as ApiAuthGithubCallbackRouteImport } from './routes/api/auth/github/callback'
 
@@ -95,9 +105,19 @@ const ConsoleRoute = ConsoleRouteImport.update({
   path: '/console',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -108,6 +128,16 @@ const AboutRoute = AboutRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthVerifyRoute = AuthVerifyRouteImport.update({
+  id: '/auth/verify',
+  path: '/auth/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
+  id: '/auth/reset-password',
+  path: '/auth/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthCallbackRoute = AuthCallbackRouteImport.update({
@@ -180,6 +210,26 @@ const ApiConsoleHintRoute = ApiConsoleHintRouteImport.update({
   path: '/api/console/hint',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChallengesVerifyRoute = ApiChallengesVerifyRouteImport.update({
+  id: '/api/challenges/verify',
+  path: '/api/challenges/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiChallengesSubmitRoute = ApiChallengesSubmitRouteImport.update({
+  id: '/api/challenges/submit',
+  path: '/api/challenges/submit',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthVerifyRoute = ApiAuthVerifyRouteImport.update({
+  id: '/api/auth/verify',
+  path: '/api/auth/verify',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAuthResetPasswordRoute = ApiAuthResetPasswordRouteImport.update({
+  id: '/api/auth/reset-password',
+  path: '/api/auth/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthRegisterRoute = ApiAuthRegisterRouteImport.update({
   id: '/api/auth/register',
   path: '/api/auth/register',
@@ -210,6 +260,16 @@ const ApiAuthGithubRoute = ApiAuthGithubRouteImport.update({
   path: '/api/auth/github',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuth2faRoute = ApiAuth2faRouteImport.update({
+  id: '/api/auth/2fa',
+  path: '/api/auth/2fa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminChallengesRoute = ApiAdminChallengesRouteImport.update({
+  id: '/api/admin/challenges',
+  path: '/api/admin/challenges',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthGoogleCallbackRoute = ApiAuthGoogleCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
@@ -224,7 +284,9 @@ const ApiAuthGithubCallbackRoute = ApiAuthGithubCallbackRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/chat': typeof ChatRoute
+  '/community': typeof CommunityRoute
   '/console': typeof ConsoleRoute
   '/dashboard': typeof DashboardRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -243,12 +305,20 @@ export interface FileRoutesByFullPath {
   '/api/workflows': typeof ApiWorkflowsRouteWithChildren
   '/api/zkp': typeof ApiZkpRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify': typeof AuthVerifyRoute
+  '/api/admin/challenges': typeof ApiAdminChallengesRoute
+  '/api/auth/2fa': typeof ApiAuth2faRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/auth/reset-password': typeof ApiAuthResetPasswordRoute
+  '/api/auth/verify': typeof ApiAuthVerifyRoute
+  '/api/challenges/submit': typeof ApiChallengesSubmitRoute
+  '/api/challenges/verify': typeof ApiChallengesVerifyRoute
   '/api/console/hint': typeof ApiConsoleHintRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -261,7 +331,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/chat': typeof ChatRoute
+  '/community': typeof CommunityRoute
   '/console': typeof ConsoleRoute
   '/dashboard': typeof DashboardRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -280,12 +352,20 @@ export interface FileRoutesByTo {
   '/api/workflows': typeof ApiWorkflowsRouteWithChildren
   '/api/zkp': typeof ApiZkpRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify': typeof AuthVerifyRoute
+  '/api/admin/challenges': typeof ApiAdminChallengesRoute
+  '/api/auth/2fa': typeof ApiAuth2faRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/auth/reset-password': typeof ApiAuthResetPasswordRoute
+  '/api/auth/verify': typeof ApiAuthVerifyRoute
+  '/api/challenges/submit': typeof ApiChallengesSubmitRoute
+  '/api/challenges/verify': typeof ApiChallengesVerifyRoute
   '/api/console/hint': typeof ApiConsoleHintRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -299,7 +379,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/admin': typeof AdminRoute
   '/chat': typeof ChatRoute
+  '/community': typeof CommunityRoute
   '/console': typeof ConsoleRoute
   '/dashboard': typeof DashboardRoute
   '/leaderboard': typeof LeaderboardRoute
@@ -318,12 +400,20 @@ export interface FileRoutesById {
   '/api/workflows': typeof ApiWorkflowsRouteWithChildren
   '/api/zkp': typeof ApiZkpRoute
   '/auth/callback': typeof AuthCallbackRoute
+  '/auth/reset-password': typeof AuthResetPasswordRoute
+  '/auth/verify': typeof AuthVerifyRoute
+  '/api/admin/challenges': typeof ApiAdminChallengesRoute
+  '/api/auth/2fa': typeof ApiAuth2faRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
   '/api/auth/logout': typeof ApiAuthLogoutRoute
   '/api/auth/me': typeof ApiAuthMeRoute
   '/api/auth/register': typeof ApiAuthRegisterRoute
+  '/api/auth/reset-password': typeof ApiAuthResetPasswordRoute
+  '/api/auth/verify': typeof ApiAuthVerifyRoute
+  '/api/challenges/submit': typeof ApiChallengesSubmitRoute
+  '/api/challenges/verify': typeof ApiChallengesVerifyRoute
   '/api/console/hint': typeof ApiConsoleHintRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
@@ -338,7 +428,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/admin'
     | '/chat'
+    | '/community'
     | '/console'
     | '/dashboard'
     | '/leaderboard'
@@ -357,12 +449,20 @@ export interface FileRouteTypes {
     | '/api/workflows'
     | '/api/zkp'
     | '/auth/callback'
+    | '/auth/reset-password'
+    | '/auth/verify'
+    | '/api/admin/challenges'
+    | '/api/auth/2fa'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/auth/reset-password'
+    | '/api/auth/verify'
+    | '/api/challenges/submit'
+    | '/api/challenges/verify'
     | '/api/console/hint'
     | '/api/dashboard/stats'
     | '/api/webhooks/stripe'
@@ -375,7 +475,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/admin'
     | '/chat'
+    | '/community'
     | '/console'
     | '/dashboard'
     | '/leaderboard'
@@ -394,12 +496,20 @@ export interface FileRouteTypes {
     | '/api/workflows'
     | '/api/zkp'
     | '/auth/callback'
+    | '/auth/reset-password'
+    | '/auth/verify'
+    | '/api/admin/challenges'
+    | '/api/auth/2fa'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/auth/reset-password'
+    | '/api/auth/verify'
+    | '/api/challenges/submit'
+    | '/api/challenges/verify'
     | '/api/console/hint'
     | '/api/dashboard/stats'
     | '/api/webhooks/stripe'
@@ -412,7 +522,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/about'
+    | '/admin'
     | '/chat'
+    | '/community'
     | '/console'
     | '/dashboard'
     | '/leaderboard'
@@ -431,12 +543,20 @@ export interface FileRouteTypes {
     | '/api/workflows'
     | '/api/zkp'
     | '/auth/callback'
+    | '/auth/reset-password'
+    | '/auth/verify'
+    | '/api/admin/challenges'
+    | '/api/auth/2fa'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
     | '/api/auth/logout'
     | '/api/auth/me'
     | '/api/auth/register'
+    | '/api/auth/reset-password'
+    | '/api/auth/verify'
+    | '/api/challenges/submit'
+    | '/api/challenges/verify'
     | '/api/console/hint'
     | '/api/dashboard/stats'
     | '/api/webhooks/stripe'
@@ -450,7 +570,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  AdminRoute: typeof AdminRoute
   ChatRoute: typeof ChatRoute
+  CommunityRoute: typeof CommunityRoute
   ConsoleRoute: typeof ConsoleRoute
   DashboardRoute: typeof DashboardRoute
   LeaderboardRoute: typeof LeaderboardRoute
@@ -469,12 +591,20 @@ export interface RootRouteChildren {
   ApiWorkflowsRoute: typeof ApiWorkflowsRouteWithChildren
   ApiZkpRoute: typeof ApiZkpRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthVerifyRoute: typeof AuthVerifyRoute
+  ApiAdminChallengesRoute: typeof ApiAdminChallengesRoute
+  ApiAuth2faRoute: typeof ApiAuth2faRoute
   ApiAuthGithubRoute: typeof ApiAuthGithubRouteWithChildren
   ApiAuthGoogleRoute: typeof ApiAuthGoogleRouteWithChildren
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
   ApiAuthLogoutRoute: typeof ApiAuthLogoutRoute
   ApiAuthMeRoute: typeof ApiAuthMeRoute
   ApiAuthRegisterRoute: typeof ApiAuthRegisterRoute
+  ApiAuthResetPasswordRoute: typeof ApiAuthResetPasswordRoute
+  ApiAuthVerifyRoute: typeof ApiAuthVerifyRoute
+  ApiChallengesSubmitRoute: typeof ApiChallengesSubmitRoute
+  ApiChallengesVerifyRoute: typeof ApiChallengesVerifyRoute
   ApiConsoleHintRoute: typeof ApiConsoleHintRoute
   ApiDashboardStatsRoute: typeof ApiDashboardStatsRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
@@ -552,11 +682,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConsoleRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/chat': {
       id: '/chat'
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -571,6 +715,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/verify': {
+      id: '/auth/verify'
+      path: '/auth/verify'
+      fullPath: '/auth/verify'
+      preLoaderRoute: typeof AuthVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/reset-password': {
+      id: '/auth/reset-password'
+      path: '/auth/reset-password'
+      fullPath: '/auth/reset-password'
+      preLoaderRoute: typeof AuthResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/callback': {
@@ -671,6 +829,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiConsoleHintRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/challenges/verify': {
+      id: '/api/challenges/verify'
+      path: '/api/challenges/verify'
+      fullPath: '/api/challenges/verify'
+      preLoaderRoute: typeof ApiChallengesVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/challenges/submit': {
+      id: '/api/challenges/submit'
+      path: '/api/challenges/submit'
+      fullPath: '/api/challenges/submit'
+      preLoaderRoute: typeof ApiChallengesSubmitRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/verify': {
+      id: '/api/auth/verify'
+      path: '/api/auth/verify'
+      fullPath: '/api/auth/verify'
+      preLoaderRoute: typeof ApiAuthVerifyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/reset-password': {
+      id: '/api/auth/reset-password'
+      path: '/api/auth/reset-password'
+      fullPath: '/api/auth/reset-password'
+      preLoaderRoute: typeof ApiAuthResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/register': {
       id: '/api/auth/register'
       path: '/api/auth/register'
@@ -711,6 +897,20 @@ declare module '@tanstack/react-router' {
       path: '/api/auth/github'
       fullPath: '/api/auth/github'
       preLoaderRoute: typeof ApiAuthGithubRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/auth/2fa': {
+      id: '/api/auth/2fa'
+      path: '/api/auth/2fa'
+      fullPath: '/api/auth/2fa'
+      preLoaderRoute: typeof ApiAuth2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/challenges': {
+      id: '/api/admin/challenges'
+      path: '/api/admin/challenges'
+      fullPath: '/api/admin/challenges'
+      preLoaderRoute: typeof ApiAdminChallengesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/google/callback': {
@@ -773,7 +973,9 @@ const ApiAuthGoogleRouteWithChildren = ApiAuthGoogleRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  AdminRoute: AdminRoute,
   ChatRoute: ChatRoute,
+  CommunityRoute: CommunityRoute,
   ConsoleRoute: ConsoleRoute,
   DashboardRoute: DashboardRoute,
   LeaderboardRoute: LeaderboardRoute,
@@ -792,12 +994,20 @@ const rootRouteChildren: RootRouteChildren = {
   ApiWorkflowsRoute: ApiWorkflowsRouteWithChildren,
   ApiZkpRoute: ApiZkpRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthVerifyRoute: AuthVerifyRoute,
+  ApiAdminChallengesRoute: ApiAdminChallengesRoute,
+  ApiAuth2faRoute: ApiAuth2faRoute,
   ApiAuthGithubRoute: ApiAuthGithubRouteWithChildren,
   ApiAuthGoogleRoute: ApiAuthGoogleRouteWithChildren,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
   ApiAuthLogoutRoute: ApiAuthLogoutRoute,
   ApiAuthMeRoute: ApiAuthMeRoute,
   ApiAuthRegisterRoute: ApiAuthRegisterRoute,
+  ApiAuthResetPasswordRoute: ApiAuthResetPasswordRoute,
+  ApiAuthVerifyRoute: ApiAuthVerifyRoute,
+  ApiChallengesSubmitRoute: ApiChallengesSubmitRoute,
+  ApiChallengesVerifyRoute: ApiChallengesVerifyRoute,
   ApiConsoleHintRoute: ApiConsoleHintRoute,
   ApiDashboardStatsRoute: ApiDashboardStatsRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,

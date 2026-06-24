@@ -20,14 +20,18 @@ export interface RateLimitConfig {
 }
 
 const DEFAULTS: Record<string, RateLimitConfig> = {
-  auth: { windowSeconds: 60, maxRequests: 5 },
-  register: { windowSeconds: 3600, maxRequests: 3 },
-  chat: { windowSeconds: 60, maxRequests: 20 },
+  global: { windowSeconds: 60, maxRequests: 500 },
+  auth: { windowSeconds: 60, maxRequests: 10 },
+  register: { windowSeconds: 3600, maxRequests: 5 },
+  chat: { windowSeconds: 60, maxRequests: 30 },
+  api: { windowSeconds: 60, maxRequests: 100 },
 };
 
 const EDGE_BINDING: Record<string, string> = {
+  global: "MY_RATE_LIMITER_GLOBAL",
   chat: "MY_RATE_LIMITER_CHAT",
   auth: "MY_RATE_LIMITER_AUTH",
+  api: "MY_RATE_LIMITER_API",
 };
 
 import { writeAnalytics } from "../analytics";

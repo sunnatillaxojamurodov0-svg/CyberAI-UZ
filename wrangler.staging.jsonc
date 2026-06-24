@@ -1,0 +1,110 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "app-staging",
+  "main": ".output/server/index.mjs",
+  "compatibility_date": "2026-05-28",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1,
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
+  },
+  "queues": {
+    "producers": [
+      { "queue": "ai-usage-queue-staging", "binding": "AI_USAGE_QUEUE" }
+    ],
+    "consumers": [
+      { "queue": "ai-usage-queue-staging" }
+    ]
+  },
+  "workflows": [
+    {
+      "name": "challenge-generator",
+      "binding": "CHALLENGE_WORKFLOW",
+      "class_name": "ChallengeGenerator",
+      "script_name": "app-staging"
+    },
+    {
+      "name": "user-onboarding",
+      "binding": "ONBOARDING_WORKFLOW",
+      "class_name": "UserOnboarding",
+      "script_name": "app-staging"
+    },
+    {
+      "name": "console-analysis",
+      "binding": "CONSOLE_WORKFLOW",
+      "class_name": "ConsoleAnalysis",
+      "script_name": "app-staging"
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      { "name": "CHAT_SESSION_DO", "class_name": "ChatSessionDO" },
+      { "name": "CONSOLE_SESSION_DO", "class_name": "ConsoleSessionDO" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["ChatSessionDO", "ConsoleSessionDO"] }
+  ],
+  "analytics_engine_datasets": [
+    { "binding": "ANALYTICS", "dataset": "cyberai_analytics_staging" }
+  ],
+  "ratelimits": [
+    {
+      "name": "MY_RATE_LIMITER_CHAT",
+      "namespace_id": "2001",
+      "simple": { "limit": 20, "period": 60 }
+    },
+    {
+      "name": "MY_RATE_LIMITER_AUTH",
+      "namespace_id": "2002",
+      "simple": { "limit": 5, "period": 60 }
+    }
+  ],
+  "vectorize": [
+    {
+      "binding": "VECTORIZE_INDEX",
+      "index_name": "cyberai-vectors-staging"
+    }
+  ],
+  "ai": {
+    "binding": "AI"
+  },
+  "r2_buckets": [
+    {
+      "binding": "MY_BUCKET",
+      "bucket_name": "cyberai-bucket-staging"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "CYBERAI_KV",
+      "id": "staging-kv-namespace-id"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "cyberai_db",
+      "database_name": "cyberai-db-staging",
+      "database_id": "staging-d1-database-id"
+    }
+  ],
+  "vars": {
+    "ENVIRONMENT": "staging"
+  },
+  "routes": []
+}

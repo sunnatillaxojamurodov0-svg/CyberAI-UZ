@@ -16,7 +16,18 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui"
+    "test:e2e:ui": "playwright test --ui",
+    "test:load": "node scripts/load-test.mjs",
+    "test:load:api": "node scripts/load-test.mjs --endpoint /api/auth/me --concurrent 5 --duration 60",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "node scripts/migrate.mjs migrate",
+    "db:status": "node scripts/migrate.mjs status",
+    "db:push": "drizzle-kit push",
+    "db:seed": "node scripts/seed.mjs",
+    "backup": "node scripts/backup.mjs",
+    "backup:db": "node scripts/backup.mjs database",
+    "backup:config": "node scripts/backup.mjs config",
+    "restore": "node scripts/restore.mjs"
   },
   "dependencies": {
     "@cloudflare/vite-plugin": "^1.25.5",
@@ -33,6 +44,8 @@
     "@tanstack/router-plugin": "^1.167.28",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-kit": "^0.31.10",
+    "drizzle-orm": "^0.45.2",
     "framer-motion": "^12.40.0",
     "gsap": "^3.15.0",
     "highlight.js": "^11.11.1",
