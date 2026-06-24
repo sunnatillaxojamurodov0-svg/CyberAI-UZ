@@ -3,8 +3,12 @@ import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
-import { checkAiQuota } from "@/lib/auth/ai-quota";
-import { writeAnalytics } from "@/lib/analytics";
+import { checkAiQuota, trackTokenUsage } from "@/lib/auth/ai-quota";
+import { writeAnalytics, trackAiUsage, trackModelSwitch, trackInjectionAttempt } from "@/lib/analytics";
+import { checkPromptInjection, sanitizeInput, createSecureSystemPrompt } from "@/lib/prompt-guard";
+import { createOptimizedMessages } from "@/lib/context-optimizer";
+import { fetchWithFallback } from "@/lib/fallback-models";
+import { getCachedResponse, setCachedResponse } from "@/lib/prompt-cache";
 
 export const Route = createFileRoute("/api/chat")({
   server: {
@@ -67,32 +71,49 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          const history = (body.history ?? []).slice(-50);
+          const injectionCheck = checkPromptInjection(body.message);
+          if (!injectionCheck.safe) {
+            trackInjectionAttempt(userId, injectionCheck.score, injectionCheck.threats);
+            return new Response("Your message contains potentially harmful content and has been blocked.", {
+              status: 403,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
 
-          const today = new Date();
-          const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+          const sanitizedMessage = sanitizeInput(body.message);
+
+          const history = (body.history ?? []).slice(-100);
+
+          const now = new Date();
+          const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
           try {
             const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as { send: (msg: unknown) => Promise<void> };
             await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
           } catch { /* non-fatal */ }
 
           const modelName = body.model || "nvidia/nemotron-3-ultra-550b-a55b:free";
+          const secureSystemPrompt = body.systemPrompt ? createSecureSystemPrompt(body.systemPrompt) : undefined;
 
-          const messages = [
-            ...(body.systemPrompt ? [{ role: "system", content: body.systemPrompt }] : []),
-            ...history.map((h) => ({
+          const messages = createOptimizedMessages(
+            secureSystemPrompt,
+            history.map((h) => ({
               role: h.role === "assistant" ? "assistant" : "user",
-              content: h.content,
+              content: sanitizeInput(h.content),
             })),
-            { role: "user", content: body.message },
-          ];
+            sanitizedMessage,
+          );
 
-          let orResponse: Response;
-          let retries = 0;
-          const maxRetries = 3;
+          const cachedResponse = await getCachedResponse(messages, modelName);
+          if (cachedResponse) {
+            trackAiUsage(userId, modelName, modelName, 0, { prompt: 0, completion: 0, total: 0 }, true, false);
+            return new Response(cachedResponse.response, {
+              headers: { "Content-Type": "text/plain", "X-Cache": "HIT" },
+            });
+          }
 
-          while (retries < maxRetries) {
-            orResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          const fallbackResult = await fetchWithFallback(
+            "https://openrouter.ai/api/v1/chat/completions",
+            {
               method: "POST",
               headers: {
                 "Authorization": `Bearer ${apiKey}`,
@@ -105,37 +126,38 @@ export const Route = createFileRoute("/api/chat")({
                 messages,
                 stream: true,
               }),
+            },
+            modelName,
+            { maxRetries: 3, retryDelay: 1000, enableFallback: true },
+          );
+
+          if (!fallbackResult.success || !fallbackResult.response) {
+            console.error("All models failed:", fallbackResult.error);
+            writeAnalytics("chat", "error", userId, "/api/chat", Date.now() - startTime, {
+              model: modelName,
+              error: fallbackResult.error,
+              attempts: fallbackResult.attempts,
+              fallbackModel: fallbackResult.model,
             });
-
-            if (orResponse.ok) break;
-
-            if (orResponse.status === 429) {
-              retries++;
-              const retryAfter = orResponse.headers.get("Retry-After") || "3";
-              const waitMs = parseInt(retryAfter) * 1000;
-              await new Promise(resolve => setTimeout(resolve, waitMs));
-              continue;
-            }
-
-            break;
-          }
-
-          if (!orResponse!.ok) {
-            const errorText = await orResponse!.text();
-            console.error("OpenRouter error:", errorText);
-            writeAnalytics("chat", "error", userId, "/api/chat", Date.now() - startTime, { model: modelName, error: errorText });
-            return new Response("AI service error. Please try again.", {
+            return new Response("AI service error. All models unavailable. Please try again.", {
               status: 502,
               headers: { "Content-Type": "text/plain" },
             });
           }
 
+          const orResponse = fallbackResult.response;
+          const usedModel = fallbackResult.model;
+          if (usedModel !== modelName) {
+            trackModelSwitch(userId, modelName, usedModel, "primary model unavailable");
+          }
+
           const stream = new ReadableStream({
             async start(controller) {
               try {
-                const reader = orResponse!.body!.getReader();
+                const reader = orResponse.body!.getReader();
                 const decoder = new TextDecoder();
                 let buffer = "";
+                let totalContent = "";
 
                 while (true) {
                   const { done, value } = await reader.read();
@@ -154,6 +176,14 @@ export const Route = createFileRoute("/api/chat")({
                         const content = parsed.choices?.[0]?.delta?.content;
                         if (content) {
                           controller.enqueue(new TextEncoder().encode(content));
+                          totalContent += content;
+                        }
+                        if (parsed.usage) {
+                          trackTokenUsage(userId, modelName, {
+                            promptTokens: parsed.usage.prompt_tokens || 0,
+                            completionTokens: parsed.usage.completion_tokens || 0,
+                            totalTokens: parsed.usage.total_tokens || 0,
+                          }).catch(() => {});
                         }
                       } catch {
                         // skip malformed chunks
@@ -161,18 +191,39 @@ export const Route = createFileRoute("/api/chat")({
                     }
                   }
                 }
+
+                if (totalContent && !orResponse!.headers.get("x-openrouter-processing")) {
+                  const estimatedPromptTokens = Math.ceil(messages.reduce((acc, m) => acc + m.content.length / 4, 0));
+                  const estimatedCompletionTokens = Math.ceil(totalContent.length / 4);
+                  trackTokenUsage(userId, modelName, {
+                    promptTokens: estimatedPromptTokens,
+                    completionTokens: estimatedCompletionTokens,
+                    totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
+                  }).catch(() => {});
+                }
               } catch (err) {
                 console.error("Stream error:", err);
                 controller.enqueue(new TextEncoder().encode(`[AI response interrupted: ${err instanceof Error ? err.message : String(err)}]`));
               } finally {
+                if (totalContent) {
+                  setCachedResponse(messages, totalContent, usedModel).catch(() => {});
+                }
                 controller.close();
               }
             },
           });
 
-          writeAnalytics("chat", "success", userId, "/api/chat", Date.now() - startTime, { model: modelName });
+          trackAiUsage(
+            userId,
+            usedModel,
+            modelName,
+            Date.now() - startTime,
+            { prompt: 0, completion: 0, total: 0 },
+            true,
+            usedModel !== modelName,
+          );
           return new Response(stream, {
-            headers: { "Content-Type": "text/plain" },
+            headers: { "Content-Type": "text/plain", "X-Cache": "MISS" },
           });
         } catch (err) {
           writeAnalytics("chat", "error", null, "/api/chat", Date.now() - startTime);

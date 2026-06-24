@@ -1,6 +1,6 @@
 import { useState, useCallback, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User, ArrowLeft, Loader2, Sparkles, CheckCircle2 } from "lucide-react";
+import { X, Mail, Lock, User, ArrowLeft, Loader2, Sparkles, CheckCircle2, Check, XCircle } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
@@ -120,12 +120,79 @@ function OrDivider() {
   );
 }
 
+/* ── Password strength meter ──────────────────────────── */
+
+function PasswordStrengthMeter({ password }: { password: string }) {
+  const checks = [
+    { label: "8+ characters", test: (p: string) => p.length >= 8 },
+    { label: "Uppercase", test: (p: string) => /[A-Z]/.test(p) },
+    { label: "Lowercase", test: (p: string) => /[a-z]/.test(p) },
+    { label: "Number", test: (p: string) => /[0-9]/.test(p) },
+    { label: "Special char", test: (p: string) => /[!@#$%^&*(),.?":{}|<>]/.test(p) },
+  ];
+
+  const passed = checks.filter((c) => c.test(password)).length;
+  const strength = passed === 0 ? 0 : passed <= 2 ? 1 : passed <= 3 ? 2 : passed <= 4 ? 3 : 4;
+
+  const colors = ["bg-muted", "bg-red-500", "bg-orange-500", "bg-yellow-500", "bg-emerald-500"];
+  const labels = ["", "Weak", "Fair", "Good", "Strong"];
+  const textColors = ["", "text-red-400", "text-orange-400", "text-yellow-400", "text-emerald-400"];
+
+  if (!password) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: "auto" }}
+      exit={{ opacity: 0, height: 0 }}
+      className="space-y-2"
+    >
+      <div className="flex gap-1">
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className={cn(
+              "h-1 flex-1 rounded-full transition-colors duration-300",
+              i < strength ? colors[strength] : "bg-muted"
+            )}
+          />
+        ))}
+      </div>
+      <div className="flex items-center justify-between">
+        <span className={cn("font-mono text-[10px] font-bold uppercase tracking-[0.1em]", textColors[strength])}>
+          {labels[strength]}
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+        {checks.map((check) => (
+          <div key={check.label} className="flex items-center gap-1.5">
+            {check.test(password) ? (
+              <Check size={10} className="text-emerald-400" />
+            ) : (
+              <XCircle size={10} className="text-muted-foreground/30" />
+            )}
+            <span
+              className={cn(
+                "font-mono text-[9px] tracking-wide",
+                check.test(password) ? "text-emerald-400" : "text-muted-foreground/40"
+              )}
+            >
+              {check.label}
+            </span>
+          </div>
+        ))}
+      </div>
+    </motion.div>
+  );
+}
+
 /* ── Login form ─────────────────────────────────────────── */
 
 function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }) {
-  const { signIn, authError, clearError } = useAuth();
+  const { signIn, authError, clearError, requires2FA } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [totpToken, setTotpToken] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
@@ -133,10 +200,10 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       e.preventDefault();
       clearError();
       setSubmitting(true);
-      await signIn(email, password);
+      await signIn(email, password, requires2FA ? totpToken : undefined);
       setSubmitting(false);
     },
-    [email, password, signIn, clearError],
+    [email, password, totpToken, requires2FA, signIn, clearError],
   );
 
   return (
@@ -171,6 +238,24 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
         placeholder="••••••••"
       />
 
+      {requires2FA && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+        >
+          <Field
+            icon={Lock}
+            label="2FA Code"
+            type="text"
+            value={totpToken}
+            onChange={setTotpToken}
+            placeholder="000000"
+            autoFocus
+          />
+        </motion.div>
+      )}
+
       <div className="flex items-center justify-between">
         <button
           type="button"
@@ -193,11 +278,11 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
 
       <button
         type="submit"
-        disabled={submitting || !email || !password}
+        disabled={submitting || !email || !password || (requires2FA && !totpToken)}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-semibold text-white shadow-[0_0_30px_-8px] shadow-accent/40 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
       >
         {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
-        {submitting ? "Verifying..." : "Sign In"}
+        {submitting ? "Verifying..." : requires2FA ? "Verify 2FA" : "Sign In"}
       </button>
 
       <p className="text-center font-mono text-[10px] text-muted-foreground">
@@ -271,6 +356,10 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
         onChange={setPassword}
         placeholder="••••••••"
       />
+
+      <AnimatePresence>
+        {password && <PasswordStrengthMeter password={password} />}
+      </AnimatePresence>
 
       {authError && (
         <motion.p

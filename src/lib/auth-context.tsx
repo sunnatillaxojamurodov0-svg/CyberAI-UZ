@@ -11,7 +11,7 @@ interface AuthContextValue {
   user: AuthUser | null;
   session: null;
   loading: boolean;
-  signIn: (email: string, password: string) => Promise<string | null>;
+  signIn: (email: string, password: string, totpToken?: string) => Promise<string | null>;
   signUp: (email: string, password: string, username?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   signInWithGithub: () => void;
@@ -22,6 +22,8 @@ interface AuthContextValue {
   authModalOpen: boolean;
   authError: string | null;
   clearError: () => void;
+  requires2FA: boolean;
+  setRequires2FA: (v: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -39,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const [requires2FA, setRequires2FA] = useState(false);
 
   useEffect(() => {
     apiFetch("/api/auth/me")
@@ -52,20 +55,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string): Promise<string | null> => {
+  const signIn = useCallback(async (email: string, password: string, totpToken?: string): Promise<string | null> => {
     setAuthError(null);
     try {
       const res = await apiFetch("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, totpToken }),
       });
       const data = await res.json();
       if (!data.ok) {
-        setAuthError(data.error ?? "Login failed.");
+        if (data.requires2FA) {
+          setRequires2FA(true);
+          setAuthError("Enter your two-factor authentication code.");
+          return null;
+        }
+        if (data.requiresVerification) {
+          setAuthError("Please verify your email first. Check your inbox for the verification link.");
+        } else if (data.locked) {
+          setAuthError(data.error ?? "Account locked due to too many failed attempts.");
+        } else {
+          setAuthError(data.error ?? "Login failed.");
+        }
         return data.error ?? "Login failed.";
       }
       setUser(data.user);
       setAuthModalOpen(false);
+      setRequires2FA(false);
       return null;
     } catch {
       setAuthError("Network error. Please try again.");
@@ -86,8 +101,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setAuthError(data.error ?? "Registration failed.");
           return data.error ?? "Registration failed.";
         }
-        setUser(data.user);
+        setAuthError(null);
         setAuthModalOpen(false);
+        setAuthError("Verification email sent! Please check your inbox and verify your email before logging in.");
         return null;
       } catch {
         setAuthError("Network error. Please try again.");
@@ -114,9 +130,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     window.location.href = "/api/auth/google";
   }, []);
 
-  const resetPassword = useCallback(async (_email: string): Promise<string | null> => {
-    setAuthError("Password reset is not available yet.");
-    return "Password reset is not available yet.";
+  const resetPassword = useCallback(async (email: string): Promise<string | null> => {
+    setAuthError(null);
+    try {
+      const res = await apiFetch("/api/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (!data.ok) {
+        setAuthError(data.error ?? "Failed to send reset link.");
+        return data.error ?? "Failed to send reset link.";
+      }
+      return null;
+    } catch {
+      setAuthError("Network error. Please try again.");
+      return "Network error. Please try again.";
+    }
   }, []);
 
   const clearError = useCallback(() => setAuthError(null), []);
@@ -137,10 +167,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         closeAuthModal: () => {
           setAuthModalOpen(false);
           setAuthError(null);
+          setRequires2FA(false);
         },
         authModalOpen,
         authError,
         clearError,
+        requires2FA,
+        setRequires2FA,
       }}
     >
       {children}

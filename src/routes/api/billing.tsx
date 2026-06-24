@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { createCheckoutSession, createPortalSession, getUserSubscription, getPlanLimits } from "@/lib/stripe";
+import { getTokenUsage } from "@/lib/auth/ai-quota";
 
 export const Route = createFileRoute("/api/billing")({
   server: {
@@ -21,12 +22,14 @@ export const Route = createFileRoute("/api/billing")({
           const subscription = await getUserSubscription(session.user.id);
           const plan = subscription?.plan || "free";
           const limits = getPlanLimits(plan);
+          const tokenUsage = await getTokenUsage(session.user.id);
 
           return new Response(JSON.stringify({
             ok: true,
             subscription,
             plan,
             limits,
+            tokenUsage,
           }), {
             headers: { "Content-Type": "application/json" },
           });

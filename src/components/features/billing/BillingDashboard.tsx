@@ -16,6 +16,12 @@ interface BillingInfo {
     aiMessagesPerDay: number;
     challengesPerDay: number;
     maxHistory: number;
+    maxTokensPerDay: number;
+  };
+  tokenUsage?: {
+    totalTokens: number;
+    promptTokens: number;
+    completionTokens: number;
   };
 }
 
@@ -108,12 +114,23 @@ export function BillingDashboard() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="text-sm text-muted-foreground mb-1">AI Messages</div>
             <div className="text-lg font-semibold">
               {billing.limits.aiMessagesPerDay === -1 ? "Unlimited" : `${billing.limits.aiMessagesPerDay}/day`}
             </div>
+          </div>
+          <div className="rounded-lg bg-muted/50 p-4">
+            <div className="text-sm text-muted-foreground mb-1">AI Tokens</div>
+            <div className="text-lg font-semibold">
+              {billing.limits.maxTokensPerDay === -1 ? "Unlimited" : `${(billing.limits.maxTokensPerDay / 1000).toFixed(0)}K/day`}
+            </div>
+            {billing.tokenUsage && (
+              <div className="text-xs text-muted-foreground mt-1">
+                Used: {(billing.tokenUsage.totalTokens / 1000).toFixed(1)}K
+              </div>
+            )}
           </div>
           <div className="rounded-lg bg-muted/50 p-4">
             <div className="text-sm text-muted-foreground mb-1">CTF Challenges</div>

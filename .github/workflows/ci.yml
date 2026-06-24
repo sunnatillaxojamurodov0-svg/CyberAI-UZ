@@ -127,7 +127,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --name app-staging
+          command: deploy --config wrangler.staging.jsonc
 
   deploy-production:
     name: Deploy to Production
