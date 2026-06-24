@@ -27,26 +27,7 @@
     "producers": [{ "queue": "ai-usage-queue", "binding": "AI_USAGE_QUEUE" }],
     "consumers": [{ "queue": "ai-usage-queue" }],
   },
-  "workflows": [
-    {
-      "name": "challenge-generator",
-      "binding": "CHALLENGE_WORKFLOW",
-      "class_name": "ChallengeGenerator",
-      "script_name": "app",
-    },
-    {
-      "name": "user-onboarding",
-      "binding": "ONBOARDING_WORKFLOW",
-      "class_name": "UserOnboarding",
-      "script_name": "app",
-    },
-    {
-      "name": "console-analysis",
-      "binding": "CONSOLE_WORKFLOW",
-      "class_name": "ConsoleAnalysis",
-      "script_name": "app",
-    },
-  ],
+  "workflows": [],
   "durable_objects": {
     "bindings": [
       { "name": "CHAT_SESSION_DO", "class_name": "ChatSessionDO" },
