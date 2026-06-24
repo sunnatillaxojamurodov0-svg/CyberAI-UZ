@@ -1,4 +1,4 @@
-import { getEnv } from '@/lib/db';
+import { getEnv } from "@/lib/db";
 
 interface Metric {
   name: string;
@@ -8,7 +8,7 @@ interface Metric {
 }
 
 interface LogEntry {
-  level: 'info' | 'warn' | 'error' | 'debug';
+  level: "info" | "warn" | "error" | "debug";
   message: string;
   timestamp: number;
   context?: Record<string, unknown>;
@@ -23,7 +23,9 @@ class Monitoring {
 
   private getAnalytics() {
     if (!this.env) return null;
-    return this.env.ANALYTICS as { writeDataPoint: (data: { blobs: string[]; doubles: number[] }) => void } | undefined;
+    return this.env.ANALYTICS as
+      | { writeDataPoint: (data: { blobs: string[]; doubles: number[] }) => void }
+      | undefined;
   }
 
   trackMetric(metric: Metric) {
@@ -35,7 +37,7 @@ class Monitoring {
           doubles: [metric.value, metric.timestamp],
         });
       } catch (e) {
-        console.error('Failed to write metric:', e);
+        console.error("Failed to write metric:", e);
       }
     }
   }
@@ -49,14 +51,14 @@ class Monitoring {
           doubles: [entry.timestamp],
         });
       } catch (e) {
-        console.error('Failed to write log:', e);
+        console.error("Failed to write log:", e);
       }
     }
   }
 
   trackRequest(path: string, method: string, status: number, duration: number) {
     this.trackMetric({
-      name: 'http_request',
+      name: "http_request",
       value: duration,
       timestamp: Date.now(),
       tags: { path, method, status: String(status) },
@@ -65,7 +67,7 @@ class Monitoring {
 
   trackError(error: Error, context?: Record<string, unknown>) {
     this.log({
-      level: 'error',
+      level: "error",
       message: error.message,
       timestamp: Date.now(),
       context: {
@@ -78,29 +80,29 @@ class Monitoring {
 
   trackAIUsage(userId: string | null, model: string, duration: number, success: boolean) {
     this.trackMetric({
-      name: 'ai_usage',
+      name: "ai_usage",
       value: duration,
       timestamp: Date.now(),
       tags: {
-        userId: userId || 'anonymous',
+        userId: userId || "anonymous",
         model,
         success: String(success),
       },
     });
   }
 
-  trackAuth(event: 'login' | 'register' | 'logout', userId: string | null, success: boolean) {
+  trackAuth(event: "login" | "register" | "logout", userId: string | null, success: boolean) {
     this.trackMetric({
-      name: 'auth_event',
+      name: "auth_event",
       value: success ? 1 : 0,
       timestamp: Date.now(),
-      tags: { event, userId: userId || 'anonymous' },
+      tags: { event, userId: userId || "anonymous" },
     });
   }
 
   trackChallenge(userId: string, challengeId: string, status: string, score: number) {
     this.trackMetric({
-      name: 'challenge_event',
+      name: "challenge_event",
       value: score,
       timestamp: Date.now(),
       tags: { userId, challengeId, status },

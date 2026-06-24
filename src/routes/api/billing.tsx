@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
-import { createCheckoutSession, createPortalSession, getUserSubscription, getPlanLimits } from "@/lib/stripe";
+import {
+  createCheckoutSession,
+  createPortalSession,
+  getUserSubscription,
+  getPlanLimits,
+} from "@/lib/stripe";
 import { getTokenUsage } from "@/lib/auth/ai-quota";
 
 export const Route = createFileRoute("/api/billing")({
@@ -24,15 +29,18 @@ export const Route = createFileRoute("/api/billing")({
           const limits = getPlanLimits(plan);
           const tokenUsage = await getTokenUsage(session.user.id);
 
-          return new Response(JSON.stringify({
-            ok: true,
-            subscription,
-            plan,
-            limits,
-            tokenUsage,
-          }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({
+              ok: true,
+              subscription,
+              plan,
+              limits,
+              tokenUsage,
+            }),
+            {
+              headers: { "Content-Type": "application/json" },
+            },
+          );
         } catch (err) {
           console.error("Billing API error:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {

@@ -1,9 +1,9 @@
 .gooey-nav-container {
   /* Stitch Design Tokens */
-  --color-1: #00f5a0;  /* Cyber Green — primary */
-  --color-2: #00a6e0;  /* Signal Blue — secondary */
-  --color-3: #cebdff;  /* Intel Purple — tertiary */
-  --color-4: #ffb4ab;  /* Threat Red — error */
+  --color-1: #00f5a0; /* Cyber Green — primary */
+  --color-2: #00a6e0; /* Signal Blue — secondary */
+  --color-3: #cebdff; /* Intel Purple — tertiary */
+  --color-4: #ffb4ab; /* Threat Red — error */
 
   position: relative;
   display: inline-flex;
@@ -50,10 +50,11 @@
   position: absolute;
   pointer-events: none;
   border-radius: 0.25rem;
-  transition: left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              top 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition:
+    left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    top 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .gooey-nav-container .effect.filter {
@@ -67,9 +68,15 @@
 }
 
 @keyframes gooey-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .gooey-nav-container .particle {
@@ -81,7 +88,8 @@
   pointer-events: none;
   z-index: 10;
   animation: gooey-particle var(--time, 600ms) ease-out forwards;
-  transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(var(--scale, 1)) rotate(var(--rotate, 0deg));
+  transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(var(--scale, 1))
+    rotate(var(--rotate, 0deg));
 }
 
 .gooey-nav-container .particle .point {
@@ -94,12 +102,16 @@
 
 @keyframes gooey-particle {
   0% {
-    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(var(--scale, 1)) rotate(var(--rotate, 0deg));
+    transform: translate(var(--start-x, 0), var(--start-y, 0)) scale(var(--scale, 1))
+      rotate(var(--rotate, 0deg));
     opacity: 1;
   }
-  50% { opacity: 0.8; }
+  50% {
+    opacity: 0.8;
+  }
   100% {
-    transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(0) rotate(calc(var(--rotate, 0deg) + 180deg));
+    transform: translate(var(--end-x, 0), var(--end-y, 0)) scale(0)
+      rotate(calc(var(--rotate, 0deg) + 180deg));
     opacity: 0;
   }
 }

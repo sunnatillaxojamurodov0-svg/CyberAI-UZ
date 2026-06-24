@@ -12,10 +12,14 @@ export const Route = createFileRoute("/leaderboard")({
       { title: "CyberAI — Leaderboard" },
       {
         name: "description",
-        content: "Global leaderboard for CyberAI CTF challenges. Compete with elite researchers worldwide.",
+        content:
+          "Global leaderboard for CyberAI CTF challenges. Compete with elite researchers worldwide.",
       },
       { property: "og:title", content: "CyberAI — Leaderboard" },
-      { property: "og:description", content: "Global CTF leaderboard. Compete and climb the ranks." },
+      {
+        property: "og:description",
+        content: "Global CTF leaderboard. Compete and climb the ranks.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/leaderboard" },
       { name: "twitter:card", content: "summary_large_image" },

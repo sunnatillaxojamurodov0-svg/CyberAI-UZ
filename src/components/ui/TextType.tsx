@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import './TextType.css';
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
+import "./TextType.css";
 
 interface TextTypeProps {
   text: string | string[];
@@ -24,17 +24,17 @@ interface TextTypeProps {
 
 const TextType = ({
   text,
-  as: Component = 'div',
+  as: Component = "div",
   typingSpeed = 50,
   initialDelay = 0,
   pauseDuration = 2000,
   deletingSpeed = 30,
   loop = true,
-  className = '',
+  className = "",
   showCursor = true,
   hideCursorWhileTyping = false,
-  cursorCharacter = '|',
-  cursorClassName = '',
+  cursorCharacter = "|",
+  cursorClassName = "",
   cursorBlinkDuration = 0.5,
   textColors = [],
   variableSpeed,
@@ -43,7 +43,7 @@ const TextType = ({
   reverseMode = false,
   ...props
 }: TextTypeProps) => {
-  const [displayedText, setDisplayedText] = useState('');
+  const [displayedText, setDisplayedText] = useState("");
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
@@ -60,7 +60,7 @@ const TextType = ({
   }, [variableSpeed, typingSpeed]);
 
   const getCurrentTextColor = () => {
-    if (textColors.length === 0) return 'inherit';
+    if (textColors.length === 0) return "inherit";
     return textColors[currentTextIndex % textColors.length];
   };
 
@@ -84,10 +84,10 @@ const TextType = ({
 
   useEffect(() => {
     if (showCursor && cursorRef.current) {
-      cursorRef.current.style.opacity = '1';
+      cursorRef.current.style.opacity = "1";
       const blink = () => {
         if (cursorRef.current) {
-          cursorRef.current.style.opacity = cursorRef.current.style.opacity === '0' ? '1' : '0';
+          cursorRef.current.style.opacity = cursorRef.current.style.opacity === "0" ? "1" : "0";
         }
       };
       const interval = setInterval(blink, cursorBlinkDuration * 1000);
@@ -100,11 +100,11 @@ const TextType = ({
 
     let timeout: ReturnType<typeof setTimeout>;
     const currentText = textArray[currentTextIndex];
-    const processedText = reverseMode ? currentText.split('').reverse().join('') : currentText;
+    const processedText = reverseMode ? currentText.split("").reverse().join("") : currentText;
 
     const executeTypingAnimation = () => {
       if (isDeleting) {
-        if (displayedText === '') {
+        if (displayedText === "") {
           setIsDeleting(false);
           if (currentTextIndex === textArray.length - 1 && !loop) {
             return;
@@ -140,7 +140,7 @@ const TextType = ({
       }
     };
 
-    if (currentCharIndex === 0 && !isDeleting && displayedText === '') {
+    if (currentCharIndex === 0 && !isDeleting && displayedText === "") {
       timeout = setTimeout(executeTypingAnimation, initialDelay);
     } else {
       executeTypingAnimation();
@@ -171,13 +171,13 @@ const TextType = ({
   return (
     // @ts-expect-error - Component is a dynamic element type
     <Component ref={containerRef} className={`text-type ${className}`} {...props}>
-      <span className="text-type__content" style={{ color: getCurrentTextColor() || 'inherit' }}>
+      <span className="text-type__content" style={{ color: getCurrentTextColor() || "inherit" }}>
         {displayedText}
       </span>
       {showCursor && (
         <span
           ref={cursorRef}
-          className={`text-type__cursor ${cursorClassName} ${shouldHideCursor ? 'text-type__cursor--hidden' : ''}`}
+          className={`text-type__cursor ${cursorClassName} ${shouldHideCursor ? "text-type__cursor--hidden" : ""}`}
         >
           {cursorCharacter}
         </span>

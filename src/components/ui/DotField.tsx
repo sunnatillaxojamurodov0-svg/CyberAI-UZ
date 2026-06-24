@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface DotFieldProps {
   dotColor?: string;
@@ -8,10 +8,10 @@ interface DotFieldProps {
 }
 
 const DotField = ({
-  dotColor = 'rgba(123, 47, 190, 0.3)',
+  dotColor = "rgba(123, 47, 190, 0.3)",
   dotSize = 2,
   gridGap = 30,
-  className = '',
+  className = "",
 }: DotFieldProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -19,7 +19,7 @@ const DotField = ({
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
     const resize = () => {
@@ -51,8 +51,8 @@ const DotField = ({
     };
 
     resize();
-    window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    window.addEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, [dotColor, dotSize, gridGap]);
 
   return (
@@ -60,10 +60,10 @@ const DotField = ({
       ref={canvasRef}
       className={`pointer-events-none ${className}`}
       style={{
-        position: 'absolute',
+        position: "absolute",
         inset: 0,
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
       }}
     />
   );

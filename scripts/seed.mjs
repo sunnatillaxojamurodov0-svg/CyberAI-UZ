@@ -2,10 +2,10 @@
 
 /**
  * Database Seed Script
- * 
+ *
  * Usage:
  *   node scripts/seed.mjs
- * 
+ *
  * Seeds the database with initial test data:
  *   - Test user
  *   - Sample challenges
@@ -50,8 +50,13 @@ async function seed() {
       name: "WEB: SQL Injection",
       difficulty: 1,
       category: "web",
-      scenario: "A login form at target.cyberai.local has a SQL injection vulnerability. Enumerate the application and exploit the vulnerability to retrieve the hidden flag.",
-      objectives: JSON.stringify(["Enumerate the target", "Find the SQL injection point", "Exploit and retrieve flag"]),
+      scenario:
+        "A login form at target.cyberai.local has a SQL injection vulnerability. Enumerate the application and exploit the vulnerability to retrieve the hidden flag.",
+      objectives: JSON.stringify([
+        "Enumerate the target",
+        "Find the SQL injection point",
+        "Exploit and retrieve flag",
+      ]),
       flag: "CTF{sql_1nj3ct10n_f0und}",
     },
     {
@@ -59,8 +64,13 @@ async function seed() {
       name: "CRYPTO: Caesar Cipher",
       difficulty: 1,
       category: "crypto",
-      scenario: "You intercepted an encrypted message using Caesar cipher. The encrypted text is: KHOOR ZRUOG. Decode it to reveal the flag.",
-      objectives: JSON.stringify(["Identify the cipher", "Determine the shift value", "Decrypt the message"]),
+      scenario:
+        "You intercepted an encrypted message using Caesar cipher. The encrypted text is: KHOOR ZRUOG. Decode it to reveal the flag.",
+      objectives: JSON.stringify([
+        "Identify the cipher",
+        "Determine the shift value",
+        "Decrypt the message",
+      ]),
       flag: "CTF{c43s4r_c1ph3r_d3c0d3d}",
     },
     {
@@ -68,7 +78,8 @@ async function seed() {
       name: "FORENSICS: PCAP Analysis",
       difficulty: 2,
       category: "forensics",
-      scenario: "A suspicious network capture was found. Analyze the pcap file to uncover the hidden flag transmitted over HTTP.",
+      scenario:
+        "A suspicious network capture was found. Analyze the pcap file to uncover the hidden flag transmitted over HTTP.",
       objectives: JSON.stringify(["Open the pcap file", "Filter HTTP traffic", "Extract the flag"]),
       flag: "CTF{pc4p_4n4lys1s_c0mpl3t3}",
     },
@@ -77,7 +88,8 @@ async function seed() {
       name: "REVERSE: Binary Analysis",
       difficulty: 2,
       category: "reverse",
-      scenario: "A binary executable contains a hidden flag. Reverse engineer the binary to extract it.",
+      scenario:
+        "A binary executable contains a hidden flag. Reverse engineer the binary to extract it.",
       objectives: JSON.stringify(["Run the binary", "Analyze strings", "Find the flag"]),
       flag: "CTF{r3v3rs3_3ng1n33r1ng}",
     },
@@ -86,8 +98,13 @@ async function seed() {
       name: "WEB: XSS Challenge",
       difficulty: 2,
       category: "web",
-      scenario: "A comment system has a stored XSS vulnerability. Inject a script to capture the admin's session cookie.",
-      objectives: JSON.stringify(["Find the injection point", "Craft the XSS payload", "Capture the flag"]),
+      scenario:
+        "A comment system has a stored XSS vulnerability. Inject a script to capture the admin's session cookie.",
+      objectives: JSON.stringify([
+        "Find the injection point",
+        "Craft the XSS payload",
+        "Capture the flag",
+      ]),
       flag: "CTF{xss_p4yl04d_d3l1v3r3d}",
     },
     {
@@ -95,8 +112,13 @@ async function seed() {
       name: "PWN: Buffer Overflow",
       difficulty: 3,
       category: "pwn",
-      scenario: "A service running on port 1337 has a buffer overflow vulnerability. Exploit it to gain shell access and read the flag.",
-      objectives: JSON.stringify(["Find the overflow", "Craft the payload", "Get shell and read flag"]),
+      scenario:
+        "A service running on port 1337 has a buffer overflow vulnerability. Exploit it to gain shell access and read the flag.",
+      objectives: JSON.stringify([
+        "Find the overflow",
+        "Craft the payload",
+        "Get shell and read flag",
+      ]),
       flag: "CTF{buff3r_0v3rfl0w_pwn3d}",
     },
     {
@@ -104,7 +126,8 @@ async function seed() {
       name: "WEB: CSRF Attack",
       difficulty: 2,
       category: "web",
-      scenario: "A password change form lacks CSRF protection. Craft a malicious page to change the admin's password.",
+      scenario:
+        "A password change form lacks CSRF protection. Craft a malicious page to change the admin's password.",
       objectives: JSON.stringify(["Analyze the form", "Create CSRF payload", "Execute the attack"]),
       flag: "CTF{csrf_4tt4ck_succ3ssful}",
     },
@@ -113,8 +136,13 @@ async function seed() {
       name: "CRYPTO: RSA Weak Key",
       difficulty: 3,
       category: "crypto",
-      scenario: "An RSA implementation uses a weak public exponent. Factor the modulus to recover the private key.",
-      objectives: JSON.stringify(["Extract public key", "Factor the modulus", "Decrypt the message"]),
+      scenario:
+        "An RSA implementation uses a weak public exponent. Factor the modulus to recover the private key.",
+      objectives: JSON.stringify([
+        "Extract public key",
+        "Factor the modulus",
+        "Decrypt the message",
+      ]),
       flag: "CTF{rs4_w34k_k3y_f4ct0r3d}",
     },
     {
@@ -131,8 +159,13 @@ async function seed() {
       name: "WEB: IDOR Vulnerability",
       difficulty: 2,
       category: "web",
-      scenario: "An API endpoint has an Insecure Direct Object Reference. Manipulate the ID parameter to access other users' data.",
-      objectives: JSON.stringify(["Identify the IDOR", "Manipulate the request", "Access unauthorized data"]),
+      scenario:
+        "An API endpoint has an Insecure Direct Object Reference. Manipulate the ID parameter to access other users' data.",
+      objectives: JSON.stringify([
+        "Identify the IDOR",
+        "Manipulate the request",
+        "Access unauthorized data",
+      ]),
       flag: "CTF{1d0r_d4t4_4cc3ss3d}",
     },
   ];

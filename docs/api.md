@@ -17,6 +17,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -43,6 +44,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -61,6 +63,7 @@ GET /api/auth/me
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -95,6 +98,7 @@ Content-Type: application/json
 **Response:** Streaming text
 
 **Rate Limits:**
+
 - Free: 50 messages/day
 - Pro: Unlimited
 - Enterprise: Unlimited
@@ -108,6 +112,7 @@ GET /api/billing
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -138,6 +143,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -157,6 +163,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -180,6 +187,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -202,6 +210,7 @@ Content-Type: application/json
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -216,6 +225,7 @@ GET /api/workflows?instanceId=challenge-1234567890&workflow=challenge
 ```
 
 **Response:**
+
 ```json
 {
   "ok": true,
@@ -258,6 +268,7 @@ stripe-signature: t=1234567890,v1=abc123...
 ```
 
 **Supported Events:**
+
 - `checkout.session.completed`
 - `invoice.payment_succeeded`
 - `customer.subscription.updated`
@@ -274,6 +285,7 @@ All errors follow this format:
 ```
 
 **HTTP Status Codes:**
+
 - `400` — Bad request
 - `401` — Unauthorized
 - `404` — Not found

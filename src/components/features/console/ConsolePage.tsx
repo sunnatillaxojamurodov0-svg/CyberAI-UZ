@@ -33,7 +33,9 @@ export function ConsolePage() {
 
   /* Flag submission -> engine check + scoring */
   const handleFlagSubmit = useCallback(
-    async (flag: string): Promise<{ correct: boolean; score?: ScoreBreakdown; points?: number }> => {
+    async (
+      flag: string,
+    ): Promise<{ correct: boolean; score?: ScoreBreakdown; points?: number }> => {
       const state = terminalRef.current?.getState();
       if (!state || !active) return { correct: false };
 

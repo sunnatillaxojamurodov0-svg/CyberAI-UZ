@@ -1,6 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { loginUser, isEmailVerified, createVerificationToken, sendVerificationEmail, setSessionCookie, recordLoginAttempt, isAccountLocked } from "@/lib/auth/auth-server";
+import {
+  loginUser,
+  isEmailVerified,
+  createVerificationToken,
+  sendVerificationEmail,
+  setSessionCookie,
+  recordLoginAttempt,
+  isAccountLocked,
+} from "@/lib/auth/auth-server";
 import { is2FAEnabled, verify2FA } from "@/lib/auth/totp";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { writeAnalytics } from "@/lib/analytics";
@@ -30,7 +38,11 @@ export const Route = createFileRoute("/api/auth/login")({
             );
           }
 
-          const body = (await request.json()) as { email?: string; password?: string; totpToken?: string };
+          const body = (await request.json()) as {
+            email?: string;
+            password?: string;
+            totpToken?: string;
+          };
           if (!body.email || !body.password) {
             return new Response(
               JSON.stringify({ ok: false, error: "Email and password are required." }),
@@ -131,7 +143,13 @@ export const Route = createFileRoute("/api/auth/login")({
           }
 
           await recordLoginAttempt(email, ip, true);
-          writeAnalytics("login", "success", result.user.id, "/api/auth/login", Date.now() - startTime);
+          writeAnalytics(
+            "login",
+            "success",
+            result.user.id,
+            "/api/auth/login",
+            Date.now() - startTime,
+          );
           return new Response(JSON.stringify({ ok: true, user: result.user }), {
             status: 200,
             headers: {

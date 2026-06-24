@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getPlanLimits, getUserSubscription } from '@/lib/stripe';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { getPlanLimits, getUserSubscription } from "@/lib/stripe";
 
-vi.mock('@/lib/db', () => ({
+vi.mock("@/lib/db", () => ({
   getEnv: vi.fn(() => ({
     cyberai_db: {
       prepare: vi.fn().mockReturnThis(),
@@ -9,42 +9,42 @@ vi.mock('@/lib/db', () => ({
       first: vi.fn().mockResolvedValue(null),
       run: vi.fn().mockResolvedValue({}),
     },
-    STRIPE_SECRET_KEY: 'sk_test_fake',
-    STRIPE_WEBHOOK_SECRET: 'whsec_fake',
+    STRIPE_SECRET_KEY: "sk_test_fake",
+    STRIPE_WEBHOOK_SECRET: "whsec_fake",
   })),
 }));
 
-describe('Stripe', () => {
+describe("Stripe", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  describe('getPlanLimits', () => {
-    it('should return free plan limits', () => {
-      const limits = getPlanLimits('free');
+  describe("getPlanLimits", () => {
+    it("should return free plan limits", () => {
+      const limits = getPlanLimits("free");
       expect(limits.aiMessagesPerDay).toBe(50);
       expect(limits.challengesPerDay).toBe(3);
       expect(limits.maxHistory).toBe(50);
     });
 
-    it('should return pro plan limits', () => {
-      const limits = getPlanLimits('pro');
+    it("should return pro plan limits", () => {
+      const limits = getPlanLimits("pro");
       expect(limits.aiMessagesPerDay).toBe(-1);
       expect(limits.challengesPerDay).toBe(-1);
       expect(limits.maxHistory).toBe(200);
     });
 
-    it('should return enterprise plan limits', () => {
-      const limits = getPlanLimits('enterprise');
+    it("should return enterprise plan limits", () => {
+      const limits = getPlanLimits("enterprise");
       expect(limits.aiMessagesPerDay).toBe(-1);
       expect(limits.challengesPerDay).toBe(-1);
       expect(limits.maxHistory).toBe(-1);
     });
   });
 
-  describe('getUserSubscription', () => {
-    it('should return null for user without subscription', async () => {
-      const result = await getUserSubscription('user-123');
+  describe("getUserSubscription", () => {
+    it("should return null for user without subscription", async () => {
+      const result = await getUserSubscription("user-123");
       expect(result).toBeNull();
     });
   });

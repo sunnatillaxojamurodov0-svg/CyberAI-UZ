@@ -12,10 +12,14 @@ export const Route = createFileRoute("/targets")({
       { title: "CyberAI — Live Cloud Targets" },
       {
         name: "description",
-        content: "Spin up isolated, realistic vulnerable networks in seconds. No local VMs required.",
+        content:
+          "Spin up isolated, realistic vulnerable networks in seconds. No local VMs required.",
       },
       { property: "og:title", content: "CyberAI — Live Cloud Targets" },
-      { property: "og:description", content: "Real-time vulnerable environments for hands-on practice." },
+      {
+        property: "og:description",
+        content: "Real-time vulnerable environments for hands-on practice.",
+      },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/targets" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -41,8 +45,8 @@ function TargetsRoute() {
               Spin up <span className="gradient-text">real targets.</span>
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
-              Launch isolated, realistic vulnerable networks in seconds. Practice on real infrastructure
-              without setting up local VMs.
+              Launch isolated, realistic vulnerable networks in seconds. Practice on real
+              infrastructure without setting up local VMs.
             </p>
           </div>
         </section>

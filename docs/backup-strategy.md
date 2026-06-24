@@ -11,11 +11,13 @@ This document outlines the backup and recovery strategy for the CyberAI platform
 **Frequency:** Daily automated + Manual before deployments
 
 **What to backup:**
+
 - `cyberai-db` — All tables (users, sessions, challenges, etc.)
 
 **Methods:**
 
 #### Manual Export
+
 ```bash
 # Export full database
 npx wrangler d1 export cyberai-db --output ./backups/cyberai-db-$(date +%Y%m%d).sql
@@ -25,12 +27,13 @@ npx wrangler d1 execute cyberai-db --command "SELECT * FROM users" --output ./ba
 ```
 
 #### Automated (via GitHub Actions)
+
 ```yaml
 # .github/workflows/backup.yml
 name: Database Backup
 on:
   schedule:
-    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+    - cron: "0 2 * * *" # Daily at 2 AM UTC
   workflow_dispatch:
 
 jobs:
@@ -51,9 +54,11 @@ jobs:
 **Frequency:** Weekly
 
 **What to backup:**
+
 - `CYBERAI_KV` — Cache, sessions, temporary data
 
 **Method:**
+
 ```bash
 # List all keys
 npx wrangler kv key list --namespace-id=31c6e4512cd34d97b2c27839f558b100
@@ -67,12 +72,14 @@ npx wrangler kv key get <key> --namespace-id=31c6e4512cd34d97b2c27839f558b100
 **Frequency:** On every change
 
 **What to backup:**
+
 - `wrangler.jsonc` — Worker configuration
 - `drizzle/schema.ts` — Database schema
 - `.dev.vars` — Environment variables (encrypted)
 - `docker-proxy/` — Docker configuration
 
 **Method:**
+
 ```bash
 # Git commit (automatic)
 git add -A
@@ -87,11 +94,13 @@ tar -czf config-backup-$(date +%Y%m%d).tar.gz wrangler.jsonc drizzle/ .dev.vars 
 **Frequency:** On every deployment
 
 **What to backup:**
+
 - `src/` — Application source code
 - `package.json` — Dependencies
 - `dist/` — Built assets
 
 **Method:**
+
 ```bash
 # Git tag on deployment
 git tag -a v$(date +%Y%m%d-%H%M%S) -m "Deployment backup"
@@ -103,6 +112,7 @@ git push origin --tags
 ### 1. Database Recovery
 
 #### Restore from Backup
+
 ```bash
 # Restore full database
 npx wrangler d1 execute cyberai-db --file ./backups/cyberai-db-20240101.sql
@@ -112,6 +122,7 @@ npx wrangler d1 execute cyberai-db --file ./backups/users-20240101.sql
 ```
 
 #### Point-in-Time Recovery
+
 ```bash
 # Export current state
 npx wrangler d1 export cyberai-db --output ./pre-restore.sql
@@ -126,6 +137,7 @@ npx wrangler d1 execute cyberai-db --command "SELECT COUNT(*) FROM users"
 ### 2. Configuration Recovery
 
 #### Restore from Git
+
 ```bash
 # List recent commits
 git log --oneline -10
@@ -138,6 +150,7 @@ git checkout <commit-hash> -- wrangler.jsonc drizzle/ .dev.vars
 ```
 
 #### Restore from Backup
+
 ```bash
 # Extract backup
 tar -xzf config-backup-20240101.tar.gz
@@ -149,6 +162,7 @@ ls -la wrangler.jsonc drizzle/ .dev.vars
 ### 3. Application Recovery
 
 #### Redeploy Previous Version
+
 ```bash
 # List deployments
 git tag -l
@@ -160,6 +174,7 @@ npx wrangler deploy
 ```
 
 #### Rollback
+
 ```bash
 # Find last working commit
 git log --oneline -5
@@ -173,16 +188,17 @@ git push origin main --force
 
 ## Backup Schedule
 
-| Type | Frequency | Retention | Storage |
-|------|-----------|-----------|---------|
-| Database | Daily | 30 days | R2 |
-| KV | Weekly | 14 days | R2 |
-| Config | On change | Git history | GitHub |
-| Code | On deploy | Git tags | GitHub |
+| Type     | Frequency | Retention   | Storage |
+| -------- | --------- | ----------- | ------- |
+| Database | Daily     | 30 days     | R2      |
+| KV       | Weekly    | 14 days     | R2      |
+| Config   | On change | Git history | GitHub  |
+| Code     | On deploy | Git tags    | GitHub  |
 
 ## Monitoring
 
 ### Backup Status
+
 ```bash
 # Check R2 backups
 npx wrangler r2 object list cyberai-backups/
@@ -192,6 +208,7 @@ npx wrangler r2 object get cyberai-backups/backup-$(date +%Y%m%d).sql --output .
 ```
 
 ### Alerts
+
 - Failed backup → GitHub Actions notification
 - Database size > 100MB → Warning
 - Backup age > 48 hours → Critical
@@ -206,18 +223,21 @@ npx wrangler r2 object get cyberai-backups/backup-$(date +%Y%m%d).sql --output .
 ## Disaster Recovery
 
 ### Scenario 1: Database Corruption
+
 1. Export current state (if possible)
 2. Restore from latest backup
 3. Verify data integrity
 4. Notify affected users
 
 ### Scenario 2: Code Deployment Failure
+
 1. Identify last working deployment
 2. `git revert` or `git reset`
 3. `npm run build && npx wrangler deploy`
 4. Verify functionality
 
 ### Scenario 3: Complete Data Loss
+
 1. Restore database from R2 backup
 2. Restore KV from backup
 3. Redeploy application

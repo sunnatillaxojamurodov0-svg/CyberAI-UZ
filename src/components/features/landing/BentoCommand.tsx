@@ -25,10 +25,21 @@ export function BentoCommand() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[300px]">
           <motion.div {...reveal(0)} className="md:col-span-2">
-            <GlassPanel hoverGlow className="h-full p-8 flex flex-col justify-between relative overflow-hidden group">
+            <GlassPanel
+              hoverGlow
+              className="h-full p-8 flex flex-col justify-between relative overflow-hidden group"
+            >
               <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="relative z-10">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-primary mb-4">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-primary mb-4"
+                >
                   <path d="M12 2L2 7l10 5 10-5-10-5z" />
                   <path d="M2 17l10 5 10-5" />
                   <path d="M2 12l10 5 10-5" />
@@ -45,13 +56,23 @@ export function BentoCommand() {
           <motion.div {...reveal(1)}>
             <GlassPanel className="h-full p-8 flex flex-col justify-between relative overflow-hidden group hover:border-accent/50 transition-colors">
               <div className="relative z-10">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-accent mb-4">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-accent mb-4"
+                >
                   <circle cx="12" cy="12" r="10" />
                   <path d="M2 12h20" />
                   <path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
                 </svg>
                 <h3 className="text-2xl font-bold text-foreground mb-2">Live Cloud Targets</h3>
-                <p className="text-muted-foreground">Spin up isolated, realistic vulnerable networks in seconds. No local VMs required.</p>
+                <p className="text-muted-foreground">
+                  Spin up isolated, realistic vulnerable networks in seconds. No local VMs required.
+                </p>
               </div>
             </GlassPanel>
           </motion.div>
@@ -59,14 +80,25 @@ export function BentoCommand() {
           <motion.div {...reveal(2)}>
             <GlassPanel className="h-full p-8 flex flex-col justify-between relative overflow-hidden group hover:border-emerald/50 transition-colors">
               <div className="relative z-10">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-emerald mb-4">
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="text-emerald mb-4"
+                >
                   <path d="M12 2l2 4h4l-3 3 1 4-4-2-4 2 1-4-3-3h4z" />
                   <path d="M12 22v-4" />
                   <path d="M8 18l-2 4" />
                   <path d="M16 18l2 4" />
                 </svg>
                 <h3 className="text-2xl font-bold text-foreground mb-2">Gamified CTFs</h3>
-                <p className="text-muted-foreground">Compete in global leaderboards. Earn zero-knowledge proofs for every vulnerability you exploit.</p>
+                <p className="text-muted-foreground">
+                  Compete in global leaderboards. Earn zero-knowledge proofs for every vulnerability
+                  you exploit.
+                </p>
               </div>
             </GlassPanel>
           </motion.div>
@@ -87,14 +119,26 @@ export function BentoCommand() {
                   </svg>
                   Premium Feature
                 </div>
-                <h3 className="text-2xl font-bold text-foreground mb-2">Automated Threat Emulation</h3>
-                <p className="text-muted-foreground mb-6">Test your defenses against AI-generated attack vectors that adapt to your architecture in real-time.</p>
+                <h3 className="text-2xl font-bold text-foreground mb-2">
+                  Automated Threat Emulation
+                </h3>
+                <p className="text-muted-foreground mb-6">
+                  Test your defenses against AI-generated attack vectors that adapt to your
+                  architecture in real-time.
+                </p>
                 <a
                   href="/console"
                   className="text-primary hover:text-primary/80 flex items-center gap-1 font-semibold transition-colors text-sm"
                 >
                   Explore Red Team Tools
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
                     <path d="M5 12h14M12 5l7 7-7 7" />
                   </svg>
                 </a>

@@ -1,6 +1,17 @@
 import { useState, useCallback, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Mail, Lock, User, ArrowLeft, Loader2, Sparkles, CheckCircle2, Check, XCircle } from "lucide-react";
+import {
+  X,
+  Mail,
+  Lock,
+  User,
+  ArrowLeft,
+  Loader2,
+  Sparkles,
+  CheckCircle2,
+  Check,
+  XCircle,
+} from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
@@ -153,13 +164,18 @@ function PasswordStrengthMeter({ password }: { password: string }) {
             key={i}
             className={cn(
               "h-1 flex-1 rounded-full transition-colors duration-300",
-              i < strength ? colors[strength] : "bg-muted"
+              i < strength ? colors[strength] : "bg-muted",
             )}
           />
         ))}
       </div>
       <div className="flex items-center justify-between">
-        <span className={cn("font-mono text-[10px] font-bold uppercase tracking-[0.1em]", textColors[strength])}>
+        <span
+          className={cn(
+            "font-mono text-[10px] font-bold uppercase tracking-[0.1em]",
+            textColors[strength],
+          )}
+        >
           {labels[strength]}
         </span>
       </div>
@@ -174,7 +190,7 @@ function PasswordStrengthMeter({ password }: { password: string }) {
             <span
               className={cn(
                 "font-mono text-[9px] tracking-wide",
-                check.test(password) ? "text-emerald-400" : "text-muted-foreground/40"
+                check.test(password) ? "text-emerald-400" : "text-muted-foreground/40",
               )}
             >
               {check.label}
@@ -357,9 +373,7 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
         placeholder="••••••••"
       />
 
-      <AnimatePresence>
-        {password && <PasswordStrengthMeter password={password} />}
-      </AnimatePresence>
+      <AnimatePresence>{password && <PasswordStrengthMeter password={password} />}</AnimatePresence>
 
       {authError && (
         <motion.p

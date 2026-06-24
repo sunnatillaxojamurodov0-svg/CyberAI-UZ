@@ -11,7 +11,14 @@ import { writeAnalytics } from "../lib/analytics";
 
 export async function processAiUsageBatch(
   messages: { body: UsageMessage }[],
-  db: { prepare: (sql: string) => { bind: (...args: unknown[]) => { first: <T>() => Promise<T | null>; run: () => Promise<unknown> } } },
+  db: {
+    prepare: (sql: string) => {
+      bind: (...args: unknown[]) => {
+        first: <T>() => Promise<T | null>;
+        run: () => Promise<unknown>;
+      };
+    };
+  },
 ): Promise<void> {
   const startTime = Date.now();
   let processed = 0;
@@ -40,5 +47,12 @@ export async function processAiUsageBatch(
       /* non-fatal */
     }
   }
-  writeAnalytics("queue", processed === messages.length ? "success" : "error", null, "/queue/ai-usage", Date.now() - startTime, { error: processed < messages.length ? "partial_failure" : undefined });
+  writeAnalytics(
+    "queue",
+    processed === messages.length ? "success" : "error",
+    null,
+    "/queue/ai-usage",
+    Date.now() - startTime,
+    { error: processed < messages.length ? "partial_failure" : undefined },
+  );
 }

@@ -21,7 +21,9 @@ function CommunityPage() {
         <div className="mx-auto max-w-4xl">
           <div className="mb-8 text-center">
             <h1 className="font-display text-3xl font-bold tracking-tight">Community Challenges</h1>
-            <p className="mt-2 text-muted-foreground">Submit your own CTF challenges and help the community learn</p>
+            <p className="mt-2 text-muted-foreground">
+              Submit your own CTF challenges and help the community learn
+            </p>
           </div>
           <ChallengeSubmit />
         </div>

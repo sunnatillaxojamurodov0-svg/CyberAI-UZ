@@ -12,7 +12,8 @@ export const Route = createFileRoute("/zkp")({
       { title: "CyberAI — Zero-Knowledge Proofs" },
       {
         name: "description",
-        content: "Prove you solved a challenge without revealing the flag. Cryptographic verification of CTF solutions.",
+        content:
+          "Prove you solved a challenge without revealing the flag. Cryptographic verification of CTF solutions.",
       },
       { property: "og:title", content: "CyberAI — Zero-Knowledge Proofs" },
       { property: "og:description", content: "Cryptographic proof of CTF solutions." },

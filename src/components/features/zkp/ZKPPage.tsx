@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
-import { 
-  Lock, 
-  Unlock, 
-  CheckCircle2, 
-  XCircle, 
-  Copy, 
+import {
+  Lock,
+  Unlock,
+  CheckCircle2,
+  XCircle,
+  Copy,
   RefreshCw,
   Shield,
   Eye,
-  EyeOff
+  EyeOff,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth-context";
@@ -113,9 +113,7 @@ export function ZKPPage() {
             onClick={() => setVerifyMode(false)}
             className={cn(
               "flex items-center gap-2 rounded-lg px-5 py-2.5 font-mono text-xs font-bold transition-all",
-              !verifyMode
-                ? "bg-accent text-white"
-                : "text-muted-foreground hover:text-foreground"
+              !verifyMode ? "bg-accent text-white" : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Lock size={14} />
@@ -126,9 +124,7 @@ export function ZKPPage() {
             onClick={() => setVerifyMode(true)}
             className={cn(
               "flex items-center gap-2 rounded-lg px-5 py-2.5 font-mono text-xs font-bold transition-all",
-              verifyMode
-                ? "bg-accent text-white"
-                : "text-muted-foreground hover:text-foreground"
+              verifyMode ? "bg-accent text-white" : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Unlock size={14} />
@@ -154,8 +150,8 @@ export function ZKPPage() {
             Generate Zero-Knowledge Proof
           </h3>
           <p className="mb-6 text-sm text-muted-foreground">
-            Prove you solved a challenge without revealing the flag. The proof is a cryptographic hash
-            that can be verified without exposing the original solution.
+            Prove you solved a challenge without revealing the flag. The proof is a cryptographic
+            hash that can be verified without exposing the original solution.
           </p>
 
           <div className="space-y-4">
@@ -201,7 +197,7 @@ export function ZKPPage() {
                 "flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-mono text-sm font-bold transition-all",
                 loading
                   ? "bg-accent/20 text-accent"
-                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none"
+                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
               )}
             >
               {loading ? (
@@ -274,7 +270,8 @@ export function ZKPPage() {
 
                 <div className="pt-2">
                   <p className="text-xs text-muted-foreground">
-                    Share this Proof ID to let others verify your solution without revealing the flag.
+                    Share this Proof ID to let others verify your solution without revealing the
+                    flag.
                   </p>
                 </div>
               </div>
@@ -314,7 +311,7 @@ export function ZKPPage() {
                 "flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3 font-mono text-sm font-bold transition-all",
                 loading
                   ? "bg-accent/20 text-accent"
-                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none"
+                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
               )}
             >
               {loading ? (
@@ -351,7 +348,9 @@ export function ZKPPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="font-mono text-xs text-muted-foreground">Challenge:</span>
-                  <span className="font-mono text-xs text-foreground">{verifyResult.public_input}</span>
+                  <span className="font-mono text-xs text-foreground">
+                    {verifyResult.public_input}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-mono text-xs text-muted-foreground">Created:</span>

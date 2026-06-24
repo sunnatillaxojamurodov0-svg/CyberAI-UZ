@@ -15,17 +15,20 @@ Bu tizim Docker API'ni internetga chiqaradi. Agar noto'g'ri sozlasangiz, hakerla
 ## 📋 O'rnatish qadamlari:
 
 ### 1. Docker Desktop o'rnating
+
 ```
 https://docker.com/products/docker-desktop
 ```
 
 ### 2. setup.bat ni ishga tushiring
+
 ```
 cd D:\cyberaiuz\docker-proxy
 setup.bat
 ```
 
 ### 3. Serverni ishga tushiring
+
 ```
 start.bat
 ```
@@ -33,11 +36,13 @@ start.bat
 ### 4. Cloudflare Tunnel sozlang
 
 #### a. cloudflared o'rnating
+
 ```
 winget install cloudflare.cloudflared
 ```
 
 #### b. Cloudflare dashboard dan tunnel yarating
+
 1. https://dash.cloudflare.com → Zero Trust → Networks → Tunnels
 2. "Create a tunnel" bosing
 3. Tunnel nomi: `cyberai-docker-proxy`
@@ -45,11 +50,13 @@ winget install cloudflare.cloudflared
 5. Hostname: `docker.cyberaiuz.workers.dev`
 
 #### c. Tunnel sozlamasini yuklab oling
+
 ```
 cloudflared tunnel token cyberai-docker-proxy > C:\Users\sunna\.cloudflared\credentials.json
 ```
 
 #### d. Tunnel ishga tushiring
+
 ```
 cloudflared tunnel run cyberai-docker-proxy
 ```
@@ -57,9 +64,11 @@ cloudflared tunnel run cyberai-docker-proxy
 ## 🔧 API ishlatish:
 
 ### API Key olish
+
 Server ishga tushganda console da API Key ko'rsatiladi.
 
 ### Container yaratish
+
 ```bash
 curl -X POST https://docker.cyberaiuz.workers.dev/api/containers \
   -H "Authorization: Bearer YOUR_API_KEY" \
@@ -68,18 +77,21 @@ curl -X POST https://docker.cyberaiuz.workers.dev/api/containers \
 ```
 
 ### Container ro'yxati
+
 ```bash
 curl https://docker.cyberaiuz.workers.dev/api/containers \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ### Container to'xtatish
+
 ```bash
 curl -X DELETE https://docker.cyberaiuz.workers.dev/api/containers/CONTAINER_ID \
   -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ## 📁 Fayl tuzilishi:
+
 ```
 docker-proxy/
 ├── server.js          # Asosiy server
@@ -93,13 +105,13 @@ docker-proxy/
 
 ## ⚡ Template lar:
 
-| ID | OS | Xizmatlar |
-|----|-----|-----------|
-| ubuntu-web | Ubuntu 22.04 | http, ssh, mysql |
-| centos-mail | CentOS 9 | smtp, imap, ssh |
-| debian-db | Debian 12 | postgresql, redis, ssh |
-| alpine-container | Alpine 3.18 | docker, ssh |
-| kali-pentest | Kali Linux | ssh, metasploit |
+| ID               | OS           | Xizmatlar              |
+| ---------------- | ------------ | ---------------------- |
+| ubuntu-web       | Ubuntu 22.04 | http, ssh, mysql       |
+| centos-mail      | CentOS 9     | smtp, imap, ssh        |
+| debian-db        | Debian 12    | postgresql, redis, ssh |
+| alpine-container | Alpine 3.18  | docker, ssh            |
+| kali-pentest     | Kali Linux   | ssh, metasploit        |
 
 ## 🔒 Xavfsizlik maslahatlari:
 

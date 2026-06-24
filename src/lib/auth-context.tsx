@@ -55,38 +55,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const signIn = useCallback(async (email: string, password: string, totpToken?: string): Promise<string | null> => {
-    setAuthError(null);
-    try {
-      const res = await apiFetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ email, password, totpToken }),
-      });
-      const data = await res.json();
-      if (!data.ok) {
-        if (data.requires2FA) {
-          setRequires2FA(true);
-          setAuthError("Enter your two-factor authentication code.");
-          return null;
+  const signIn = useCallback(
+    async (email: string, password: string, totpToken?: string): Promise<string | null> => {
+      setAuthError(null);
+      try {
+        const res = await apiFetch("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email, password, totpToken }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          if (data.requires2FA) {
+            setRequires2FA(true);
+            setAuthError("Enter your two-factor authentication code.");
+            return null;
+          }
+          if (data.requiresVerification) {
+            setAuthError(
+              "Please verify your email first. Check your inbox for the verification link.",
+            );
+          } else if (data.locked) {
+            setAuthError(data.error ?? "Account locked due to too many failed attempts.");
+          } else {
+            setAuthError(data.error ?? "Login failed.");
+          }
+          return data.error ?? "Login failed.";
         }
-        if (data.requiresVerification) {
-          setAuthError("Please verify your email first. Check your inbox for the verification link.");
-        } else if (data.locked) {
-          setAuthError(data.error ?? "Account locked due to too many failed attempts.");
-        } else {
-          setAuthError(data.error ?? "Login failed.");
-        }
-        return data.error ?? "Login failed.";
+        setUser(data.user);
+        setAuthModalOpen(false);
+        setRequires2FA(false);
+        return null;
+      } catch {
+        setAuthError("Network error. Please try again.");
+        return "Network error. Please try again.";
       }
-      setUser(data.user);
-      setAuthModalOpen(false);
-      setRequires2FA(false);
-      return null;
-    } catch {
-      setAuthError("Network error. Please try again.");
-      return "Network error. Please try again.";
-    }
-  }, []);
+    },
+    [],
+  );
 
   const signUp = useCallback(
     async (email: string, password: string, username?: string): Promise<string | null> => {
@@ -103,7 +108,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
         setAuthError(null);
         setAuthModalOpen(false);
-        setAuthError("Verification email sent! Please check your inbox and verify your email before logging in.");
+        setAuthError(
+          "Verification email sent! Please check your inbox and verify your email before logging in.",
+        );
         return null;
       } catch {
         setAuthError("Network error. Please try again.");

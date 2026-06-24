@@ -36,9 +36,7 @@ export interface AiQuotaResult {
   plan: Plan;
 }
 
-export async function checkAiQuota(
-  userId: string | null,
-): Promise<AiQuotaResult> {
+export async function checkAiQuota(userId: string | null): Promise<AiQuotaResult> {
   try {
     const db = requireDb<D1Database>();
     const date = today();
@@ -64,16 +62,21 @@ export async function checkAiQuota(
       .first<{ count: number }>();
 
     const tokenRow = await db
-      .prepare("SELECT COALESCE(SUM(total_tokens), 0) as total FROM ai_token_usage WHERE user_id = ? AND date = ?")
+      .prepare(
+        "SELECT COALESCE(SUM(total_tokens), 0) as total FROM ai_token_usage WHERE user_id = ? AND date = ?",
+      )
       .bind(key, date)
       .first<{ total: number }>();
 
     const used = row?.count ?? 0;
     const tokensUsed = tokenRow?.total ?? 0;
-    const tokensRemaining = limits.maxTokensPerDay === -1 ? -1 : Math.max(0, limits.maxTokensPerDay - tokensUsed);
+    const tokensRemaining =
+      limits.maxTokensPerDay === -1 ? -1 : Math.max(0, limits.maxTokensPerDay - tokensUsed);
 
     return {
-      allowed: used < limits.aiMessagesPerDay && (limits.maxTokensPerDay === -1 || tokensUsed < limits.maxTokensPerDay),
+      allowed:
+        used < limits.aiMessagesPerDay &&
+        (limits.maxTokensPerDay === -1 || tokensUsed < limits.maxTokensPerDay),
       remaining: Math.max(0, limits.aiMessagesPerDay - used),
       tokensRemaining,
       plan,

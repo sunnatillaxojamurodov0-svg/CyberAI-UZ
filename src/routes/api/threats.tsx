@@ -84,7 +84,7 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
           const orResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${apiKey}`,
+              Authorization: `Bearer ${apiKey}`,
               "Content-Type": "application/json",
               "HTTP-Referer": "https://cyberaiuz.com",
               "X-OpenRouter-Title": "CyberAI",
@@ -99,10 +99,10 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
           });
 
           if (!orResponse.ok) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "AI service error" }),
-              { status: 500, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "AI service error" }), {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const orData = await orResponse.json();
@@ -131,7 +131,9 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
             id: t.id || `TV-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
             name: t.name || "Unknown Threat",
             description: t.description || "No description available",
-            severity: ["low", "medium", "high", "critical"].includes(t.severity) ? t.severity : "medium",
+            severity: ["low", "medium", "high", "critical"].includes(t.severity)
+              ? t.severity
+              : "medium",
             category: t.category || "general",
             technique: t.technique || "Unknown technique",
             mitigation: t.mitigation || "Consult security documentation",
@@ -155,7 +157,10 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to generate threats" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to generate threats",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }

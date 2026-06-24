@@ -178,9 +178,13 @@ export const Route = createFileRoute("/api/console/hint")({
           const now = new Date();
           const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
           try {
-            const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as { send: (msg: unknown) => Promise<void> };
+            const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as {
+              send: (msg: unknown) => Promise<void>;
+            };
             await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
-          } catch { /* non-fatal */ }
+          } catch {
+            /* non-fatal */
+          }
 
           const context = [
             `Challenge: ${body.challengeTitle} (Level ${body.challengeLevel}, ${body.challengeCategory})`,
@@ -194,17 +198,26 @@ export const Route = createFileRoute("/api/console/hint")({
 
           const injectionCheck = checkPromptInjection(body.userMessage);
           if (!injectionCheck.safe) {
-            writeAnalytics("hint", "injection_blocked", userId, "/api/console/hint", Date.now() - startTime);
-            return new Response("Your message contains potentially harmful content and has been blocked.", {
-              status: 403,
-              headers: { "Content-Type": "text/plain" },
-            });
+            writeAnalytics(
+              "hint",
+              "injection_blocked",
+              userId,
+              "/api/console/hint",
+              Date.now() - startTime,
+            );
+            return new Response(
+              "Your message contains potentially harmful content and has been blocked.",
+              {
+                status: 403,
+                headers: { "Content-Type": "text/plain" },
+              },
+            );
           }
 
           const orResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
             method: "POST",
             headers: {
-              "Authorization": `Bearer ${apiKey}`,
+              Authorization: `Bearer ${apiKey}`,
               "Content-Type": "application/json",
               "HTTP-Referer": "https://cyberaiuz.com",
               "X-OpenRouter-Title": "CyberAI",
@@ -214,7 +227,10 @@ export const Route = createFileRoute("/api/console/hint")({
               messages: [
                 { role: "system", content: createSecureSystemPrompt(SYSTEM_PROMPT) },
                 { role: "user", content: "Here is my current challenge context and question:" },
-                { role: "assistant", content: "Understood. Send me the context and I'll guide you." },
+                {
+                  role: "assistant",
+                  content: "Understood. Send me the context and I'll guide you.",
+                },
                 { role: "user", content: context },
               ],
               stream: true,
@@ -270,7 +286,9 @@ export const Route = createFileRoute("/api/console/hint")({
             },
           });
 
-          writeAnalytics("hint", "success", userId, "/api/console/hint", Date.now() - startTime, { model: "nvidia/nemotron-3-ultra-550b-a55b:free" });
+          writeAnalytics("hint", "success", userId, "/api/console/hint", Date.now() - startTime, {
+            model: "nvidia/nemotron-3-ultra-550b-a55b:free",
+          });
           return new Response(stream, {
             headers: { "Content-Type": "text/plain" },
           });

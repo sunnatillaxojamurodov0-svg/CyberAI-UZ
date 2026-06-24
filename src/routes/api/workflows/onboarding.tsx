@@ -8,7 +8,9 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
       POST: async ({ request }) => {
         try {
           const env = getEnv();
-          const workflow = env.USER_ONBOARDING as { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> } | undefined;
+          const workflow = env.USER_ONBOARDING as
+            | { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> }
+            | undefined;
           if (!workflow) {
             return new Response("User Onboarding workflow not available.", { status: 503 });
           }
@@ -37,10 +39,16 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Workflow failed" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Workflow failed",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            },
+          );
         }
       },
     },

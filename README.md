@@ -153,19 +153,19 @@ cyberai/
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|------------|
-| Frontend | React 19 + TanStack Router + TailwindCSS 4 |
-| Backend | TanStack Start (SSR) + Cloudflare Workers |
-| Database | Cloudflare D1 (SQLite) |
-| Storage | Cloudflare R2, KV |
-| AI | OpenRouter (GPT, Claude, Llama) |
-| Auth | Custom (GitHub, Google OAuth, 2FA) |
-| Payments | Stripe |
-| Realtime | Durable Objects (WebSocket) |
-| Queue | Cloudflare Queues |
-| Container | Docker Proxy (Kali sandbox) |
-| Monitoring | Sentry + Analytics Engine |
+| Layer      | Technology                                 |
+| ---------- | ------------------------------------------ |
+| Frontend   | React 19 + TanStack Router + TailwindCSS 4 |
+| Backend    | TanStack Start (SSR) + Cloudflare Workers  |
+| Database   | Cloudflare D1 (SQLite)                     |
+| Storage    | Cloudflare R2, KV                          |
+| AI         | OpenRouter (GPT, Claude, Llama)            |
+| Auth       | Custom (GitHub, Google OAuth, 2FA)         |
+| Payments   | Stripe                                     |
+| Realtime   | Durable Objects (WebSocket)                |
+| Queue      | Cloudflare Queues                          |
+| Container  | Docker Proxy (Kali sandbox)                |
+| Monitoring | Sentry + Analytics Engine                  |
 
 ## API
 

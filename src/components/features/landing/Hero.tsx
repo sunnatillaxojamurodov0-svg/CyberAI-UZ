@@ -30,22 +30,12 @@ export function Hero() {
 
       {/* Silk - binafsharang ipak fon */}
       <div className="absolute inset-0 z-0 opacity-25">
-        <Silk
-          speed={5}
-          scale={1}
-          color="#7B2FBE"
-          noiseIntensity={1.5}
-          rotation={0}
-        />
+        <Silk speed={5} scale={1} color="#7B2FBE" noiseIntensity={1.5} rotation={0} />
       </div>
 
       {/* DotField - nuqtalar tarmog'i */}
       <div className="absolute inset-0 z-0">
-        <DotField
-          dotColor="rgba(123, 47, 190, 0.2)"
-          dotSize={1.5}
-          gridGap={40}
-        />
+        <DotField dotColor="rgba(123, 47, 190, 0.2)" dotSize={1.5} gridGap={40} />
       </div>
 
       <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] pointer-events-none" />
@@ -60,7 +50,9 @@ export function Hero() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border">
               <span className="size-2 rounded-full bg-primary animate-pulse" />
-              <span className="font-mono text-[10px] uppercase tracking-wider text-primary">v2.0 Beta Live</span>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-primary">
+                v2.0 Beta Live
+              </span>
             </div>
 
             <h1 className="font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-[1.1] tracking-[-0.04em] text-balance">
@@ -114,7 +106,6 @@ export function Hero() {
           </motion.div>
         </div>
       </div>
-
     </section>
   );
 }
@@ -143,7 +134,10 @@ function TerminalVisual() {
       }
     };
     t = setTimeout(addLine, 1000);
-    return () => { cancelled = true; clearTimeout(t); };
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+    };
   }, []);
 
   return (
@@ -181,13 +175,24 @@ function TerminalVisual() {
               className="mt-4 p-4 bg-surface-2/80 backdrop-blur-sm rounded-lg border border-primary/30 flex items-start gap-4"
             >
               <span className="text-primary mt-1">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-spin" style={{ animationDuration: "3s" }}>
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="animate-spin"
+                  style={{ animationDuration: "3s" }}
+                >
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 6v6l4 2" />
                 </svg>
               </span>
               <div>
-                <p className="text-primary font-bold tracking-wide text-xs uppercase">AI Assistant</p>
+                <p className="text-primary font-bold tracking-wide text-xs uppercase">
+                  AI Assistant
+                </p>
                 <p className="text-xs mt-1 text-muted-foreground">
                   I've identified the zero-day exploit payload. Recommending immediate sandbox
                   isolation.

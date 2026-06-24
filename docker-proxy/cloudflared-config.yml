@@ -15,6 +15,6 @@ ingress:
     originRequest:
       noTLSVerify: true
       connectTimeout: 30s
-      
+
   # Catch-all rule (required)
   - service: http_status:404

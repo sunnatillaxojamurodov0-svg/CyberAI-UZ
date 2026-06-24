@@ -23,11 +23,7 @@ async function generateProof(flag: string, challengeId: string): Promise<string>
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
-async function verifyProof(
-  proofHash: string,
-  flag: string,
-  challengeId: string
-): Promise<boolean> {
+async function verifyProof(proofHash: string, flag: string, challengeId: string): Promise<boolean> {
   const expectedHash = await generateProof(flag, challengeId);
   return proofHash === expectedHash;
 }
@@ -41,10 +37,10 @@ export const Route = createFileRoute("/api/zkp")({
           const session = token ? await verifySession(token) : null;
 
           if (!session?.ok || !session.user?.id) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Authentication required" }),
-              { status: 401, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const body = (await request.json()) as {
@@ -67,18 +63,18 @@ export const Route = createFileRoute("/api/zkp")({
             .first<{ flag: string }>();
 
           if (!challenge) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Challenge not found" }),
-              { status: 404, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Challenge not found" }), {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           // Verify the flag is correct
           if (challenge.flag !== body.flag) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Invalid flag" }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Invalid flag" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           // Generate ZKP proof
@@ -89,7 +85,7 @@ export const Route = createFileRoute("/api/zkp")({
           await db
             .prepare(
               `INSERT INTO console_sessions (id, user_id, challenge_id, command_history)
-               VALUES (?, ?, ?, ?)`
+               VALUES (?, ?, ?, ?)`,
             )
             .bind(
               proofId,
@@ -100,7 +96,7 @@ export const Route = createFileRoute("/api/zkp")({
                 proof_hash: proofHash,
                 public_input: body.challenge_id,
                 created_at: Date.now(),
-              })
+              }),
             )
             .run();
 
@@ -122,7 +118,10 @@ export const Route = createFileRoute("/api/zkp")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to generate proof" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to generate proof",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
@@ -161,7 +160,7 @@ export const Route = createFileRoute("/api/zkp")({
           if (!proof && challengeId) {
             const sessions = await db
               .prepare(
-                "SELECT id, command_history FROM console_sessions WHERE challenge_id = ? AND command_history LIKE '%zkp_proof%'"
+                "SELECT id, command_history FROM console_sessions WHERE challenge_id = ? AND command_history LIKE '%zkp_proof%'",
               )
               .bind(challengeId)
               .all<{ id: string; command_history: string }>();
@@ -174,10 +173,10 @@ export const Route = createFileRoute("/api/zkp")({
           }
 
           if (!proof) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Proof not found" }),
-              { status: 404, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Proof not found" }), {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           return new Response(
@@ -192,7 +191,10 @@ export const Route = createFileRoute("/api/zkp")({
           );
         } catch (err) {
           return new Response(
-            JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Failed to verify proof" }),
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Failed to verify proof",
+            }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }

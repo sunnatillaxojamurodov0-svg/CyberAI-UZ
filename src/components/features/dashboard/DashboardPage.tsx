@@ -2,14 +2,7 @@ import { useState, useEffect } from "react";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { useAuth } from "@/lib/auth-context";
-import {
-  Activity,
-  Users,
-  Bot,
-  Shield,
-  Calendar,
-  RefreshCw,
-} from "lucide-react";
+import { Activity, Users, Bot, Shield, Calendar, RefreshCw } from "lucide-react";
 
 interface DashboardData {
   users: { total: number };
@@ -65,12 +58,8 @@ export function DashboardPage() {
         </span>
         <span className="text-muted-foreground/60">{icon}</span>
       </div>
-      <span className="font-mono text-3xl font-bold tracking-tight text-foreground">
-        {value}
-      </span>
-      {sub && (
-        <span className="font-mono text-xs text-muted-foreground">{sub}</span>
-      )}
+      <span className="font-mono text-3xl font-bold tracking-tight text-foreground">{value}</span>
+      {sub && <span className="font-mono text-xs text-muted-foreground">{sub}</span>}
     </GlassPanel>
   );
 
@@ -120,11 +109,7 @@ export function DashboardPage() {
       </div>
 
       <div className="mb-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard
-          label="Total Users"
-          value={data?.users.total ?? 0}
-          icon={<Users size={18} />}
-        />
+        <StatCard label="Total Users" value={data?.users.total ?? 0} icon={<Users size={18} />} />
         <StatCard
           label="AI Queries"
           value={(data?.aiUsage.total ?? 0).toLocaleString()}
@@ -153,9 +138,7 @@ export function DashboardPage() {
           {data?.workflows.map((wf) => (
             <GlassPanel key={wf.name} className="flex items-center justify-between p-4">
               <div>
-                <div className="font-mono text-sm font-medium text-foreground">
-                  {wf.name}
-                </div>
+                <div className="font-mono text-sm font-medium text-foreground">{wf.name}</div>
                 <div className="mt-0.5 font-mono text-[10px] text-muted-foreground">
                   {wf.binding}
                 </div>
@@ -197,9 +180,7 @@ export function DashboardPage() {
                       <div className="font-mono text-sm text-foreground">
                         {u.name ?? "Anonymous"}
                       </div>
-                      <div className="font-mono text-xs text-muted-foreground">
-                        {u.email}
-                      </div>
+                      <div className="font-mono text-xs text-muted-foreground">{u.email}</div>
                     </div>
                   </div>
                   <div className="font-mono text-[10px] text-muted-foreground">

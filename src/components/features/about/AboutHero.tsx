@@ -18,7 +18,9 @@ export function AboutHero() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border">
             <span className="size-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-mono text-[10px] uppercase tracking-wider text-primary">About Us</span>
+            <span className="font-mono text-[10px] uppercase tracking-wider text-primary">
+              About Us
+            </span>
           </div>
         </motion.div>
 
@@ -28,8 +30,7 @@ export function AboutHero() {
           transition={{ duration: 0.8, delay: 0.08, ease: EASE }}
           className="mt-7 font-display text-[clamp(2.5rem,7vw,5rem)] font-extrabold leading-[0.95] tracking-[-0.04em] text-balance"
         >
-          CyberAI: New Era of{" "}
-          <span className="gradient-text">Digital Frontier</span>
+          CyberAI: New Era of <span className="gradient-text">Digital Frontier</span>
         </motion.h1>
 
         <motion.p

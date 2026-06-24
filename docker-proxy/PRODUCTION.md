@@ -37,13 +37,13 @@ make dev
 
 ### Environment Variables
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DOCKER_API_KEY` | - | API authentication key |
-| `MAX_CONTAINERS` | 10 | Maximum concurrent containers |
-| `CONTAINER_TTL_MS` | 14400000 | Container TTL (4 hours) |
-| `ALLOWED_ORIGINS` | https://app.cyberaiuz.workers.dev | CORS origins |
-| `CLOUDFLARE_TUNNEL_TOKEN` | - | Cloudflare tunnel token |
+| Variable                  | Default                           | Description                   |
+| ------------------------- | --------------------------------- | ----------------------------- |
+| `DOCKER_API_KEY`          | -                                 | API authentication key        |
+| `MAX_CONTAINERS`          | 10                                | Maximum concurrent containers |
+| `CONTAINER_TTL_MS`        | 14400000                          | Container TTL (4 hours)       |
+| `ALLOWED_ORIGINS`         | https://app.cyberaiuz.workers.dev | CORS origins                  |
+| `CLOUDFLARE_TUNNEL_TOKEN` | -                                 | Cloudflare tunnel token       |
 
 ### Get Cloudflare Tunnel Token
 
@@ -107,13 +107,13 @@ curl http://127.0.0.1:2377/api/health
 
 ## Templates
 
-| ID | Image | Ports | Memory | CPU |
-|----|-------|-------|--------|-----|
-| ubuntu-web | ubuntu:22.04 | 80, 22, 3306 | 512MB | 1 core |
-| centos-mail | centos:stream9 | 25, 143, 22 | 512MB | 1 core |
-| debian-db | debian:12 | 5432, 6379, 22 | 512MB | 1 core |
-| alpine-container | alpine:3.18 | 22 | 256MB | 0.5 core |
-| kali-pentest | kalilinux/kali-rolling | 22 | 1GB | 2 cores |
+| ID               | Image                  | Ports          | Memory | CPU      |
+| ---------------- | ---------------------- | -------------- | ------ | -------- |
+| ubuntu-web       | ubuntu:22.04           | 80, 22, 3306   | 512MB  | 1 core   |
+| centos-mail      | centos:stream9         | 25, 143, 22    | 512MB  | 1 core   |
+| debian-db        | debian:12              | 5432, 6379, 22 | 512MB  | 1 core   |
+| alpine-container | alpine:3.18            | 22             | 256MB  | 0.5 core |
+| kali-pentest     | kalilinux/kali-rolling | 22             | 1GB    | 2 cores  |
 
 ## Management Commands
 

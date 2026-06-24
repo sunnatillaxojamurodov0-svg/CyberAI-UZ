@@ -2,10 +2,10 @@
 
 /**
  * Backup Script
- * 
+ *
  * Usage:
  *   node scripts/backup.mjs [type]
- * 
+ *
  * Types:
  *   all       - Backup everything
  *   database  - Backup D1 database
@@ -47,7 +47,9 @@ async function backupDatabase() {
 async function backupConfig() {
   console.log("📦 Backing up configuration...");
   const outputFile = join(BACKUP_DIR, `config-${DATE}.tar.gz`);
-  const result = runCommand(`tar -czf ${outputFile} wrangler.jsonc drizzle/ .dev.vars docker-proxy/ 2>/dev/null`);
+  const result = runCommand(
+    `tar -czf ${outputFile} wrangler.jsonc drizzle/ .dev.vars docker-proxy/ 2>/dev/null`,
+  );
   if (result !== null) {
     console.log(`  ✅ Configuration exported to ${outputFile}`);
   }
@@ -56,10 +58,10 @@ async function backupConfig() {
 async function backupAll() {
   ensureBackupDir();
   console.log(`\n🔄 Starting backup (${DATE})\n`);
-  
+
   await backupDatabase();
   await backupConfig();
-  
+
   console.log("\n✅ Backup completed!");
   console.log(`📁 Backups stored in: ${BACKUP_DIR}/`);
 }

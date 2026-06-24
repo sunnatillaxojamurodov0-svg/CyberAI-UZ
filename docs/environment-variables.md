@@ -16,55 +16,55 @@ cp .env.example .dev.vars
 
 ## Required Variables
 
-| Variable | Description | Where to get |
-|----------|-------------|--------------|
-| `OPENROUTER_API_KEY` | AI chat completions | [openrouter.ai/keys](https://openrouter.ai/keys) |
-| `GITHUB_CLIENT_ID` | GitHub OAuth | [github.com/settings/developers](https://github.com/settings/developers) |
-| `GITHUB_CLIENT_SECRET` | GitHub OAuth | [github.com/settings/developers](https://github.com/settings/developers) |
-| `GOOGLE_CLIENT_ID` | Google OAuth | [console.cloud.google.com](https://console.cloud.google.com/apis/credentials) |
-| `GOOGLE_CLIENT_SECRET` | Google OAuth | [console.cloud.google.com](https://console.cloud.google.com/apis/credentials) |
+| Variable               | Description         | Where to get                                                                  |
+| ---------------------- | ------------------- | ----------------------------------------------------------------------------- |
+| `OPENROUTER_API_KEY`   | AI chat completions | [openrouter.ai/keys](https://openrouter.ai/keys)                              |
+| `GITHUB_CLIENT_ID`     | GitHub OAuth        | [github.com/settings/developers](https://github.com/settings/developers)      |
+| `GITHUB_CLIENT_SECRET` | GitHub OAuth        | [github.com/settings/developers](https://github.com/settings/developers)      |
+| `GOOGLE_CLIENT_ID`     | Google OAuth        | [console.cloud.google.com](https://console.cloud.google.com/apis/credentials) |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth        | [console.cloud.google.com](https://console.cloud.google.com/apis/credentials) |
 
 ## Optional Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `RESEND_API_KEY` | Email service | (disabled) |
-| `STRIPE_SECRET_KEY` | Payment processing | (disabled) |
-| `STRIPE_WEBHOOK_SECRET` | Stripe webhooks | (disabled) |
-| `DOCKER_API_KEY` | Container management | (disabled) |
-| `DOCKER_PROXY_URL` | Docker endpoint | (disabled) |
-| `GEMINI_API_KEY` | Alternative AI | (disabled) |
+| Variable                | Description          | Default    |
+| ----------------------- | -------------------- | ---------- |
+| `RESEND_API_KEY`        | Email service        | (disabled) |
+| `STRIPE_SECRET_KEY`     | Payment processing   | (disabled) |
+| `STRIPE_WEBHOOK_SECRET` | Stripe webhooks      | (disabled) |
+| `DOCKER_API_KEY`        | Container management | (disabled) |
+| `DOCKER_PROXY_URL`      | Docker endpoint      | (disabled) |
+| `GEMINI_API_KEY`        | Alternative AI       | (disabled) |
 
 ## Cloudflare-Specific
 
-| Variable | Description | Required for |
-|----------|-------------|--------------|
-| `CLOUDFLARE_API_TOKEN` | API access | Deployment |
-| `CLOUDFLARE_ZONE_ID` | Zone identifier | WAF rules |
+| Variable               | Description     | Required for |
+| ---------------------- | --------------- | ------------ |
+| `CLOUDFLARE_API_TOKEN` | API access      | Deployment   |
+| `CLOUDFLARE_ZONE_ID`   | Zone identifier | WAF rules    |
 
 ## Application Settings
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `APP_URL` | Application URL | `https://app.cyberaiuz.workers.dev` |
-| `ENVIRONMENT` | Environment mode | `development` |
+| Variable      | Description      | Default                             |
+| ------------- | ---------------- | ----------------------------------- |
+| `APP_URL`     | Application URL  | `https://app.cyberaiuz.workers.dev` |
+| `ENVIRONMENT` | Environment mode | `development`                       |
 
 ## Feature Flags
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ENABLE_REGISTRATION` | Allow new signups | `true` |
-| `ENABLE_CHAT` | Enable AI chat | `true` |
-| `ENABLE_CONSOLE` | Enable terminal | `true` |
-| `ENABLE_2FA` | Enable 2FA | `true` |
+| Variable              | Description       | Default |
+| --------------------- | ----------------- | ------- |
+| `ENABLE_REGISTRATION` | Allow new signups | `true`  |
+| `ENABLE_CHAT`         | Enable AI chat    | `true`  |
+| `ENABLE_CONSOLE`      | Enable terminal   | `true`  |
+| `ENABLE_2FA`          | Enable 2FA        | `true`  |
 
 ## Rate Limiting
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `RATE_LIMIT_GLOBAL` | Global requests/min | `100` |
-| `RATE_LIMIT_AUTH` | Auth attempts/min | `5` |
-| `RATE_LIMIT_CHAT` | Chat requests/min | `20` |
+| Variable            | Description         | Default |
+| ------------------- | ------------------- | ------- |
+| `RATE_LIMIT_GLOBAL` | Global requests/min | `100`   |
+| `RATE_LIMIT_AUTH`   | Auth attempts/min   | `5`     |
+| `RATE_LIMIT_CHAT`   | Chat requests/min   | `20`    |
 
 ## Security Notes
 

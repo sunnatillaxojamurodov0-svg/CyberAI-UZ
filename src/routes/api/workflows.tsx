@@ -4,7 +4,9 @@ import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 
 type WorkflowBinding = {
   create: (opts: { id: string; params: Record<string, unknown> }) => Promise<{ id: string }>;
-  get: (id: string) => Promise<{ status: () => Promise<{ status: string; output?: unknown; error?: string }> }>;
+  get: (
+    id: string,
+  ) => Promise<{ status: () => Promise<{ status: string; output?: unknown; error?: string }> }>;
 };
 
 export const Route = createFileRoute("/api/workflows")({

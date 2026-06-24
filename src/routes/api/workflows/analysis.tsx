@@ -8,7 +8,9 @@ export const Route = createFileRoute("/api/workflows/analysis")({
       POST: async ({ request }) => {
         try {
           const env = getEnv();
-          const workflow = env.CONSOLE_ANALYSIS as { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> } | undefined;
+          const workflow = env.CONSOLE_ANALYSIS as
+            | { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> }
+            | undefined;
           if (!workflow) {
             return new Response("Console Analysis workflow not available.", { status: 503 });
           }
@@ -39,10 +41,16 @@ export const Route = createFileRoute("/api/workflows/analysis")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: err instanceof Error ? err.message : "Workflow failed" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({
+              ok: false,
+              error: err instanceof Error ? err.message : "Workflow failed",
+            }),
+            {
+              status: 500,
+              headers: { "Content-Type": "application/json" },
+            },
+          );
         }
       },
     },

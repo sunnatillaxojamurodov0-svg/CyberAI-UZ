@@ -4,7 +4,12 @@ import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { checkAiQuota, trackTokenUsage } from "@/lib/auth/ai-quota";
-import { writeAnalytics, trackAiUsage, trackModelSwitch, trackInjectionAttempt } from "@/lib/analytics";
+import {
+  writeAnalytics,
+  trackAiUsage,
+  trackModelSwitch,
+  trackInjectionAttempt,
+} from "@/lib/analytics";
 import { checkPromptInjection, sanitizeInput, createSecureSystemPrompt } from "@/lib/prompt-guard";
 import { createOptimizedMessages } from "@/lib/context-optimizer";
 import { fetchWithFallback } from "@/lib/fallback-models";
@@ -74,10 +79,13 @@ export const Route = createFileRoute("/api/chat")({
           const injectionCheck = checkPromptInjection(body.message);
           if (!injectionCheck.safe) {
             trackInjectionAttempt(userId, injectionCheck.score, injectionCheck.threats);
-            return new Response("Your message contains potentially harmful content and has been blocked.", {
-              status: 403,
-              headers: { "Content-Type": "text/plain" },
-            });
+            return new Response(
+              "Your message contains potentially harmful content and has been blocked.",
+              {
+                status: 403,
+                headers: { "Content-Type": "text/plain" },
+              },
+            );
           }
 
           const sanitizedMessage = sanitizeInput(body.message);
@@ -87,12 +95,18 @@ export const Route = createFileRoute("/api/chat")({
           const now = new Date();
           const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
           try {
-            const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as { send: (msg: unknown) => Promise<void> };
+            const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as {
+              send: (msg: unknown) => Promise<void>;
+            };
             await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
-          } catch { /* non-fatal */ }
+          } catch {
+            /* non-fatal */
+          }
 
           const modelName = body.model || "nvidia/nemotron-3-ultra-550b-a55b:free";
-          const secureSystemPrompt = body.systemPrompt ? createSecureSystemPrompt(body.systemPrompt) : undefined;
+          const secureSystemPrompt = body.systemPrompt
+            ? createSecureSystemPrompt(body.systemPrompt)
+            : undefined;
 
           const messages = createOptimizedMessages(
             secureSystemPrompt,
@@ -105,7 +119,15 @@ export const Route = createFileRoute("/api/chat")({
 
           const cachedResponse = await getCachedResponse(messages, modelName);
           if (cachedResponse) {
-            trackAiUsage(userId, modelName, modelName, 0, { prompt: 0, completion: 0, total: 0 }, true, false);
+            trackAiUsage(
+              userId,
+              modelName,
+              modelName,
+              0,
+              { prompt: 0, completion: 0, total: 0 },
+              true,
+              false,
+            );
             return new Response(cachedResponse.response, {
               headers: { "Content-Type": "text/plain", "X-Cache": "HIT" },
             });
@@ -116,7 +138,7 @@ export const Route = createFileRoute("/api/chat")({
             {
               method: "POST",
               headers: {
-                "Authorization": `Bearer ${apiKey}`,
+                Authorization: `Bearer ${apiKey}`,
                 "Content-Type": "application/json",
                 "HTTP-Referer": "https://cyberaiuz.workers.dev",
                 "X-OpenRouter-Title": "CyberAI",
@@ -193,7 +215,9 @@ export const Route = createFileRoute("/api/chat")({
                 }
 
                 if (totalContent && !orResponse!.headers.get("x-openrouter-processing")) {
-                  const estimatedPromptTokens = Math.ceil(messages.reduce((acc, m) => acc + m.content.length / 4, 0));
+                  const estimatedPromptTokens = Math.ceil(
+                    messages.reduce((acc, m) => acc + m.content.length / 4, 0),
+                  );
                   const estimatedCompletionTokens = Math.ceil(totalContent.length / 4);
                   trackTokenUsage(userId, modelName, {
                     promptTokens: estimatedPromptTokens,
@@ -203,7 +227,11 @@ export const Route = createFileRoute("/api/chat")({
                 }
               } catch (err) {
                 console.error("Stream error:", err);
-                controller.enqueue(new TextEncoder().encode(`[AI response interrupted: ${err instanceof Error ? err.message : String(err)}]`));
+                controller.enqueue(
+                  new TextEncoder().encode(
+                    `[AI response interrupted: ${err instanceof Error ? err.message : String(err)}]`,
+                  ),
+                );
               } finally {
                 if (totalContent) {
                   setCachedResponse(messages, totalContent, usedModel).catch(() => {});

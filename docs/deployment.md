@@ -132,15 +132,15 @@ jobs:
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `OPENROUTER_API_KEY` | Yes | OpenRouter API key for AI |
-| `GITHUB_CLIENT_ID` | Yes | GitHub OAuth client ID |
-| `GITHUB_CLIENT_SECRET` | Yes | GitHub OAuth client secret |
-| `GOOGLE_CLIENT_ID` | Yes | Google OAuth client ID |
-| `GOOGLE_CLIENT_SECRET` | Yes | Google OAuth client secret |
-| `STRIPE_SECRET_KEY` | Yes | Stripe secret key |
-| `STRIPE_WEBHOOK_SECRET` | Yes | Stripe webhook secret |
+| Variable                | Required | Description                |
+| ----------------------- | -------- | -------------------------- |
+| `OPENROUTER_API_KEY`    | Yes      | OpenRouter API key for AI  |
+| `GITHUB_CLIENT_ID`      | Yes      | GitHub OAuth client ID     |
+| `GITHUB_CLIENT_SECRET`  | Yes      | GitHub OAuth client secret |
+| `GOOGLE_CLIENT_ID`      | Yes      | Google OAuth client ID     |
+| `GOOGLE_CLIENT_SECRET`  | Yes      | Google OAuth client secret |
+| `STRIPE_SECRET_KEY`     | Yes      | Stripe secret key          |
+| `STRIPE_WEBHOOK_SECRET` | Yes      | Stripe webhook secret      |
 
 ## Monitoring
 

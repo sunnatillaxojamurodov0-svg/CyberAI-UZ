@@ -22,9 +22,12 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
           const payload = await request.text();
           const result = await handleWebhook(payload, signature);
 
-          return new Response(JSON.stringify({ received: true, type: result.type, processed: result.processed }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return new Response(
+            JSON.stringify({ received: true, type: result.type, processed: result.processed }),
+            {
+              headers: { "Content-Type": "application/json" },
+            },
+          );
         } catch (err) {
           console.error("Stripe webhook error:", err);
           return new Response(JSON.stringify({ error: "Webhook error" }), {
