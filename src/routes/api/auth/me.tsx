@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { verifySession, getSessionToken } from "@/lib/auth/auth-server";
+import { jsonResponse } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/auth/me")({
   server: {
@@ -9,21 +10,12 @@ export const Route = createFileRoute("/api/auth/me")({
         try {
           const token = getSessionToken(request);
           if (!token) {
-            return new Response(JSON.stringify({ ok: false, user: null }), {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonResponse({ ok: false, user: null });
           }
           const result = await verifySession(token);
-          return new Response(JSON.stringify({ ok: result.ok, user: result.user ?? null }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonResponse({ ok: result.ok, user: result.user ?? null });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, user: null }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonResponse({ ok: false, user: null });
         }
       },
     },

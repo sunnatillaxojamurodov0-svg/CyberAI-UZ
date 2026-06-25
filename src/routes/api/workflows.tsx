@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getEnv } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { jsonOk, jsonError, serverError, serviceUnavailableText } from "@/lib/api-response";
+import { requireAuth, isAuthResponse } from "@/lib/api-middleware";
 
 type WorkflowBinding = {
   create: (opts: { id: string; params: Record<string, unknown> }) => Promise<{ id: string }>;
@@ -15,15 +16,8 @@ export const Route = createFileRoute("/api/workflows")({
       POST: async ({ request }) => {
         try {
           const env = getEnv();
-          const token = getSessionToken(request);
-          const session = token ? await verifySession(token) : null;
-
-          if (!session?.ok || !session.user?.id) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const body = (await request.json()) as {
             action: "challenge" | "console";
@@ -34,16 +28,13 @@ export const Route = createFileRoute("/api/workflows")({
             commandHistory?: string[];
           };
 
-          const userId = session.user.id;
+          const userId = auth.user.id;
           const envRecord = env as Record<string, unknown>;
 
           if (body.action === "challenge") {
             const workflow = envRecord.CHALLENGE_WORKFLOW as WorkflowBinding | undefined;
             if (!workflow) {
-              return new Response(JSON.stringify({ error: "Workflow not configured" }), {
-                status: 503,
-                headers: { "Content-Type": "application/json" },
-              });
+              return jsonError("Workflow not configured", 503);
             }
 
             const instance = await workflow.create({
@@ -54,25 +45,17 @@ export const Route = createFileRoute("/api/workflows")({
                 category: body.category ?? "web",
               },
             });
-            return new Response(JSON.stringify({ ok: true, instanceId: instance.id }), {
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonOk({ instanceId: instance.id });
           }
 
           if (body.action === "console") {
             if (!body.sessionId || !body.challengeId) {
-              return new Response(JSON.stringify({ error: "sessionId and challengeId required" }), {
-                status: 400,
-                headers: { "Content-Type": "application/json" },
-              });
+              return jsonError("sessionId and challengeId required");
             }
 
             const workflow = envRecord.CONSOLE_WORKFLOW as WorkflowBinding | undefined;
             if (!workflow) {
-              return new Response(JSON.stringify({ error: "Workflow not configured" }), {
-                status: 503,
-                headers: { "Content-Type": "application/json" },
-              });
+              return jsonError("Workflow not configured", 503);
             }
 
             const instance = await workflow.create({
@@ -84,21 +67,13 @@ export const Route = createFileRoute("/api/workflows")({
                 commandHistory: body.commandHistory ?? [],
               },
             });
-            return new Response(JSON.stringify({ ok: true, instanceId: instance.id }), {
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonOk({ instanceId: instance.id });
           }
 
-          return new Response(JSON.stringify({ error: "Invalid action" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonError("Invalid action");
         } catch (err) {
           console.error("Workflow API error:", err);
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
 
@@ -110,10 +85,7 @@ export const Route = createFileRoute("/api/workflows")({
           const workflowName = url.searchParams.get("workflow");
 
           if (!instanceId || !workflowName) {
-            return new Response(JSON.stringify({ error: "instanceId and workflow required" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("instanceId and workflow required");
           }
 
           const workflowMap: Record<string, string> = {
@@ -124,33 +96,22 @@ export const Route = createFileRoute("/api/workflows")({
 
           const binding = workflowMap[workflowName];
           if (!binding) {
-            return new Response(JSON.stringify({ error: "Invalid workflow name" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("Invalid workflow name");
           }
 
           const envRecord = env as Record<string, unknown>;
           const workflow = envRecord[binding] as WorkflowBinding | undefined;
           if (!workflow) {
-            return new Response(JSON.stringify({ error: "Workflow not configured" }), {
-              status: 503,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("Workflow not configured", 503);
           }
 
           const instance = await workflow.get(instanceId);
           const status = await instance.status();
 
-          return new Response(JSON.stringify({ ok: true, status }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({ status });
         } catch (err) {
           console.error("Workflow status error:", err);
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
     },

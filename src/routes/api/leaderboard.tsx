@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { jsonOk, jsonCreated, jsonError, unauthorizedError, catchError } from "@/lib/api-response";
+import { requireAuth, isAuthResponse } from "@/lib/api-middleware";
 
 export const Route = createFileRoute("/api/leaderboard")({
   server: {
@@ -48,39 +49,17 @@ export const Route = createFileRoute("/api/leaderboard")({
             .bind(...params)
             .all();
 
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              data: results.results ?? [],
-            }),
-            {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return jsonOk({ data: results.results ?? [] });
         } catch (err) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: err instanceof Error ? err.message : "Failed to load leaderboard",
-            }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return catchError(err, "Failed to load leaderboard");
         }
       },
 
       POST: async ({ request }) => {
         try {
           const db = requireDb();
-          const token = getSessionToken(request);
-          const session = token ? await verifySession(token) : null;
-
-          if (!session?.ok || !session.user?.id) {
-            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const body = (await request.json()) as {
             challenge_id: string;
@@ -91,10 +70,7 @@ export const Route = createFileRoute("/api/leaderboard")({
           };
 
           if (!body.challenge_id || typeof body.score !== "number") {
-            return new Response(JSON.stringify({ ok: false, error: "Invalid request body" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("Invalid request body");
           }
 
           const result = await db
@@ -103,7 +79,7 @@ export const Route = createFileRoute("/api/leaderboard")({
                VALUES (?, ?, ?, ?, ?, ?)`,
             )
             .bind(
-              session.user.id,
+              auth.user.id,
               body.challenge_id,
               body.score,
               body.time_seconds ?? 0,
@@ -112,24 +88,9 @@ export const Route = createFileRoute("/api/leaderboard")({
             )
             .run();
 
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              data: { id: result.meta?.last_row_id },
-            }),
-            {
-              status: 201,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return jsonCreated({ data: { id: result.meta?.last_row_id } });
         } catch (err) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: err instanceof Error ? err.message : "Failed to submit score",
-            }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return catchError(err, "Failed to submit score");
         }
       },
     },

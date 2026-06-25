@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb, getEnv } from "@/lib/db";
 import { writeAnalytics } from "@/lib/analytics";
+import { jsonOk, catchError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/dashboard/stats")({
   server: {
@@ -72,37 +73,24 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             Date.now() - startTime,
           );
 
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              data: {
-                users: { total: totalUsers?.count ?? 0 },
-                aiUsage: {
-                  total: totalAiUsage?.total ?? 0,
-                  today: todayUsage?.total ?? 0,
-                  thisMonth: monthUsage?.total ?? 0,
-                },
-                challenges: {
-                  total: challengeCount?.count ?? 0,
-                  completed: completedChallenges?.count ?? 0,
-                },
-                recentUsers: recentUsers?.results ?? [],
-                workflows: workflowBindings,
+          return jsonOk({
+            data: {
+              users: { total: totalUsers?.count ?? 0 },
+              aiUsage: {
+                total: totalAiUsage?.total ?? 0,
+                today: todayUsage?.total ?? 0,
+                thisMonth: monthUsage?.total ?? 0,
               },
-            }),
-            {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
+              challenges: {
+                total: challengeCount?.count ?? 0,
+                completed: completedChallenges?.count ?? 0,
+              },
+              recentUsers: recentUsers?.results ?? [],
+              workflows: workflowBindings,
             },
-          );
+          });
         } catch (err) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: err instanceof Error ? err.message : "Failed to load dashboard stats",
-            }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return catchError(err, "Failed to load dashboard stats");
         }
       },
     },

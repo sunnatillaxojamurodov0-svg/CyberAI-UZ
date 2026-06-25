@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { getEnv } from "@/lib/db";
 import { handleWebhook } from "@/lib/stripe";
+import { jsonResponse, jsonError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/webhooks/stripe")({
   server: {
@@ -22,18 +23,10 @@ export const Route = createFileRoute("/api/webhooks/stripe")({
           const payload = await request.text();
           const result = await handleWebhook(payload, signature);
 
-          return new Response(
-            JSON.stringify({ received: true, type: result.type, processed: result.processed }),
-            {
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return jsonResponse({ received: true, type: result.type, processed: result.processed });
         } catch (err) {
           console.error("Stripe webhook error:", err);
-          return new Response(JSON.stringify({ error: "Webhook error" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonError("Webhook error");
         }
       },
     },

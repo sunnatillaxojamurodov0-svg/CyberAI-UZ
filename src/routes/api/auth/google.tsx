@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { serviceUnavailableText, textError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/auth/google")({
   server: {
@@ -10,10 +11,7 @@ export const Route = createFileRoute("/api/auth/google")({
           const env = getEnv();
           const clientId = env.GOOGLE_CLIENT_ID as string;
           if (!clientId) {
-            return new Response("Google OAuth is not configured.", {
-              status: 503,
-              headers: { "Content-Type": "text/plain" },
-            });
+            return serviceUnavailableText("Google OAuth is not configured.");
           }
 
           const origin = new URL(request.url).origin;
@@ -25,7 +23,7 @@ export const Route = createFileRoute("/api/auth/google")({
             headers: { Location: url },
           });
         } catch {
-          return new Response("Google OAuth error.", { status: 500 });
+          return textError("Google OAuth error.", 500);
         }
       },
     },

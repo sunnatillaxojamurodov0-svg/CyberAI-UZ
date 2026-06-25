@@ -1,9 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { getEnv } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
-import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
-import { checkAiQuota, trackTokenUsage } from "@/lib/auth/ai-quota";
+import { trackTokenUsage } from "@/lib/auth/ai-quota";
 import {
   writeAnalytics,
   trackAiUsage,
@@ -14,44 +11,19 @@ import { checkPromptInjection, sanitizeInput, createSecureSystemPrompt } from "@
 import { createOptimizedMessages } from "@/lib/context-optimizer";
 import { fetchWithFallback } from "@/lib/fallback-models";
 import { getCachedResponse, setCachedResponse } from "@/lib/prompt-cache";
+import { textError, textResponse, serviceUnavailableText } from "@/lib/api-response";
+import { checkAiAccess, isResponse, trackAiQueue } from "@/lib/api-middleware";
+import { createSSEStream } from "@/lib/api-stream";
 
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
-          const env = getEnv();
-          const apiKey = env.OPENROUTER_API_KEY as string;
-          if (!apiKey) {
-            return new Response("AI service is not configured.", {
-              status: 503,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
+          const access = await checkAiAccess(request, "chat", "/api/chat", "chat");
+          if (isResponse(access)) return access;
 
-          const ip = request.headers.get("cf-connecting-ip") || "unknown";
-          const startTime = Date.now();
-          const rl = await checkRateLimit(rateLimitKey(ip, "chat"), "chat");
-          if (!rl.allowed) {
-            writeAnalytics("chat", "denied", null, "/api/chat", Date.now() - startTime);
-            return new Response("Too many requests. Try again later.", {
-              status: 429,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
-
-          const token = getSessionToken(request);
-          const session = token ? await verifySession(token) : null;
-          const userId = session?.ok ? (session.user?.id ?? null) : null;
-
-          const quota = await checkAiQuota(userId);
-          if (!quota.allowed) {
-            writeAnalytics("quota", "denied", userId, "/api/chat", Date.now() - startTime);
-            return new Response("Daily AI quota exceeded. Try again tomorrow.", {
-              status: 429,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
+          const { apiKey, userId, startTime } = access;
 
           const body = (await request.json()) as {
             history?: { role: "user" | "assistant"; content: string }[];
@@ -63,45 +35,26 @@ export const Route = createFileRoute("/api/chat")({
           };
 
           if (!body.message) {
-            return new Response("Message is required.", {
-              status: 400,
-              headers: { "Content-Type": "text/plain" },
-            });
+            return textError("Message is required.");
           }
 
           if (body.message.length > 10000) {
-            return new Response("Message too long (max 10000 characters).", {
-              status: 400,
-              headers: { "Content-Type": "text/plain" },
-            });
+            return textError("Message too long (max 10000 characters).");
           }
 
           const injectionCheck = checkPromptInjection(body.message);
           if (!injectionCheck.safe) {
             trackInjectionAttempt(userId, injectionCheck.score, injectionCheck.threats);
-            return new Response(
+            return textError(
               "Your message contains potentially harmful content and has been blocked.",
-              {
-                status: 403,
-                headers: { "Content-Type": "text/plain" },
-              },
+              403,
             );
           }
 
           const sanitizedMessage = sanitizeInput(body.message);
-
           const history = (body.history ?? []).slice(-100);
 
-          const now = new Date();
-          const dateStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}-${String(now.getUTCDate()).padStart(2, "0")}`;
-          try {
-            const q = (env as Record<string, unknown>).AI_USAGE_QUEUE as {
-              send: (msg: unknown) => Promise<void>;
-            };
-            await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
-          } catch {
-            /* non-fatal */
-          }
+          trackAiQueue(userId);
 
           const modelName = body.model || "nvidia/nemotron-3-ultra-550b-a55b:free";
           const secureSystemPrompt = body.systemPrompt
@@ -128,9 +81,7 @@ export const Route = createFileRoute("/api/chat")({
               true,
               false,
             );
-            return new Response(cachedResponse.response, {
-              headers: { "Content-Type": "text/plain", "X-Cache": "HIT" },
-            });
+            return textResponse(cachedResponse.response, 200, { "X-Cache": "HIT" });
           }
 
           const fallbackResult = await fetchWithFallback(
@@ -161,10 +112,7 @@ export const Route = createFileRoute("/api/chat")({
               attempts: fallbackResult.attempts,
               fallbackModel: fallbackResult.model,
             });
-            return new Response("AI service error. All models unavailable. Please try again.", {
-              status: 502,
-              headers: { "Content-Type": "text/plain" },
-            });
+            return textError("AI service error. All models unavailable. Please try again.", 502);
           }
 
           const orResponse = fallbackResult.response;
@@ -173,70 +121,28 @@ export const Route = createFileRoute("/api/chat")({
             trackModelSwitch(userId, modelName, usedModel, "primary model unavailable");
           }
 
-          const stream = new ReadableStream({
-            async start(controller) {
-              try {
-                const reader = orResponse.body!.getReader();
-                const decoder = new TextDecoder();
-                let buffer = "";
-                let totalContent = "";
-
-                while (true) {
-                  const { done, value } = await reader.read();
-                  if (done) break;
-
-                  buffer += decoder.decode(value, { stream: true });
-                  const lines = buffer.split("\n");
-                  buffer = lines.pop() || "";
-
-                  for (const line of lines) {
-                    if (line.startsWith("data: ")) {
-                      const data = line.slice(6);
-                      if (data === "[DONE]") continue;
-                      try {
-                        const parsed = JSON.parse(data);
-                        const content = parsed.choices?.[0]?.delta?.content;
-                        if (content) {
-                          controller.enqueue(new TextEncoder().encode(content));
-                          totalContent += content;
-                        }
-                        if (parsed.usage) {
-                          trackTokenUsage(userId, modelName, {
-                            promptTokens: parsed.usage.prompt_tokens || 0,
-                            completionTokens: parsed.usage.completion_tokens || 0,
-                            totalTokens: parsed.usage.total_tokens || 0,
-                          }).catch(() => {});
-                        }
-                      } catch {
-                        // skip malformed chunks
-                      }
-                    }
-                  }
-                }
-
-                if (totalContent && !orResponse!.headers.get("x-openrouter-processing")) {
-                  const estimatedPromptTokens = Math.ceil(
-                    messages.reduce((acc, m) => acc + m.content.length / 4, 0),
-                  );
-                  const estimatedCompletionTokens = Math.ceil(totalContent.length / 4);
-                  trackTokenUsage(userId, modelName, {
-                    promptTokens: estimatedPromptTokens,
-                    completionTokens: estimatedCompletionTokens,
-                    totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
-                  }).catch(() => {});
-                }
-              } catch (err) {
-                console.error("Stream error:", err);
-                controller.enqueue(
-                  new TextEncoder().encode(
-                    `[AI response interrupted: ${err instanceof Error ? err.message : String(err)}]`,
-                  ),
+          const stream = createSSEStream(orResponse, {
+            onUsage: (usage) => {
+              trackTokenUsage(userId, modelName, {
+                promptTokens: usage.prompt_tokens || 0,
+                completionTokens: usage.completion_tokens || 0,
+                totalTokens: usage.total_tokens || 0,
+              }).catch(() => {});
+            },
+            onDone: (totalContent) => {
+              if (totalContent && !orResponse.headers.get("x-openrouter-processing")) {
+                const estimatedPromptTokens = Math.ceil(
+                  messages.reduce((acc, m) => acc + m.content.length / 4, 0),
                 );
-              } finally {
-                if (totalContent) {
-                  setCachedResponse(messages, totalContent, usedModel).catch(() => {});
-                }
-                controller.close();
+                const estimatedCompletionTokens = Math.ceil(totalContent.length / 4);
+                trackTokenUsage(userId, modelName, {
+                  promptTokens: estimatedPromptTokens,
+                  completionTokens: estimatedCompletionTokens,
+                  totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
+                }).catch(() => {});
+              }
+              if (totalContent) {
+                setCachedResponse(messages, totalContent, usedModel).catch(() => {});
               }
             },
           });
@@ -254,11 +160,8 @@ export const Route = createFileRoute("/api/chat")({
             headers: { "Content-Type": "text/plain", "X-Cache": "MISS" },
           });
         } catch (err) {
-          writeAnalytics("chat", "error", null, "/api/chat", Date.now() - startTime);
-          return new Response("AI service error.", {
-            status: 500,
-            headers: { "Content-Type": "text/plain" },
-          });
+          writeAnalytics("chat", "error", null, "/api/chat", 0);
+          return textError("AI service error.", 500);
         }
       },
     },

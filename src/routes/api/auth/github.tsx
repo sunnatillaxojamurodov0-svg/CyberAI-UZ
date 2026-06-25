@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { serviceUnavailableText, textError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/auth/github")({
   server: {
@@ -10,10 +11,7 @@ export const Route = createFileRoute("/api/auth/github")({
           const env = getEnv();
           const clientId = env.GITHUB_CLIENT_ID as string;
           if (!clientId) {
-            return new Response("GitHub OAuth is not configured.", {
-              status: 503,
-              headers: { "Content-Type": "text/plain" },
-            });
+            return serviceUnavailableText("GitHub OAuth is not configured.");
           }
 
           const origin = new URL(request.url).origin;
@@ -25,7 +23,7 @@ export const Route = createFileRoute("/api/auth/github")({
             headers: { Location: url },
           });
         } catch {
-          return new Response("GitHub OAuth error.", { status: 500 });
+          return textError("GitHub OAuth error.", 500);
         }
       },
     },

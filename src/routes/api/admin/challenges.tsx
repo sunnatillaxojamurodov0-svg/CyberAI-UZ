@@ -1,27 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { getEnv } from "@/lib/db";
+import { jsonOk, jsonError, serverError } from "@/lib/api-response";
+import { requireAuth, isAuthResponse } from "@/lib/api-middleware";
 
 export const Route = createFileRoute("/api/admin/challenges")({
   server: {
     handlers: {
       GET: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const env = getEnv();
           const db = env.cyberai_db as {
@@ -36,33 +25,16 @@ export const Route = createFileRoute("/api/admin/challenges")({
           const result = await db
             .prepare("SELECT * FROM challenges ORDER BY created_at DESC")
             .all();
-          return new Response(JSON.stringify({ ok: true, challenges: result.results }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({ challenges: result.results });
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
 
       POST: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const body = (await request.json()) as {
             name?: string;
@@ -73,10 +45,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
             flag?: string;
           };
           if (!body.name || !body.scenario || !body.flag) {
-            return new Response(
-              JSON.stringify({ error: "Name, scenario, and flag are required" }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return jsonError("Name, scenario, and flag are required");
           }
 
           const env = getEnv();
@@ -102,41 +71,21 @@ export const Route = createFileRoute("/api/admin/challenges")({
             )
             .run();
 
-          return new Response(JSON.stringify({ ok: true, id }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({ id });
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
 
       PUT: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const url = new URL(request.url);
           const id = url.searchParams.get("id");
           if (!id) {
-            return new Response(JSON.stringify({ error: "ID is required" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("ID is required");
           }
 
           const body = (await request.json()) as {
@@ -181,10 +130,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
           }
 
           if (fields.length === 0) {
-            return new Response(JSON.stringify({ error: "No fields to update" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("No fields to update");
           }
 
           values.push(id);
@@ -193,41 +139,21 @@ export const Route = createFileRoute("/api/admin/challenges")({
             .bind(...values)
             .run();
 
-          return new Response(JSON.stringify({ ok: true }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({});
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
 
       DELETE: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const url = new URL(request.url);
           const id = url.searchParams.get("id");
           if (!id) {
-            return new Response(JSON.stringify({ error: "ID is required" }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("ID is required");
           }
 
           const env = getEnv();
@@ -236,14 +162,9 @@ export const Route = createFileRoute("/api/admin/challenges")({
           };
           await db.prepare("DELETE FROM challenges WHERE id = ?").bind(id).run();
 
-          return new Response(JSON.stringify({ ok: true }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({});
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
     },

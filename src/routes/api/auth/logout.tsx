@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { logoutUser, getSessionToken, clearSessionCookie } from "@/lib/auth/auth-server";
+import { jsonOk, serverError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/auth/logout")({
   server: {
@@ -11,18 +12,9 @@ export const Route = createFileRoute("/api/auth/logout")({
           if (token) {
             await logoutUser(token);
           }
-          return new Response(JSON.stringify({ ok: true }), {
-            status: 200,
-            headers: {
-              "Content-Type": "application/json",
-              "Set-Cookie": clearSessionCookie(),
-            },
-          });
+          return jsonOk({}, { "Set-Cookie": clearSessionCookie() });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
     },

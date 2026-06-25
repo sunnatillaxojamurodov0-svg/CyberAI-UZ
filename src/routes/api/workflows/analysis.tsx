@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { jsonResponse, textError, catchError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/workflows/analysis")({
   server: {
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/api/workflows/analysis")({
             | { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> }
             | undefined;
           if (!workflow) {
-            return new Response("Console Analysis workflow not available.", { status: 503 });
+            return textError("Console Analysis workflow not available.", 503);
           }
 
           const body = (await request.json()) as {
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/api/workflows/analysis")({
           };
 
           if (!body.sessionId || !body.userId) {
-            return new Response("sessionId and userId are required.", { status: 400 });
+            return textError("sessionId and userId are required.");
           }
 
           const instance = await workflow.create({
@@ -36,21 +37,9 @@ export const Route = createFileRoute("/api/workflows/analysis")({
             },
           });
 
-          return new Response(JSON.stringify({ ok: true, instanceId: instance.id }), {
-            status: 202,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonResponse({ ok: true, instanceId: instance.id }, 202);
         } catch (err) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: err instanceof Error ? err.message : "Workflow failed",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return catchError(err, "Workflow failed");
         }
       },
     },

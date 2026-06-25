@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { jsonResponse, textError, catchError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/workflows/onboarding")({
   server: {
@@ -12,7 +13,7 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
             | { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> }
             | undefined;
           if (!workflow) {
-            return new Response("User Onboarding workflow not available.", { status: 503 });
+            return textError("User Onboarding workflow not available.", 503);
           }
 
           const body = (await request.json()) as {
@@ -22,7 +23,7 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
           };
 
           if (!body.userId || !body.email) {
-            return new Response("userId and email are required.", { status: 400 });
+            return textError("userId and email are required.");
           }
 
           const instance = await workflow.create({
@@ -34,21 +35,9 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
             },
           });
 
-          return new Response(JSON.stringify({ ok: true, instanceId: instance.id }), {
-            status: 202,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonResponse({ ok: true, instanceId: instance.id }, 202);
         } catch (err) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: err instanceof Error ? err.message : "Workflow failed",
-            }),
-            {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return catchError(err, "Workflow failed");
         }
       },
     },

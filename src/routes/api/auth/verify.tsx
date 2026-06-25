@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { verifyEmail } from "@/lib/auth/auth-server";
+import { jsonOk, jsonError, serverError } from "@/lib/api-response";
 
 export const Route = createFileRoute("/api/auth/verify")({
   server: {
@@ -11,30 +12,18 @@ export const Route = createFileRoute("/api/auth/verify")({
           const token = url.searchParams.get("token");
 
           if (!token) {
-            return new Response(JSON.stringify({ ok: false, error: "Token is required." }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("Token is required.");
           }
 
           const result = await verifyEmail(token);
 
           if (!result.ok) {
-            return new Response(JSON.stringify({ ok: false, error: result.error }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError(result.error ?? "Verification failed.");
           }
 
-          return new Response(
-            JSON.stringify({ ok: true, message: "Email verified successfully." }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          );
+          return jsonOk({ message: "Email verified successfully." });
         } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
     },

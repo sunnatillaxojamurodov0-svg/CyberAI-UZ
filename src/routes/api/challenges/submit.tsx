@@ -1,27 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { getEnv } from "@/lib/db";
+import { jsonOk, jsonError, serverError } from "@/lib/api-response";
+import { requireAuth, isAuthResponse } from "@/lib/api-middleware";
 
 export const Route = createFileRoute("/api/challenges/submit")({
   server: {
     handlers: {
       GET: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const env = getEnv();
           const db = env.cyberai_db as {
@@ -37,36 +26,19 @@ export const Route = createFileRoute("/api/challenges/submit")({
             .prepare(
               "SELECT * FROM challenge_submissions WHERE submitted_by = ? ORDER BY created_at DESC",
             )
-            .bind(session.user.id)
+            .bind(auth.user.id)
             .all();
 
-          return new Response(JSON.stringify({ ok: true, submissions: result.results }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({ submissions: result.results });
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
 
       POST: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const body = (await request.json()) as {
             name?: string;
@@ -80,10 +52,7 @@ export const Route = createFileRoute("/api/challenges/submit")({
           };
 
           if (!body.name || !body.scenario || !body.flag) {
-            return new Response(
-              JSON.stringify({ error: "Name, scenario, and flag are required" }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return jsonError("Name, scenario, and flag are required");
           }
 
           const env = getEnv();
@@ -107,20 +76,15 @@ export const Route = createFileRoute("/api/challenges/submit")({
               body.flag,
               body.hints || "",
               body.writeup || "",
-              session.user.id,
+              auth.user.id,
               "pending",
               now,
             )
             .run();
 
-          return new Response(JSON.stringify({ ok: true, id }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonOk({ id });
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError();
         }
       },
     },

@@ -1,21 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { createPasswordResetToken, sendPasswordResetEmail } from "@/lib/auth/auth-server";
-import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
+import { jsonOk, jsonError, jsonResponse, serverError } from "@/lib/api-response";
+import { withRateLimit, isRateLimitResponse } from "@/lib/api-middleware";
 
 export const Route = createFileRoute("/api/auth/reset-password")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
-          const ip = request.headers.get("cf-connecting-ip") || "unknown";
-          const rl = await checkRateLimit(rateLimitKey(ip, "reset"), "auth");
-          if (!rl.allowed) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Too many attempts. Try again later." }),
-              { status: 429, headers: { "Content-Type": "application/json" } },
-            );
-          }
+          const rl = await withRateLimit(request, "reset", "auth", "/api/auth/reset-password");
+          if (isRateLimitResponse(rl)) return rl;
 
           const body = (await request.json()) as {
             email?: string;
@@ -26,17 +21,11 @@ export const Route = createFileRoute("/api/auth/reset-password")({
           if (body.token && body.newPassword) {
             const { resetPassword } = await import("@/lib/auth/auth-server");
             const result = await resetPassword(body.token, body.newPassword);
-            return new Response(JSON.stringify(result), {
-              status: result.ok ? 200 : 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonResponse(result, result.ok ? 200 : 400);
           }
 
           if (!body.email) {
-            return new Response(JSON.stringify({ ok: false, error: "Email is required." }), {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonError("Email is required.");
           }
 
           const result = await createPasswordResetToken(body.email);
@@ -44,18 +33,11 @@ export const Route = createFileRoute("/api/auth/reset-password")({
             sendPasswordResetEmail(body.email, result.token).catch(() => {});
           }
 
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              message: "If an account exists, a reset link has been sent.",
-            }),
-            { status: 200, headers: { "Content-Type": "application/json" } },
-          );
-        } catch (err) {
-          return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
+          return jsonOk({
+            message: "If an account exists, a reset link has been sent.",
           });
+        } catch (err) {
+          return serverError();
         }
       },
     },

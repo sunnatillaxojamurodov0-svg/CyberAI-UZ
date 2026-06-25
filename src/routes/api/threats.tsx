@@ -1,8 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { getEnv } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
-import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
+import { jsonOk, jsonError, serverError } from "@/lib/api-response";
+import {
+  requireAuth,
+  isAuthResponse,
+  requireApiKey,
+  isApiKeyResponse,
+  withRateLimit,
+  isRateLimitResponse,
+  getClientIp,
+} from "@/lib/api-middleware";
 
 interface ThreatVector {
   id: string;
@@ -21,34 +28,14 @@ export const Route = createFileRoute("/api/threats")({
     handlers: {
       POST: async ({ request }) => {
         try {
-          const env = getEnv();
-          const apiKey = env.OPENROUTER_API_KEY as string;
-          if (!apiKey) {
-            return new Response("AI service is not configured.", {
-              status: 503,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
+          const apiKey = requireApiKey("OPENROUTER_API_KEY", "AI service is not configured.");
+          if (isApiKeyResponse(apiKey)) return apiKey;
 
-          const ip = request.headers.get("cf-connecting-ip") || "unknown";
-          const startTime = Date.now();
-          const rl = await checkRateLimit(rateLimitKey(ip, "threats"), "chat");
-          if (!rl.allowed) {
-            return new Response("Too many requests. Try again later.", {
-              status: 429,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
+          const rl = await withRateLimit(request, "threats", "chat", "/api/threats");
+          if (isRateLimitResponse(rl)) return rl;
 
-          const token = getSessionToken(request);
-          const session = token ? await verifySession(token) : null;
-
-          if (!session?.ok || !session.user?.id) {
-            return new Response("Authentication required.", {
-              status: 401,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const body = (await request.json()) as {
             infrastructure?: string;
@@ -99,19 +86,14 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
           });
 
           if (!orResponse.ok) {
-            return new Response(JSON.stringify({ ok: false, error: "AI service error" }), {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            });
+            return serverError("AI service error");
           }
 
           const orData = await orResponse.json();
           const response = orData.choices?.[0]?.message?.content || "";
 
-          // Parse the JSON response
           let threats: ThreatVector[];
           try {
-            // Try to extract JSON from the response
             const jsonMatch = response.match(/\[[\s\S]*\]/);
             if (jsonMatch) {
               threats = JSON.parse(jsonMatch[0]);
@@ -119,14 +101,9 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
               threats = JSON.parse(response);
             }
           } catch {
-            // If parsing fails, return a formatted error
-            return new Response(
-              JSON.stringify({ ok: false, error: "Failed to parse AI response" }),
-              { status: 500, headers: { "Content-Type": "application/json" } },
-            );
+            return serverError("Failed to parse AI response");
           }
 
-          // Validate and sanitize the threats
           threats = threats.map((t) => ({
             id: t.id || `TV-${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
             name: t.name || "Unknown Threat",
@@ -134,35 +111,16 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
             severity: ["low", "medium", "high", "critical"].includes(t.severity)
               ? t.severity
               : "medium",
-            category: t.category || "general",
-            technique: t.technique || "Unknown technique",
-            mitigation: t.mitigation || "Consult security documentation",
+            category: t.category || "unknown",
+            technique: t.technique || "Unknown",
+            mitigation: t.mitigation || "No mitigation available",
             cve: t.cve,
             references: t.references,
           }));
 
-          return new Response(
-            JSON.stringify({
-              ok: true,
-              data: threats,
-              meta: {
-                generated_at: Date.now(),
-                infrastructure: body.infrastructure ? "custom" : "general",
-              },
-            }),
-            {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
-            },
-          );
+          return jsonOk({ threats });
         } catch (err) {
-          return new Response(
-            JSON.stringify({
-              ok: false,
-              error: err instanceof Error ? err.message : "Failed to generate threats",
-            }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return serverError();
         }
       },
     },

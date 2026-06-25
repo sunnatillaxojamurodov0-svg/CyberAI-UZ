@@ -1,13 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import {
-  getSessionToken,
-  verifySession,
-  setup2FA,
-  enable2FA,
-  disable2FA,
-  is2FAEnabled,
-} from "@/lib/auth/auth-server";
+import { setup2FA, enable2FA, disable2FA, is2FAEnabled } from "@/lib/auth/auth-server";
 import {
   setup2FA as setupTOTP,
   enable2FA as enableTOTP,
@@ -15,96 +8,56 @@ import {
   verify2FA as verifyTOTP,
   is2FAEnabled as check2FA,
 } from "@/lib/auth/totp";
+import {
+  jsonOk,
+  jsonError,
+  jsonResponse,
+  serverError,
+  unauthorizedError,
+} from "@/lib/api-response";
+import { requireAuth, isAuthResponse } from "@/lib/api-middleware";
 
 export const Route = createFileRoute("/api/auth/2fa")({
   server: {
     handlers: {
       GET: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const enabled = await check2FA(session.user.id);
-          return new Response(JSON.stringify({ ok: true, enabled }), {
-            headers: { "Content-Type": "application/json" },
-          });
+          const enabled = await check2FA(auth.user.id);
+          return jsonOk({ enabled });
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError("Internal server error");
         }
       },
 
       POST: async ({ request }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
+          const auth = await requireAuth(request);
+          if (isAuthResponse(auth)) return auth;
 
           const body = (await request.json()) as { action?: string; token?: string };
-          const userId = session.user.id;
+          const userId = auth.user.id;
 
           if (body.action === "setup") {
             const result = await setupTOTP(userId);
-            return new Response(
-              JSON.stringify({ ok: true, secret: result.secret, qrCodeUrl: result.qrCodeUrl }),
-              {
-                headers: { "Content-Type": "application/json" },
-              },
-            );
+            return jsonOk({ secret: result.secret, qrCodeUrl: result.qrCodeUrl });
           }
 
           if (body.action === "enable" && body.token) {
             const result = await enableTOTP(userId, body.token);
-            return new Response(JSON.stringify(result), {
-              status: result.ok ? 200 : 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonResponse(result, result.ok ? 200 : 400);
           }
 
           if (body.action === "disable" && body.token) {
             const result = await disableTOTP(userId, body.token);
-            return new Response(JSON.stringify(result), {
-              status: result.ok ? 200 : 400,
-              headers: { "Content-Type": "application/json" },
-            });
+            return jsonResponse(result, result.ok ? 200 : 400);
           }
 
-          return new Response(JSON.stringify({ error: "Invalid action" }), {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          });
+          return jsonError("Invalid action");
         } catch (err) {
-          return new Response(JSON.stringify({ error: "Internal server error" }), {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          });
+          return serverError("Internal server error");
         }
       },
     },
