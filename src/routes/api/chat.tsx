@@ -129,8 +129,8 @@ export const Route = createFileRoute("/api/chat")({
                 totalTokens: usage.total_tokens || 0,
               }).catch(() => {});
             },
-            onDone: (totalContent) => {
-              if (totalContent && !orResponse.headers.get("x-openrouter-processing")) {
+            onDone: (totalContent, hadError) => {
+              if (!hadError && totalContent && !orResponse.headers.get("x-openrouter-processing")) {
                 const estimatedPromptTokens = Math.ceil(
                   messages.reduce((acc, m) => acc + m.content.length / 4, 0),
                 );

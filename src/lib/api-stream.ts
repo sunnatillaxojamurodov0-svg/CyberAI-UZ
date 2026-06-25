@@ -5,7 +5,7 @@ export interface StreamCallbacks {
     completion_tokens?: number;
     total_tokens?: number;
   }) => void;
-  onDone?: (totalContent: string) => void;
+  onDone?: (totalContent: string, hadError: boolean) => void;
   onError?: (err: unknown) => void;
 }
 
@@ -15,6 +15,7 @@ export function createSSEStream(
 ): ReadableStream<Uint8Array> {
   const encoder = new TextEncoder();
   let totalContent = "";
+  let hadError = false;
 
   return new ReadableStream({
     async start(controller) {
@@ -53,11 +54,12 @@ export function createSSEStream(
           }
         }
       } catch (err) {
+        hadError = true;
         const errorMessage = err instanceof Error ? err.message : String(err);
         controller.enqueue(encoder.encode(`\n\n[AI response interrupted: ${errorMessage}]`));
         callbacks?.onError?.(err);
       } finally {
-        callbacks?.onDone?.(totalContent);
+        callbacks?.onDone?.(totalContent, hadError);
         controller.close();
       }
     },

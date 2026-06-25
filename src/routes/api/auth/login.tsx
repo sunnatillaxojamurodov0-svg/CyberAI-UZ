@@ -12,7 +12,7 @@ import {
 import { is2FAEnabled, verify2FA } from "@/lib/auth/totp";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { writeAnalytics } from "@/lib/analytics";
-import { jsonOk, jsonError, serverError } from "@/lib/api-response";
+import { jsonOk, jsonError, jsonResponse, serverError } from "@/lib/api-response";
 import { getClientIp } from "@/lib/api-middleware";
 
 export const Route = createFileRoute("/api/auth/login")({
@@ -25,9 +25,13 @@ export const Route = createFileRoute("/api/auth/login")({
           const rl = await checkRateLimit(rateLimitKey(ip, "login"), "auth");
           if (!rl.allowed) {
             writeAnalytics("login", "denied", null, "/api/auth/login", Date.now() - startTime);
-            return jsonError(
-              `Too many attempts. Try again in ${Math.ceil((rl.resetAt - Date.now() / 1000) / 60)} minutes.`,
+            return jsonResponse(
+              {
+                ok: false,
+                error: `Too many attempts. Try again in ${Math.ceil((rl.resetAt - Date.now() / 1000) / 60)} minutes.`,
+              },
               429,
+              { "Retry-After": String(Math.ceil(rl.resetAt - Date.now() / 1000)) },
             );
           }
 

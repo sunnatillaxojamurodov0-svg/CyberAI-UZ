@@ -111,14 +111,20 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
             severity: ["low", "medium", "high", "critical"].includes(t.severity)
               ? t.severity
               : "medium",
-            category: t.category || "unknown",
-            technique: t.technique || "Unknown",
-            mitigation: t.mitigation || "No mitigation available",
+            category: t.category || "general",
+            technique: t.technique || "Unknown technique",
+            mitigation: t.mitigation || "Consult security documentation",
             cve: t.cve,
             references: t.references,
           }));
 
-          return jsonOk({ threats });
+          return jsonOk({
+            data: threats,
+            meta: {
+              generated_at: Date.now(),
+              infrastructure: body.infrastructure ? "custom" : "general",
+            },
+          });
         } catch (err) {
           return serverError();
         }
