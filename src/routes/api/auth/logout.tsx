@@ -19,6 +19,7 @@ export const Route = createFileRoute("/api/auth/logout")({
             },
           });
         } catch (err) {
+          console.error("Logout failed:", err);
           return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

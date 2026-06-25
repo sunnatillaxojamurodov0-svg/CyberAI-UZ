@@ -46,7 +46,8 @@ async function getCacheEntry(key: string): Promise<CacheEntry | null> {
     await kv.put(key, JSON.stringify(entry), { expirationTtl: DEFAULT_CONFIG.ttlSeconds });
 
     return entry;
-  } catch {
+  } catch (err) {
+    console.error("Cache retrieval failed:", err);
     return null;
   }
 }
@@ -67,8 +68,8 @@ async function setCacheEntry(key: string, response: string, model: string): Prom
     };
 
     await kv.put(key, JSON.stringify(entry), { expirationTtl: DEFAULT_CONFIG.ttlSeconds });
-  } catch {
-    /* non-fatal */
+  } catch (err) {
+    console.error("Cache write failed (non-fatal):", err);
   }
 }
 

@@ -182,8 +182,8 @@ export const Route = createFileRoute("/api/console/hint")({
               send: (msg: unknown) => Promise<void>;
             };
             await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
-          } catch {
-            /* non-fatal */
+          } catch (err) {
+            console.error("Queue send failed (non-fatal):", err);
           }
 
           const context = [
@@ -270,13 +270,14 @@ export const Route = createFileRoute("/api/console/hint")({
                         if (content) {
                           controller.enqueue(new TextEncoder().encode(content));
                         }
-                      } catch {
-                        // skip malformed chunks
+                      } catch (err) {
+                        console.error("Malformed SSE chunk:", err);
                       }
                     }
                   }
                 }
-              } catch {
+              } catch (err) {
+                console.error("AI Mentor stream error:", err);
                 controller.enqueue(
                   new TextEncoder().encode("\n\n[AI Mentor connection interrupted. Try again.]"),
                 );
@@ -292,7 +293,8 @@ export const Route = createFileRoute("/api/console/hint")({
           return new Response(stream, {
             headers: { "Content-Type": "text/plain" },
           });
-        } catch {
+        } catch (err) {
+          console.error("AI Mentor hint error:", err);
           writeAnalytics("hint", "error", null, "/api/console/hint", Date.now() - startTime);
           return new Response("AI Mentor error.", {
             status: 500,

@@ -61,8 +61,8 @@ export function ConsolePage() {
             hints_used: state.telemetry.hintsUsed,
           }),
         });
-      } catch {
-        // Non-fatal: leaderboard submission failed
+      } catch (err) {
+        console.error("Leaderboard submission failed:", err);
       }
 
       return { correct: true, score, points };

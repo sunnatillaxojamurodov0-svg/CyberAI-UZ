@@ -45,6 +45,7 @@ export const Route = createFileRoute("/api/workflows/challenge")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Challenge workflow failed:", err);
           return new Response(
             JSON.stringify({
               ok: false,

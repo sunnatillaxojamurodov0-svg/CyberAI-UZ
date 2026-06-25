@@ -117,6 +117,7 @@ export const Route = createFileRoute("/api/zkp")({
             },
           );
         } catch (err) {
+          console.error("ZKP proof generation failed:", err);
           return new Response(
             JSON.stringify({
               ok: false,
@@ -190,6 +191,7 @@ export const Route = createFileRoute("/api/zkp")({
             },
           );
         } catch (err) {
+          console.error("ZKP proof verification failed:", err);
           return new Response(
             JSON.stringify({
               ok: false,

@@ -117,7 +117,8 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
           buffer += decoder.decode(value, { stream: true });
           setAiStreamText(buffer);
         }
-      } catch {
+      } catch (err) {
+        console.error("AI Mentor streaming failed:", err);
         setAiStreamText("Network error while contacting AI Mentor.");
       } finally {
         setAiStreaming(false);

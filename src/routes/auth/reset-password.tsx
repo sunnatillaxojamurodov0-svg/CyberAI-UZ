@@ -50,7 +50,8 @@ function ResetPasswordPage() {
         setStatus("error");
         setMessage(data.error || "Password reset failed.");
       }
-    } catch {
+    } catch (err) {
+      console.error("Password reset failed:", err);
       setStatus("error");
       setMessage("Network error. Please try again.");
     }

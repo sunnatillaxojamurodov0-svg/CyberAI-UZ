@@ -20,6 +20,7 @@ export const Route = createFileRoute("/api/auth/me")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Auth session verification failed:", err);
           return new Response(JSON.stringify({ ok: false, user: null }), {
             status: 200,
             headers: { "Content-Type": "application/json" },

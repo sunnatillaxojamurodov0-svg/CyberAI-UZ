@@ -55,7 +55,8 @@ function AuthCallback() {
           setMessage(data.error ?? "Authentication failed.");
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Auth callback failed:", err);
         setStatus("error");
         setMessage("Network error during authentication.");
       });

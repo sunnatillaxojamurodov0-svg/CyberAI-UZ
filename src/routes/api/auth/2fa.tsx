@@ -42,6 +42,7 @@ export const Route = createFileRoute("/api/auth/2fa")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("2FA status check failed:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
@@ -101,6 +102,7 @@ export const Route = createFileRoute("/api/auth/2fa")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("2FA action failed:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

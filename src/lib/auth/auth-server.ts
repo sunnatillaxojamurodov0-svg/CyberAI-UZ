@@ -134,7 +134,8 @@ export async function recordLoginAttempt(
       locked: false,
       attemptsRemaining: MAX_LOGIN_ATTEMPTS - failedCount,
     };
-  } catch {
+  } catch (err) {
+    console.error("Login attempt status check failed:", err);
     return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS };
   }
 }
@@ -162,7 +163,8 @@ export async function isAccountLocked(
     }
 
     return { locked: false };
-  } catch {
+  } catch (err) {
+    console.error("Account lock check failed:", err);
     return { locked: false };
   }
 }
@@ -171,8 +173,8 @@ export async function clearLoginAttempts(email: string): Promise<void> {
   try {
     const db = requireDb<D1Database>();
     await db.prepare("DELETE FROM login_attempts WHERE email = ?").bind(email).run();
-  } catch {
-    // non-fatal
+  } catch (err) {
+    console.error("Failed to clear login attempts:", err);
   }
 }
 
@@ -298,7 +300,8 @@ export async function logoutUser(token: string): Promise<{ ok: boolean }> {
     const tokenHash = await sha256(token);
     await db.prepare("DELETE FROM sessions WHERE id = ?").bind(tokenHash).run();
     return { ok: true };
-  } catch {
+  } catch (err) {
+    console.error("Logout session deletion failed:", err);
     return { ok: true };
   }
 }
@@ -379,7 +382,8 @@ export async function isEmailVerified(userId: string): Promise<boolean> {
       .bind(userId)
       .first<{ email_verified: number }>();
     return row?.email_verified === 1;
-  } catch {
+  } catch (err) {
+    console.error("Email verification status check failed:", err);
     return false;
   }
 }

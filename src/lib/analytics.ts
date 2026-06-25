@@ -69,8 +69,8 @@ export function writeAnalytics(
       ],
       indexes: [userId ?? "anonymous"],
     });
-  } catch {
-    /* non-fatal */
+  } catch (err) {
+    console.error("Analytics write failed (non-fatal):", err);
   }
 }
 

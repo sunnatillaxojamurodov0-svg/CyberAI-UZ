@@ -36,7 +36,9 @@ export function BillingDashboard() {
       fetch("/api/billing")
         .then((res) => res.json())
         .then((data: BillingInfo) => setBilling(data))
-        .catch(() => {})
+        .catch((err) => {
+          console.error("Failed to fetch billing info:", err);
+        })
         .finally(() => setLoading(false));
     }
   }, [user]);
@@ -53,8 +55,8 @@ export function BillingDashboard() {
       if (data.ok && data.url) {
         window.location.href = data.url;
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Failed to manage subscription:", err);
     } finally {
       setActionLoading(false);
     }

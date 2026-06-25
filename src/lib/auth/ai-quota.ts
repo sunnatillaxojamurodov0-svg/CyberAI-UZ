@@ -81,7 +81,8 @@ export async function checkAiQuota(userId: string | null): Promise<AiQuotaResult
       tokensRemaining,
       plan,
     };
-  } catch {
+  } catch (err) {
+    console.error("AI quota check failed:", err);
     return { allowed: true, remaining: 1, tokensRemaining: 10000, plan: "free" };
   }
 }
@@ -108,8 +109,8 @@ export async function incrementAiUsage(userId: string | null): Promise<void> {
         .bind(key, date)
         .run();
     }
-  } catch {
-    /* quota tracking failure is non-fatal */
+  } catch (err) {
+    console.error("Quota tracking failed (non-fatal):", err);
   }
 }
 
@@ -137,8 +138,8 @@ export async function trackTokenUsage(
         Math.floor(Date.now() / 1000),
       )
       .run();
-  } catch {
-    /* token tracking failure is non-fatal */
+  } catch (err) {
+    console.error("Token tracking failed (non-fatal):", err);
   }
 }
 
@@ -162,7 +163,8 @@ export async function getTokenUsage(
       completionTokens: row?.completion ?? 0,
       totalTokens: row?.total ?? 0,
     };
-  } catch {
+  } catch (err) {
+    console.error("Token usage retrieval failed:", err);
     return { totalTokens: 0, promptTokens: 0, completionTokens: 0 };
   }
 }

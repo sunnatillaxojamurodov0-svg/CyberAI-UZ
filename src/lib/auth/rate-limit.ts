@@ -56,8 +56,8 @@ export async function checkRateLimit(
           resetAt: windowEnd,
         };
       }
-    } catch {
-      /* fall through to D1 */
+    } catch (err) {
+      console.error("KV rate limit check failed, falling through to D1:", err);
     }
   }
 
@@ -92,7 +92,8 @@ export async function checkRateLimit(
     }
 
     return { allowed: true, remaining: config.maxRequests - currentCount - 1, resetAt: windowEnd };
-  } catch {
+  } catch (err) {
+    console.error("Rate limit check failed:", err);
     return { allowed: true, remaining: 1, resetAt: 0 };
   }
 }

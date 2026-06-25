@@ -73,8 +73,8 @@ export function PricingSection() {
       if (data.ok && data.url) {
         window.location.href = data.url;
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Checkout failed:", err);
     } finally {
       setLoading(null);
     }

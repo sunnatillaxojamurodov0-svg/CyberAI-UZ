@@ -24,7 +24,8 @@ export const Route = createFileRoute("/api/auth/google")({
             status: 302,
             headers: { Location: url },
           });
-        } catch {
+        } catch (err) {
+          console.error("Google OAuth redirect error:", err);
           return new Response("Google OAuth error.", { status: 500 });
         }
       },

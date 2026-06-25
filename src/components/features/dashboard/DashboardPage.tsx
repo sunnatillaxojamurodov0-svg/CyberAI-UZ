@@ -29,7 +29,8 @@ export function DashboardPage() {
       } else {
         setError(json.error ?? "Failed to load");
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to load dashboard stats:", err);
       setError("Network error");
     } finally {
       setLoading(false);

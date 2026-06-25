@@ -59,7 +59,8 @@ export async function getDynamicFlag(
       .run();
 
     return { flag: newFlag, isDynamic: true };
-  } catch {
+  } catch (err) {
+    console.error("Dynamic flag generation failed:", err);
     return { flag: "", isDynamic: false };
   }
 }

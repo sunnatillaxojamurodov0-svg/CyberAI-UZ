@@ -93,7 +93,9 @@ export const Route = createFileRoute("/api/auth/login")({
           const verified = await isEmailVerified(result.user.id);
           if (!verified) {
             const verificationToken = await createVerificationToken(result.user.id);
-            sendVerificationEmail(result.user.email, verificationToken).catch(() => {});
+            sendVerificationEmail(result.user.email, verificationToken).catch((err) => {
+              console.error("Failed to send verification email:", err);
+            });
             return new Response(
               JSON.stringify({
                 ok: false,
@@ -158,6 +160,7 @@ export const Route = createFileRoute("/api/auth/login")({
             },
           });
         } catch (err) {
+          console.error("Login failed:", err);
           return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

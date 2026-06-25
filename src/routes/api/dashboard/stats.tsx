@@ -96,6 +96,7 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             },
           );
         } catch (err) {
+          console.error("Dashboard stats error:", err);
           return new Response(
             JSON.stringify({
               ok: false,

@@ -24,7 +24,8 @@ export const Route = createFileRoute("/api/auth/github")({
             status: 302,
             headers: { Location: url },
           });
-        } catch {
+        } catch (err) {
+          console.error("GitHub OAuth redirect error:", err);
           return new Response("GitHub OAuth error.", { status: 500 });
         }
       },

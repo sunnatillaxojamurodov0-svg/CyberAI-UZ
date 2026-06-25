@@ -83,7 +83,8 @@ export function ThreatsPage() {
       } else {
         setError(json.error ?? "Failed to generate threats");
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to generate threats:", err);
       setError("Network error");
     } finally {
       setLoading(false);

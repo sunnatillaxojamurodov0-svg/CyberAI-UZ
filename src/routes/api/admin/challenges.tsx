@@ -40,6 +40,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Failed to list challenges:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
@@ -106,6 +107,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Failed to create challenge:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
@@ -197,6 +199,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Failed to update challenge:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
@@ -240,6 +243,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Failed to delete challenge:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

@@ -76,7 +76,9 @@ export const Route = createFileRoute("/api/auth/register")({
           }
 
           const verificationToken = await createVerificationToken(result.user.id);
-          sendVerificationEmail(email, verificationToken).catch(() => {});
+          sendVerificationEmail(email, verificationToken).catch((err) => {
+            console.error("Failed to send verification email:", err);
+          });
 
           writeAnalytics(
             "register",
@@ -95,6 +97,7 @@ export const Route = createFileRoute("/api/auth/register")({
             { status: 200, headers: { "Content-Type": "application/json" } },
           );
         } catch (err) {
+          console.error("Registration failed:", err);
           return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

@@ -98,6 +98,7 @@ export const Route = createFileRoute("/api/targets")({
             },
           );
         } catch (err) {
+          console.error("Failed to load targets:", err);
           return new Response(
             JSON.stringify({
               ok: false,
@@ -223,6 +224,7 @@ export const Route = createFileRoute("/api/targets")({
             },
           );
         } catch (err) {
+          console.error("Failed to create target:", err);
           return new Response(
             JSON.stringify({
               ok: false,

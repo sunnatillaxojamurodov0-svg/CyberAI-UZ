@@ -67,7 +67,8 @@ export function ZKPPage() {
       } else {
         setError(json.error ?? "Failed to generate proof");
       }
-    } catch {
+    } catch (err) {
+      console.error("ZKP proof generation failed:", err);
       setError("Network error");
     } finally {
       setLoading(false);
@@ -92,7 +93,8 @@ export function ZKPPage() {
       } else {
         setError(json.error ?? "Proof not found");
       }
-    } catch {
+    } catch (err) {
+      console.error("ZKP proof fetch failed:", err);
       setError("Network error");
     } finally {
       setLoading(false);

@@ -41,6 +41,7 @@ export const Route = createFileRoute("/api/workflows/analysis")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Analysis workflow failed:", err);
           return new Response(
             JSON.stringify({
               ok: false,
