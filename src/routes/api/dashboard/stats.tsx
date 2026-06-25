@@ -2,12 +2,23 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb, getEnv } from "@/lib/db";
 import { writeAnalytics } from "@/lib/analytics";
+import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 
 export const Route = createFileRoute("/api/dashboard/stats")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
+          const token = getSessionToken(request);
+          const session = token ? await verifySession(token) : null;
+
+          if (!session?.ok || !session.user?.id) {
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const startTime = Date.now();
           const db = requireDb();
           const env = getEnv();
@@ -99,7 +110,7 @@ export const Route = createFileRoute("/api/dashboard/stats")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to load dashboard stats",
+              error: "Failed to load dashboard stats",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

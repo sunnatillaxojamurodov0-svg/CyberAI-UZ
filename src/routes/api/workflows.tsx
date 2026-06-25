@@ -105,6 +105,16 @@ export const Route = createFileRoute("/api/workflows")({
       GET: async ({ request }) => {
         try {
           const env = getEnv();
+          const token = getSessionToken(request);
+          const session = token ? await verifySession(token) : null;
+
+          if (!session?.ok || !session.user?.id) {
+            return new Response(JSON.stringify({ error: "Unauthorized" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const url = new URL(request.url);
           const instanceId = url.searchParams.get("instanceId");
           const workflowName = url.searchParams.get("workflow");

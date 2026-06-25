@@ -18,7 +18,6 @@ export const Route = createFileRoute("/api/leaderboard")({
               l.id,
               l.user_id,
               u.name as user_name,
-              u.email as user_email,
               l.challenge_id,
               c.name as challenge_name,
               c.difficulty as challenge_level,
@@ -62,7 +61,7 @@ export const Route = createFileRoute("/api/leaderboard")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to load leaderboard",
+              error: "Failed to load leaderboard",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
@@ -126,7 +125,7 @@ export const Route = createFileRoute("/api/leaderboard")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to submit score",
+              error: "Failed to submit score",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

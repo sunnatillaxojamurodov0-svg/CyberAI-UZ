@@ -48,7 +48,7 @@ export const Route = createFileRoute("/api/workflows/challenge")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Workflow failed",
+              error: "Workflow failed",
             }),
             {
               status: 500,

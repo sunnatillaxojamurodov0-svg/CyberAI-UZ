@@ -161,13 +161,26 @@ export async function handleWebhook(
   const env = getEnv();
   const webhookSecret = env.STRIPE_WEBHOOK_SECRET as string;
 
-  const timestamp = signature.split(",")[0].replace("t=", "");
-  const sig = signature.split(",")[1].replace("sig=", "");
+  const parts = signature.split(",").reduce(
+    (acc, part) => {
+      const [key, val] = part.split("=");
+      if (key === "t") acc.timestamp = val;
+      if (key === "v1") acc.sig = val;
+      return acc;
+    },
+    { timestamp: "", sig: "" },
+  );
+  const timestamp = parts.timestamp;
+  const sig = parts.sig;
 
-  const elements = [timestamp, payload, webhookSecret].join(".");
+  if (!timestamp || !sig) {
+    throw new Error("Invalid webhook signature format");
+  }
+
+  const signedPayload = `${timestamp}.${payload}`;
   const encoder = new TextEncoder();
   const keyData = encoder.encode(webhookSecret);
-  const data = encoder.encode(elements);
+  const data = encoder.encode(signedPayload);
 
   const key = await crypto.subtle.importKey(
     "raw",

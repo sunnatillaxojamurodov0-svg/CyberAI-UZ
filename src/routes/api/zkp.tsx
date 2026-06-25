@@ -120,7 +120,7 @@ export const Route = createFileRoute("/api/zkp")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to generate proof",
+              error: "Failed to generate proof",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
@@ -129,6 +129,16 @@ export const Route = createFileRoute("/api/zkp")({
 
       GET: async ({ request }) => {
         try {
+          const token = getSessionToken(request);
+          const session = token ? await verifySession(token) : null;
+
+          if (!session?.ok || !session.user?.id) {
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const url = new URL(request.url);
           const proofId = url.searchParams.get("id");
           const challengeId = url.searchParams.get("challenge_id");
@@ -193,7 +203,7 @@ export const Route = createFileRoute("/api/zkp")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to verify proof",
+              error: "Failed to verify proof",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
