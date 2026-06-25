@@ -210,7 +210,8 @@ export async function is2FAEnabled(userId: string): Promise<boolean> {
       .bind(userId)
       .first<{ enabled: number }>();
     return row?.enabled === 1;
-  } catch {
+  } catch (err) {
+    console.error("2FA status check failed:", err);
     return false;
   }
 }
@@ -223,7 +224,8 @@ export async function get2FASecret(userId: string): Promise<string | null> {
       .bind(userId)
       .first<{ secret: string }>();
     return row?.secret ?? null;
-  } catch {
+  } catch (err) {
+    console.error("2FA secret retrieval failed:", err);
     return null;
   }
 }

@@ -65,8 +65,8 @@ export function TargetsPage() {
       if (json.ok) {
         setTemplates(json.data);
       }
-    } catch {
-      // Handle error
+    } catch (err) {
+      console.error("Failed to load targets:", err);
     } finally {
       setLoading(false);
     }
@@ -99,8 +99,8 @@ export function TargetsPage() {
         };
         setActiveTargets((prev) => [...prev, newTarget]);
       }
-    } catch {
-      // Handle error
+    } catch (err) {
+      console.error("Failed to spawn target:", err);
     } finally {
       setSpawning(null);
     }

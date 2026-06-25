@@ -118,8 +118,8 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
             } else {
               threats = JSON.parse(response);
             }
-          } catch {
-            // If parsing fails, return a formatted error
+          } catch (err) {
+            console.error("Failed to parse AI threat response:", err);
             return new Response(
               JSON.stringify({ ok: false, error: "Failed to parse AI response" }),
               { status: 500, headers: { "Content-Type": "application/json" } },
@@ -156,6 +156,7 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
             },
           );
         } catch (err) {
+          console.error("Threat generation failed:", err);
           return new Response(
             JSON.stringify({
               ok: false,

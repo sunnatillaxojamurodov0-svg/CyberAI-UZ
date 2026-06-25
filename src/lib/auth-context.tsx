@@ -51,7 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setUser(data.user);
         }
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.error("Failed to fetch current user session:", err);
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -85,7 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAuthModalOpen(false);
         setRequires2FA(false);
         return null;
-      } catch {
+      } catch (err) {
+        console.error("Login failed:", err);
         setAuthError("Network error. Please try again.");
         return "Network error. Please try again.";
       }
@@ -112,7 +115,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           "Verification email sent! Please check your inbox and verify your email before logging in.",
         );
         return null;
-      } catch {
+      } catch (err) {
+        console.error("Registration failed:", err);
         setAuthError("Network error. Please try again.");
         return "Network error. Please try again.";
       }
@@ -123,8 +127,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = useCallback(async () => {
     try {
       await apiFetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Logout request failed:", err);
     }
     setUser(null);
   }, []);
@@ -150,7 +154,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return data.error ?? "Failed to send reset link.";
       }
       return null;
-    } catch {
+    } catch (err) {
+      console.error("Password reset request failed:", err);
       setAuthError("Network error. Please try again.");
       return "Network error. Please try again.";
     }

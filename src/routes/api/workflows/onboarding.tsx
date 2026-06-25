@@ -39,6 +39,7 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Onboarding workflow failed:", err);
           return new Response(
             JSON.stringify({
               ok: false,

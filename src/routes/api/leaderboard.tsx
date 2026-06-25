@@ -59,6 +59,7 @@ export const Route = createFileRoute("/api/leaderboard")({
             },
           );
         } catch (err) {
+          console.error("Failed to load leaderboard:", err);
           return new Response(
             JSON.stringify({
               ok: false,
@@ -123,6 +124,7 @@ export const Route = createFileRoute("/api/leaderboard")({
             },
           );
         } catch (err) {
+          console.error("Failed to submit leaderboard score:", err);
           return new Response(
             JSON.stringify({
               ok: false,

@@ -33,7 +33,8 @@ function VerifyEmailPage() {
           setMessage(data.error || "Verification failed.");
         }
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Email verification failed:", err);
         setStatus("error");
         setMessage("Network error. Please try again.");
       });

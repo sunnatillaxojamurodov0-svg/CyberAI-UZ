@@ -39,7 +39,8 @@ export function LeaderboardPage() {
       } else {
         setError(json.error ?? "Failed to load leaderboard");
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to load leaderboard:", err);
       setError("Network error");
     } finally {
       setLoading(false);

@@ -31,6 +31,7 @@ export const Route = createFileRoute("/api/auth/verify")({
             { status: 200, headers: { "Content-Type": "application/json" } },
           );
         } catch (err) {
+          console.error("Email verification failed:", err);
           return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

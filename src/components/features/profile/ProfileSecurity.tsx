@@ -28,8 +28,8 @@ export function ProfileSecurity() {
       const res = await fetch("/api/auth/2fa");
       const data = await res.json();
       setTwoFAEnabled(data.enabled);
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Failed to fetch 2FA status:", err);
     } finally {
       setLoading(false);
     }
@@ -52,7 +52,8 @@ export function ProfileSecurity() {
       } else {
         setMessage({ type: "error", text: data.error || "Failed to setup 2FA" });
       }
-    } catch {
+    } catch (err) {
+      console.error("2FA setup failed:", err);
       setMessage({ type: "error", text: "Network error" });
     } finally {
       setActionLoading(false);
@@ -81,7 +82,8 @@ export function ProfileSecurity() {
       } else {
         setMessage({ type: "error", text: data.error || "Invalid code" });
       }
-    } catch {
+    } catch (err) {
+      console.error("2FA verification failed:", err);
       setMessage({ type: "error", text: "Network error" });
     } finally {
       setActionLoading(false);
@@ -110,7 +112,8 @@ export function ProfileSecurity() {
       } else {
         setMessage({ type: "error", text: data.error || "Invalid code" });
       }
-    } catch {
+    } catch (err) {
+      console.error("2FA disable failed:", err);
       setMessage({ type: "error", text: "Network error" });
     } finally {
       setActionLoading(false);

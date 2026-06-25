@@ -37,6 +37,7 @@ export const Route = createFileRoute("/api/challenges/verify")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Flag verification failed:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

@@ -44,6 +44,7 @@ export const Route = createFileRoute("/api/challenges/submit")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Failed to list challenge submissions:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
@@ -117,6 +118,7 @@ export const Route = createFileRoute("/api/challenges/submit")({
             headers: { "Content-Type": "application/json" },
           });
         } catch (err) {
+          console.error("Failed to submit challenge:", err);
           return new Response(JSON.stringify({ error: "Internal server error" }), {
             status: 500,
             headers: { "Content-Type": "application/json" },

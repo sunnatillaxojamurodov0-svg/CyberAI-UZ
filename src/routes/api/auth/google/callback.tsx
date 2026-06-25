@@ -46,7 +46,9 @@ export const Route = createFileRoute("/api/auth/google/callback")({
                   name: result.user.name ?? "User",
                 },
               })
-              .catch(() => {});
+              .catch((err: unknown) => {
+                console.error("Failed to create onboarding workflow:", err);
+              });
           }
 
           return new Response(JSON.stringify({ ok: true, user: result.user }), {
@@ -56,7 +58,8 @@ export const Route = createFileRoute("/api/auth/google/callback")({
               "Set-Cookie": setSessionCookie(result.token),
             },
           });
-        } catch {
+        } catch (err) {
+          console.error("Google authentication error:", err);
           return new Response(
             JSON.stringify({ ok: false, error: "Google authentication error." }),
             {

@@ -66,8 +66,8 @@ export function ChallengeAdmin() {
       if (data.ok) {
         setChallenges(data.challenges);
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Failed to fetch challenges:", err);
     } finally {
       setLoading(false);
     }
@@ -102,7 +102,8 @@ export function ChallengeAdmin() {
       } else {
         setMessage({ type: "error", text: data.error || "Failed to save challenge" });
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to save challenge:", err);
       setMessage({ type: "error", text: "Network error" });
     } finally {
       setSaving(false);
@@ -132,7 +133,8 @@ export function ChallengeAdmin() {
         setMessage({ type: "success", text: "Challenge deleted!" });
         fetchChallenges();
       }
-    } catch {
+    } catch (err) {
+      console.error("Failed to delete challenge:", err);
       setMessage({ type: "error", text: "Failed to delete" });
     }
   };

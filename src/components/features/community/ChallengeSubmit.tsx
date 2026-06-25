@@ -73,8 +73,8 @@ export function ChallengeSubmit() {
       if (data.ok) {
         setSubmissions(data.submissions);
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.error("Failed to fetch submissions:", err);
     } finally {
       setLoading(false);
     }
@@ -112,7 +112,8 @@ export function ChallengeSubmit() {
       } else {
         setMessage({ type: "error", text: data.error || "Failed to submit" });
       }
-    } catch {
+    } catch (err) {
+      console.error("Challenge submission failed:", err);
       setMessage({ type: "error", text: "Network error" });
     } finally {
       setSubmitting(false);

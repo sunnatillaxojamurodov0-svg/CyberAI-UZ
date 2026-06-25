@@ -99,8 +99,8 @@ export const Route = createFileRoute("/api/chat")({
               send: (msg: unknown) => Promise<void>;
             };
             await q.send({ userId: userId ?? "__anonymous__", date: dateStr });
-          } catch {
-            /* non-fatal */
+          } catch (err) {
+            console.error("Queue send failed (non-fatal):", err);
           }
 
           const modelName = body.model || "nvidia/nemotron-3-ultra-550b-a55b:free";
@@ -205,10 +205,12 @@ export const Route = createFileRoute("/api/chat")({
                             promptTokens: parsed.usage.prompt_tokens || 0,
                             completionTokens: parsed.usage.completion_tokens || 0,
                             totalTokens: parsed.usage.total_tokens || 0,
-                          }).catch(() => {});
+                          }).catch((err) => {
+                            console.error("Failed to track token usage:", err);
+                          });
                         }
-                      } catch {
-                        // skip malformed chunks
+                      } catch (err) {
+                        console.error("Malformed SSE chunk:", err);
                       }
                     }
                   }
@@ -223,7 +225,9 @@ export const Route = createFileRoute("/api/chat")({
                     promptTokens: estimatedPromptTokens,
                     completionTokens: estimatedCompletionTokens,
                     totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
-                  }).catch(() => {});
+                  }).catch((err) => {
+                    console.error("Failed to track token usage:", err);
+                  });
                 }
               } catch (err) {
                 console.error("Stream error:", err);
@@ -234,7 +238,9 @@ export const Route = createFileRoute("/api/chat")({
                 );
               } finally {
                 if (totalContent) {
-                  setCachedResponse(messages, totalContent, usedModel).catch(() => {});
+                  setCachedResponse(messages, totalContent, usedModel).catch((err) => {
+                    console.error("Failed to cache AI response:", err);
+                  });
                 }
                 controller.close();
               }
@@ -254,6 +260,7 @@ export const Route = createFileRoute("/api/chat")({
             headers: { "Content-Type": "text/plain", "X-Cache": "MISS" },
           });
         } catch (err) {
+          console.error("Chat API error:", err);
           writeAnalytics("chat", "error", null, "/api/chat", Date.now() - startTime);
           return new Response("AI service error.", {
             status: 500,

@@ -41,7 +41,9 @@ export const Route = createFileRoute("/api/auth/reset-password")({
 
           const result = await createPasswordResetToken(body.email);
           if (result.ok && result.token) {
-            sendPasswordResetEmail(body.email, result.token).catch(() => {});
+            sendPasswordResetEmail(body.email, result.token).catch((err) => {
+              console.error("Failed to send password reset email:", err);
+            });
           }
 
           return new Response(
@@ -52,6 +54,7 @@ export const Route = createFileRoute("/api/auth/reset-password")({
             { status: 200, headers: { "Content-Type": "application/json" } },
           );
         } catch (err) {
+          console.error("Password reset failed:", err);
           return new Response(JSON.stringify({ ok: false, error: "Internal server error." }), {
             status: 500,
             headers: { "Content-Type": "application/json" },
