@@ -159,7 +159,7 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to generate threats",
+              error: "Failed to generate threats",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

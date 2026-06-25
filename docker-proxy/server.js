@@ -29,7 +29,7 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "https://app.cyberaiuz.w
 console.log("========================================");
 console.log("  CyberAI Docker Proxy - PRODUCTION");
 console.log("========================================");
-console.log(`API Key: ${API_KEY.substring(0, 8)}...${API_KEY.substring(API_KEY.length - 8)}`);
+console.log(`API Key: ${API_KEY.substring(0, 4)}****`);
 console.log(`Max Containers: ${MAX_CONTAINERS}`);
 console.log(`Container TTL: ${CONTAINER_TTL_MS / 1000 / 60} min`);
 console.log(`Network: ${NETWORK_NAME}`);
@@ -44,7 +44,7 @@ app.use(helmet());
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || ALLOWED_ORIGINS.includes(origin)) {
+      if (origin && ALLOWED_ORIGINS.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error("Not allowed by CORS"));

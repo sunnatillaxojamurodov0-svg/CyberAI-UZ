@@ -101,7 +101,7 @@ export const Route = createFileRoute("/api/targets")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to load targets",
+              error: "Failed to load targets",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
@@ -226,7 +226,7 @@ export const Route = createFileRoute("/api/targets")({
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to create target",
+              error: "Failed to create target",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

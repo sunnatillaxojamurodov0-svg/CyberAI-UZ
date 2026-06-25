@@ -3,6 +3,16 @@ import type {} from "@tanstack/react-start";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { getEnv } from "@/lib/db";
 
+function isAdmin(email: string): boolean {
+  const env = getEnv();
+  const adminEmails = (env.ADMIN_EMAILS as string | undefined) ?? "";
+  return adminEmails
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean)
+    .includes(email.toLowerCase());
+}
+
 export const Route = createFileRoute("/api/admin/challenges")({
   server: {
     handlers: {
@@ -19,6 +29,13 @@ export const Route = createFileRoute("/api/admin/challenges")({
           if (!session.ok || !session.user) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), {
               status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          if (!isAdmin(session.user.email)) {
+            return new Response(JSON.stringify({ error: "Forbidden" }), {
+              status: 403,
               headers: { "Content-Type": "application/json" },
             });
           }
@@ -60,6 +77,13 @@ export const Route = createFileRoute("/api/admin/challenges")({
           if (!session.ok || !session.user) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), {
               status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          if (!isAdmin(session.user.email)) {
+            return new Response(JSON.stringify({ error: "Forbidden" }), {
+              status: 403,
               headers: { "Content-Type": "application/json" },
             });
           }
@@ -126,6 +150,13 @@ export const Route = createFileRoute("/api/admin/challenges")({
           if (!session.ok || !session.user) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), {
               status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          if (!isAdmin(session.user.email)) {
+            return new Response(JSON.stringify({ error: "Forbidden" }), {
+              status: 403,
               headers: { "Content-Type": "application/json" },
             });
           }
@@ -217,6 +248,13 @@ export const Route = createFileRoute("/api/admin/challenges")({
           if (!session.ok || !session.user) {
             return new Response(JSON.stringify({ error: "Unauthorized" }), {
               status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          if (!isAdmin(session.user.email)) {
+            return new Response(JSON.stringify({ error: "Forbidden" }), {
+              status: 403,
               headers: { "Content-Type": "application/json" },
             });
           }
