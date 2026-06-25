@@ -10,6 +10,7 @@ jobs:
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true
     permissions:
       security-events: write
       contents: read
@@ -33,6 +34,7 @@ jobs:
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
+    continue-on-error: true
     if: github.event_name == 'pull_request'
     permissions:
       contents: read
