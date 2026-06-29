@@ -2,14 +2,17 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
+import { useTranslation } from "@/lib/i18n";
 
 const STATS = [
-  { value: "1", label: "Operator" },
-  { value: "7", label: "Countries" },
-  { value: "200+", label: "Signals / day" },
+  { value: "1", key: "community.operator" },
+  { value: "7", key: "community.countries" },
+  { value: "200+", key: "community.signals" },
 ];
 
 export function CommunitySection() {
+  const { t } = useTranslation();
+
   return (
     <section className="relative px-6 py-28">
       <div className="mx-auto max-w-7xl">
@@ -37,15 +40,12 @@ export function CommunitySection() {
 
             <div className="relative grid grid-cols-12 gap-10">
               <div className="col-span-12 lg:col-span-7">
-                <StatusPill>Mission</StatusPill>
+                <StatusPill>{t("community.mission")}</StatusPill>
                 <h2 className="mt-6 font-display text-4xl font-bold tracking-[-0.03em] md:text-6xl text-balance">
-                  The network of operators protecting the{" "}
-                  <span className="gradient-text">edge of intelligence.</span>
+                  {t("community.mission.title")}
                 </h2>
                 <p className="mt-6 max-w-xl text-base leading-relaxed text-muted-foreground">
-                  CyberAI is built with — and for — the engineers, researchers, and analysts shaping
-                  the next decade of autonomous systems. Join a community that defines how machines
-                  defend machines.
+                  {t("community.mission.description")}
                 </p>
                 <a
                   href="https://t.me/Cyber_AI_UZ"
@@ -53,7 +53,7 @@ export function CommunitySection() {
                   rel="noopener noreferrer"
                   className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary"
                 >
-                  Apply for early access
+                  {t("community.cta")}
                   <svg
                     className="size-[0.9em] -translate-x-1 rotate-45 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
                     fill="none"
@@ -75,30 +75,31 @@ export function CommunitySection() {
               <div className="col-span-12 lg:col-span-5">
                 <div className="grid grid-cols-3 gap-px overflow-hidden rounded-xl border border-border bg-border">
                   {STATS.map((s) => (
-                    <div key={s.label} className="bg-background p-6 text-center">
+                    <div key={s.key} className="bg-background p-6 text-center">
                       <div className="font-display text-3xl font-bold tracking-tighter text-foreground md:text-4xl">
                         {s.value}
                       </div>
                       <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                        {s.label}
+                        {t(s.key)}
                       </div>
                     </div>
                   ))}
                 </div>
                 <div className="mt-4 rounded-xl border border-border bg-surface-2/80 p-5">
                   <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
-                    // Operator Log
+                    // {t("community.operator_log")}
                   </div>
                   <p className="text-sm italic leading-relaxed text-foreground/80">
-                    "It reminds me of a quiet cockpit. Everything I need is one click away — nothing
-                    else demanding my attention."
+                    &ldquo;{t("community.quote")}&rdquo;
                   </p>
                   <div className="mt-4 flex items-center gap-3">
                     <div className="size-8 rounded-full bg-gradient-to-br from-primary to-accent" />
                     <div>
-                      <div className="text-xs font-semibold text-foreground">VAEL AI</div>
+                      <div className="text-xs font-semibold text-foreground">
+                        {t("community.quote_name")}
+                      </div>
                       <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-                        Lead Operator · CyberAI
+                        {t("community.quote_title")}
                       </div>
                     </div>
                   </div>

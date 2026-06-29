@@ -1,5 +1,13 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { forwardRef, useRef, useMemo, useLayoutEffect } from "react";
+import {
+  forwardRef,
+  useRef,
+  useMemo,
+  useLayoutEffect,
+  useState,
+  useCallback,
+  type ReactNode,
+} from "react";
 import { Color } from "three";
 
 interface SilkProps {
@@ -108,6 +116,34 @@ const SilkPlane = forwardRef<THREE.Mesh, SilkPlaneProps>(function SilkPlane({ un
   );
 });
 
+class SilkErrorBoundary extends React.Component<
+  { children: ReactNode; fallback: ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: { children: ReactNode; fallback: ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    // Silently handle WebGL errors (context loss, unsupported features)
+    console.debug("Silk WebGL unavailable:", error.message);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+import React from "react";
+
 const Silk = ({
   speed = 5,
   scale = 1,
@@ -117,6 +153,11 @@ const Silk = ({
   className,
 }: SilkProps) => {
   const meshRef = useRef<THREE.Mesh>(null);
+  const [webglFailed, setWebglFailed] = useState(false);
+
+  const handleCreated = useCallback(() => {
+    // Canvas created successfully
+  }, []);
 
   const uniforms = useMemo(
     () => ({
@@ -130,11 +171,46 @@ const Silk = ({
     [speed, scale, noiseIntensity, color, rotation],
   );
 
+  if (webglFailed) {
+    return (
+      <div
+        className={className}
+        style={{
+          width: "100%",
+          height: "100%",
+          background: `linear-gradient(135deg, ${color}22 0%, ${color}08 100%)`,
+        }}
+      />
+    );
+  }
+
   return (
     <div className={className} style={{ width: "100%", height: "100%" }}>
-      <Canvas dpr={[1, 2]} frameloop="always">
-        <SilkPlane ref={meshRef} uniforms={uniforms} />
-      </Canvas>
+      <SilkErrorBoundary
+        fallback={
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              background: `linear-gradient(135deg, ${color}22 0%, ${color}08 100%)`,
+            }}
+          />
+        }
+      >
+        <Canvas
+          dpr={[1, 2]}
+          frameloop="always"
+          onCreated={handleCreated}
+          onError={() => setWebglFailed(true)}
+          gl={{
+            antialias: false,
+            powerPreference: "low-power",
+            failIfMajorPerformanceCaveat: false,
+          }}
+        >
+          <SilkPlane ref={meshRef} uniforms={uniforms} />
+        </Canvas>
+      </SilkErrorBoundary>
     </div>
   );
 };

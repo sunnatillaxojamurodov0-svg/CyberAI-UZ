@@ -3,7 +3,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Target, Lightbulb, ChevronDown, Crosshair, ListChecks } from "lucide-react";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { LEVEL_META } from "@/lib/console/challenges";
+import { useTranslation } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { ChallengeRating } from "./ChallengeRating";
 import type { CTFChallenge } from "@/lib/console/types";
 
 interface ChallengeBriefingProps {
@@ -14,6 +16,7 @@ interface ChallengeBriefingProps {
 
 export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefingProps) {
   const [revealed, setRevealed] = useState<number>(0);
+  const { t } = useTranslation();
   const meta = LEVEL_META[challenge.level];
 
   const revealNext = () => {
@@ -35,7 +38,7 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
             {challenge.category}
           </span>
           <span className="rounded-full border border-accent/20 bg-accent/5 px-2.5 py-1 font-mono text-[10px] uppercase tracking-wider text-accent">
-            {challenge.points} ball
+            {challenge.points} {t("console.points")}
           </span>
         </div>
         <h2 className="mt-3 font-display text-2xl font-bold tracking-tight">{challenge.title}</h2>
@@ -64,7 +67,7 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
         <div className="mb-3 flex items-center gap-2">
           <ListChecks size={14} className="text-accent" />
           <span className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-            Maqsadlar
+            {t("console.objectives")}
           </span>
         </div>
         <ol className="space-y-2">
@@ -85,11 +88,11 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
           <div className="flex items-center gap-2">
             <Lightbulb size={14} className="text-yellow-400" />
             <span className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              Maslahatlar
+              {t("console.hints")}
             </span>
           </div>
           <span className="font-mono text-[10px] text-muted-foreground/60">
-            {revealed}/{challenge.hints.length} ochildi
+            {revealed}/{challenge.hints.length} {t("console.revealed")}
           </span>
         </div>
 
@@ -118,9 +121,9 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
             className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-yellow-400/25 py-2 font-mono text-[11px] uppercase tracking-wider text-yellow-400/80 transition-colors hover:bg-yellow-400/5 hover:text-yellow-400"
           >
             <ChevronDown size={13} />
-            Maslahatni ochish
+            {t("console.reveal_hint")}
             {revealed > 0 && (
-              <span className="text-muted-foreground/50">(ball biroz kamayadi)</span>
+              <span className="text-muted-foreground/50">({t("console.hint_cost")})</span>
             )}
           </button>
         )}
@@ -130,11 +133,12 @@ export function ChallengeBriefing({ challenge, onHintRevealed }: ChallengeBriefi
       <div className="flex items-start gap-2.5 rounded-xl border border-border bg-surface/20 px-4 py-3">
         <Target size={14} className="mt-0.5 shrink-0 text-muted-foreground" />
         <p className="text-[11px] leading-relaxed text-muted-foreground">
-          This environment is a fully isolated virtual sandbox. All techniques are for educational
-          purposes only and operate against these CTF targets. No connection to external systems is
-          available.
+          {t("console.ethics_reminder")}
         </p>
       </div>
+
+      {/* Community Rating */}
+      <ChallengeRating challengeId={challenge.id} />
     </div>
   );
 }

@@ -1,8 +1,8 @@
-import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
-import { cva } from "class-variance-authority"
+import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
+import { cva } from "class-variance-authority";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
 const buttonVariantsOuter = cva("", {
   variants: {
@@ -30,7 +30,7 @@ const buttonVariantsOuter = cva("", {
     variant: "primary",
     size: "default",
   },
-})
+});
 
 const innerDivVariants = cva(
   "w-full h-full flex items-center justify-center text-muted-foreground",
@@ -60,52 +60,32 @@ const innerDivVariants = cva(
       variant: "primary",
       size: "default",
     },
-  }
-)
+  },
+);
 
-export interface UnifiedButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?:
-    | "primary"
-    | "secondary"
-    | "accent"
-    | "destructive"
-    | "minimal"
-    | "icon"
-  size?: "default" | "sm" | "lg" | "icon"
-  asChild?: boolean
+export interface UnifiedButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "accent" | "destructive" | "minimal" | "icon";
+  size?: "default" | "sm" | "lg" | "icon";
+  asChild?: boolean;
 }
 
 const TextureButton = React.forwardRef<HTMLButtonElement, UnifiedButtonProps>(
   (
-    {
-      children,
-      variant = "primary",
-      size = "default",
-      asChild = false,
-      className,
-      ...props
-    },
-    ref
+    { children, variant = "primary", size = "default", asChild = false, className, ...props },
+    ref,
   ) => {
-    const Comp = asChild ? Slot : "button"
+    const Comp = asChild ? Slot : "button";
 
     return (
-      <Comp
-        className={cn(buttonVariantsOuter({ variant, size }), className)}
-        ref={ref}
-        {...props}
-      >
-        <div className={cn(innerDivVariants({ variant, size }))}>
-          {children}
-        </div>
+      <Comp className={cn(buttonVariantsOuter({ variant, size }), className)} ref={ref} {...props}>
+        <div className={cn(innerDivVariants({ variant, size }))}>{children}</div>
       </Comp>
-    )
-  }
-)
+    );
+  },
+);
 
-TextureButton.displayName = "TextureButton"
+TextureButton.displayName = "TextureButton";
 
-export { TextureButton }
+export { TextureButton };
 
 // export default TextureButton

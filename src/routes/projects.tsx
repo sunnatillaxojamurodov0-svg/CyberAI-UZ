@@ -22,10 +22,10 @@ export const Route = createFileRoute("/projects")({
           "Sovereign infrastructure for the autonomous era. Explore every CyberAI project — built for silent strength at machine speed.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/projects" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/projects" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/projects" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/projects" }],
   }),
   component: ProjectsRoute,
 });

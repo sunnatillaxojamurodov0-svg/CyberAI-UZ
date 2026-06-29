@@ -104,6 +104,22 @@ export const Route = createFileRoute("/api/workflows")({
 
       GET: async ({ request }) => {
         try {
+          const token = getSessionToken(request);
+          if (!token) {
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const session = await verifySession(token);
+          if (!session.ok || !session.user) {
+            return new Response(JSON.stringify({ ok: false, error: "Invalid session" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const env = getEnv();
           const url = new URL(request.url);
           const instanceId = url.searchParams.get("instanceId");

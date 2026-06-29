@@ -11,6 +11,7 @@ import * as Sentry from "@sentry/react";
 
 import appCss from "../styles.css?url";
 import { AuthProvider } from "@/lib/auth-context";
+import { TranslationProvider } from "@/lib/i18n";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 
 function NotFoundComponent() {
@@ -158,13 +159,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             {
               "@type": "Organization",
               name: "CyberAI",
-              url: "https://cyberaiuz.lovable.app",
+              url: "https://app.cyberaiuz.workers.dev",
               description: "Sovereign AI cybersecurity platform for high-stakes infrastructure.",
             },
             {
               "@type": "WebSite",
               name: "CyberAI",
-              url: "https://cyberaiuz.lovable.app",
+              url: "https://app.cyberaiuz.workers.dev",
               description:
                 "Autonomous defense for the synthetic era — predictive threat intelligence, conversational defense, and autonomous remediation.",
             },
@@ -198,10 +199,12 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Outlet />
-        <AuthModal />
-      </AuthProvider>
+      <TranslationProvider>
+        <AuthProvider>
+          <Outlet />
+          <AuthModal />
+        </AuthProvider>
+      </TranslationProvider>
     </QueryClientProvider>
   );
 }

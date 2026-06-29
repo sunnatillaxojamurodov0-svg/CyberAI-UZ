@@ -12,9 +12,9 @@ export const Route = createFileRoute("/dashboard")({
       { title: "CyberAI — Dashboard" },
       { name: "description", content: "System dashboard and analytics." },
       { property: "og:title", content: "CyberAI — Dashboard" },
-      { property: "og:url", content: "/dashboard" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/dashboard" },
     ],
-    links: [{ rel: "canonical", href: "/dashboard" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/dashboard" }],
   }),
   component: DashboardRoute,
 });

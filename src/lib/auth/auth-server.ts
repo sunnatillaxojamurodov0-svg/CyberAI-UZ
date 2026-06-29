@@ -24,6 +24,7 @@ export interface AuthUser {
   email: string;
   name: string | null;
   avatar_url: string | null;
+  is_admin?: number;
 }
 
 export interface AuthResult {
@@ -35,9 +36,9 @@ export interface AuthResult {
 
 /* ── Password hashing (PBKDF2 via Web Crypto API) ───────────── */
 
-const PBKDF2_ITERATIONS = 100_000;
+const PBKDF2_ITERATIONS = 210_000;
 
-async function hashPassword(password: string, salt: string): Promise<string> {
+export async function hashPassword(password: string, salt: string): Promise<string> {
   const enc = new TextEncoder();
   const key = await crypto.subtle.importKey("raw", enc.encode(password), "PBKDF2", false, [
     "deriveBits",
@@ -58,11 +59,17 @@ async function hashPassword(password: string, salt: string): Promise<string> {
   return `${salt}:${hash}`;
 }
 
-async function verifyPassword(password: string, stored: string): Promise<boolean> {
+export async function verifyPassword(password: string, stored: string): Promise<boolean> {
   const [salt, hash] = stored.split(":");
   if (!salt || !hash) return false;
   const computed = await hashPassword(password, salt);
-  return computed === stored;
+  // Constant-time comparison to prevent timing attacks
+  if (computed.length !== stored.length) return false;
+  let result = 0;
+  for (let i = 0; i < computed.length; i++) {
+    result |= computed.charCodeAt(i) ^ stored.charCodeAt(i);
+  }
+  return result === 0;
 }
 
 /* ── Token generation & hashing ─────────────────────────────── */
@@ -273,12 +280,12 @@ export async function verifySession(token: string): Promise<AuthResult> {
 
     const row = await db
       .prepare(
-        `SELECT u.id, u.email, u.name, u.avatar_url
+        `SELECT u.id, u.email, u.name, u.avatar_url, u.is_admin
          FROM sessions s JOIN users u ON s.user_id = u.id
          WHERE s.id = ? AND s.expires_at > ?`,
       )
       .bind(tokenHash, now)
-      .first<{ id: string; email: string; name: string | null; avatar_url: string | null }>();
+      .first<{ id: string; email: string; name: string | null; avatar_url: string | null; is_admin: number }>();
     if (!row) {
       return { ok: false, error: "Invalid or expired session." };
     }

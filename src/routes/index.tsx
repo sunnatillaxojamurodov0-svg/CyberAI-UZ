@@ -27,10 +27,10 @@ export const Route = createFileRoute("/")({
           "Sovereign AI cybersecurity platform. Predictive intelligence, conversational defense, autonomous remediation.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/" }],
   }),
   component: Landing,
 });

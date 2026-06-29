@@ -22,10 +22,10 @@ export const Route = createFileRoute("/prompts")({
           "Pre-approved prompt templates developed by CyberAI operators. Search, filter, and copy for your environment.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/prompts" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/prompts" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/prompts" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/prompts" }],
   }),
   component: PromptsRoute,
 });

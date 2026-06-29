@@ -189,47 +189,47 @@
      ═══════════════════════════════════════════════════════════════════ */
 
   /* Surface hierarchy (darkest → lightest) */
-  --stitch-void: #030B0A;
-  --stitch-background: #030B0A;
-  --stitch-surface-dim: #030B0A;
+  --stitch-void: #030b0a;
+  --stitch-background: #030b0a;
+  --stitch-surface-dim: #030b0a;
   --stitch-surface: #071210;
-  --stitch-surface-container-lowest: #030B0A;
+  --stitch-surface-container-lowest: #030b0a;
   --stitch-surface-container-low: #071210;
-  --stitch-surface-container: #0D2A20;
-  --stitch-surface-container-high: #132E24;
-  --stitch-surface-container-highest: #1A3D30;
-  --stitch-surface-variant: #1A3D30;
-  --stitch-surface-bright: #204A38;
+  --stitch-surface-container: #0d2a20;
+  --stitch-surface-container-high: #132e24;
+  --stitch-surface-container-highest: #1a3d30;
+  --stitch-surface-variant: #1a3d30;
+  --stitch-surface-bright: #204a38;
 
   /* Text colors — WHITE for body, GREEN for headings */
-  --stitch-on-surface: #FFFFFF;
-  --stitch-on-background: #FFFFFF;
+  --stitch-on-surface: #ffffff;
+  --stitch-on-background: #ffffff;
   --stitch-on-surface-variant: rgba(255, 255, 255, 0.6);
-  --stitch-inverse-surface: #FFFFFF;
+  --stitch-inverse-surface: #ffffff;
 
   /* Outline */
-  --stitch-outline: #1A6640;
-  --stitch-outline-variant: #0D2A20;
+  --stitch-outline: #1a6640;
+  --stitch-outline-variant: #0d2a20;
 
   /* Primary — Sovereign Green */
-  --stitch-primary: #00FF94;
-  --stitch-primary-container: #00FF94;
-  --stitch-on-primary-container: #030B0A;
+  --stitch-primary: #00ff94;
+  --stitch-primary-container: #00ff94;
+  --stitch-on-primary-container: #030b0a;
   --stitch-primary-fixed-dim: #00cc76;
   --stitch-surface-tint: #00cc76;
 
   /* Secondary — AI Cyan */
-  --stitch-secondary: #00D4FF;
+  --stitch-secondary: #00d4ff;
   --stitch-secondary-container: #00b8e6;
-  --stitch-on-secondary-container: #030B0A;
+  --stitch-on-secondary-container: #030b0a;
 
   /* Tertiary — Crypto Purple */
-  --stitch-tertiary: #7B61FF;
+  --stitch-tertiary: #7b61ff;
   --stitch-tertiary-container: #6a4fe6;
   --stitch-tertiary-fixed-dim: #5a40cc;
 
   /* Error — Threat Red */
-  --stitch-error: #FF0039;
+  --stitch-error: #ff0039;
   --stitch-error-container: #33000d;
   --stitch-on-error: #ffffff;
 
@@ -556,10 +556,13 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     color: var(--color-primary);
   }
-  strong, b {
+  strong,
+  b {
     color: var(--color-primary);
   }
   .highlight {
@@ -616,7 +619,11 @@
       0 12px 48px -16px rgba(0, 0, 0, 0.6);
   }
   .glass-panel-cyan {
-    background: linear-gradient(135deg, color-mix(in oklab, var(--stitch-secondary) 8%, transparent) 0%, color-mix(in oklab, var(--stitch-primary-container) 1%, transparent) 100%);
+    background: linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--stitch-secondary) 8%, transparent) 0%,
+      color-mix(in oklab, var(--stitch-primary-container) 1%, transparent) 100%
+    );
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     border: 1px solid color-mix(in oklab, var(--stitch-secondary) 20%, transparent);
@@ -662,11 +669,18 @@
     background-size: 24px 24px;
   }
   .noise {
-    background-image: linear-gradient(color-mix(in oklab, var(--stitch-on-surface) 1.5%, transparent) 1px, transparent 1px);
+    background-image: linear-gradient(
+      color-mix(in oklab, var(--stitch-on-surface) 1.5%, transparent) 1px,
+      transparent 1px
+    );
     background-size: 100% 4px;
   }
   .dot-grid {
-    background-image: radial-gradient(circle, color-mix(in oklab, var(--stitch-on-surface) 8%, transparent) 1px, transparent 1px);
+    background-image: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--stitch-on-surface) 8%, transparent) 1px,
+      transparent 1px
+    );
     background-size: 24px 24px;
   }
 
@@ -687,7 +701,10 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(color-mix(in oklab, var(--stitch-on-surface) 1.5%, transparent) 1px, transparent 1px);
+    background: linear-gradient(
+      color-mix(in oklab, var(--stitch-on-surface) 1.5%, transparent) 1px,
+      transparent 1px
+    );
     background-size: 100% 4px;
     pointer-events: none;
   }

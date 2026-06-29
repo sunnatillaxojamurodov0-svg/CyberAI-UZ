@@ -83,10 +83,14 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
 
       try {
         let acc = "";
+        const model = MODELS[0];
+        if (!model) {
+          throw new Error("No AI models configured");
+        }
         for await (const chunk of streamChat({
           history,
           message: buildContextPrompt(trimmed),
-          model: MODELS[0],
+          model,
         })) {
           acc += chunk;
           setMessages((prev) => prev.map((m) => (m.id === aiId ? { ...m, content: acc } : m)));

@@ -25,10 +25,10 @@ export const Route = createFileRoute("/about")({
           "Built for when the alert sounds. The mission, timeline, and operational doctrine behind CyberAI.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/about" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/about" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/about" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/about" }],
   }),
   component: AboutPage,
 });

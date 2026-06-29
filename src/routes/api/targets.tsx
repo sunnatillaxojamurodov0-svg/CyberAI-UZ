@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type {} from "@tanstack/react-start";
+import type { } from "@tanstack/react-start";
 import { requireDb, getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 
@@ -98,10 +98,11 @@ export const Route = createFileRoute("/api/targets")({
             },
           );
         } catch (err) {
+          console.error("Targets GET error:", err);
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to load targets",
+              error: "Failed to load targets",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
@@ -223,10 +224,11 @@ export const Route = createFileRoute("/api/targets")({
             },
           );
         } catch (err) {
+          console.error("Targets POST error:", err);
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to create target",
+              error: "Failed to create target",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

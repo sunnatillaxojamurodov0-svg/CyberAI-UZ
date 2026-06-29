@@ -113,6 +113,231 @@ function err(output: string): CommandResult {
   return { output, kind: "error" };
 }
 
+/* ── Pipe execution ──────────────────────────────────────────── */
+
+function executePipe(state: EngineState, line: string): CommandResult {
+  // Split by pipe, but respect quoted strings
+  const segments: string[] = [];
+  let current = "";
+  let inQuote = false;
+  let quoteChar = "";
+
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (inQuote) {
+      current += ch;
+      if (ch === quoteChar) inQuote = false;
+    } else if (ch === "'" || ch === '"') {
+      inQuote = true;
+      quoteChar = ch;
+      current += ch;
+    } else if (ch === "|") {
+      segments.push(current.trim());
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  segments.push(current.trim());
+
+  if (segments.length < 2) return ok(line);
+
+  let input = "";
+
+  for (const segment of segments) {
+    const parts = tokenize(segment);
+    const cmd = parts[0];
+    const args = parts.slice(1);
+
+    // Process pipe commands with input
+    const result = executePipeSegment(state, cmd, args, input);
+    if (result.kind === "error") return result;
+    input = result.output;
+  }
+
+  return ok(input);
+}
+
+function executePipeSegment(
+  state: EngineState,
+  cmd: string,
+  args: string[],
+  stdin: string,
+): CommandResult {
+  recordTool(state, cmd);
+  const segment = [cmd, ...args].join(" ");
+
+  switch (cmd) {
+    case "cat":
+    case "type":
+    case "more": {
+      // cat with stdin or file
+      const file = args.find((a) => !a.startsWith("-"));
+      if (file) {
+        const s = currentShell(state);
+        const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
+        const resolved = resolvePath(s.cwd, file);
+        let content = fs[file] ?? fs[resolved];
+        if (content === undefined) {
+          const hit = Object.entries(fs).find(([p]) => p.endsWith("/" + file) || p === file);
+          if (hit) content = hit[1];
+        }
+        return ok(content ?? `cat: ${file}: No such file or directory`);
+      }
+      return ok(stdin);
+    }
+    case "grep": {
+      const pattern = args.find((a) => !a.startsWith("-"));
+      if (!pattern) return err("grep: pattern required");
+      const lines = stdin.split("\n");
+      const invert = args.includes("-v");
+      const caseInsensitive = args.includes("-i");
+      const matched = lines.filter((line) => {
+        const testLine = caseInsensitive ? line.toLowerCase() : line;
+        const testPattern = caseInsensitive ? pattern.toLowerCase() : pattern;
+        const matches = testLine.includes(testPattern);
+        return invert ? !matches : matches;
+      });
+      return ok(matched.join("\n"));
+    }
+    case "wc": {
+      const lines = stdin.split("\n").length;
+      const words = stdin.split(/\s+/).filter(Boolean).length;
+      const chars = stdin.length;
+      if (args.includes("-l")) return ok(String(lines));
+      if (args.includes("-w")) return ok(String(words));
+      if (args.includes("-c")) return ok(String(chars));
+      return ok(`  ${lines}  ${words} ${chars}`);
+    }
+    case "head": {
+      const n = args.includes("-n") ? parseInt(args[args.indexOf("-n") + 1]) || 10 : 10;
+      return ok(stdin.split("\n").slice(0, n).join("\n"));
+    }
+    case "tail": {
+      const n = args.includes("-n") ? parseInt(args[args.indexOf("-n") + 1]) || 10 : 10;
+      const lines = stdin.split("\n");
+      return ok(lines.slice(-n).join("\n"));
+    }
+    case "sort": {
+      const lines = stdin.split("\n");
+      if (args.includes("-r")) return ok(lines.sort().reverse().join("\n"));
+      return ok(lines.sort().join("\n"));
+    }
+    case "uniq": {
+      const lines = stdin.split("\n");
+      return ok([...new Set(lines)].join("\n"));
+    }
+    case "tr": {
+      // Basic tr: tr 'A-Z' 'a-z'
+      if (args.length >= 2) {
+        const from = stripQuotes(args[0]);
+        const to = stripQuotes(args[1]);
+        let result = stdin;
+        for (let i = 0; i < from.length && i < to.length; i++) {
+          result = result.split(from[i]).join(to[i]);
+        }
+        return ok(result);
+      }
+      return ok(stdin);
+    }
+    case "base64": {
+      if (args.includes("-d") || args.includes("--decode")) {
+        try {
+          return ok(b64decode(stdin));
+        } catch {
+          return err("base64: invalid input");
+        }
+      }
+      return ok(b64encode(stdin));
+    }
+    case "md5sum":
+    case "sha256sum":
+    case "sha1sum": {
+      // Simulate hash output
+      const hash = simpleHash(stdin, cmd === "md5sum" ? 32 : cmd === "sha1sum" ? 40 : 64);
+      return ok(`${hash}  -`);
+    }
+    case "xxd": {
+      const hex = Array.from(stdin.slice(0, 32))
+        .map((c) => c.charCodeAt(0).toString(16).padStart(2, "0"))
+        .join(" ");
+      return ok(hex);
+    }
+    case "rev": {
+      return ok(
+        stdin
+          .split("\n")
+          .map((l) => l.split("").reverse().join(""))
+          .join("\n"),
+      );
+    }
+    case "cut": {
+      // cut -d':' -f1
+      const delim = args.includes("-d") ? stripQuotes(args[args.indexOf("-d") + 1]) : "\t";
+      const field = args.includes("-f") ? parseInt(args[args.indexOf("-f") + 1]) || 1 : 1;
+      const lines = stdin.split("\n").map((line) => {
+        const parts = line.split(delim);
+        return parts[field - 1] ?? "";
+      });
+      return ok(lines.join("\n"));
+    }
+    case "awk": {
+      // Simple awk: awk '{print $1}'
+      const fieldMatch = /\{print\s+\$(\d+)\}/.exec(segment);
+      if (fieldMatch) {
+        const field = parseInt(fieldMatch[1]);
+        const lines = stdin.split("\n").map((line) => {
+          const parts = line.split(/\s+/);
+          return parts[field - 1] ?? "";
+        });
+        return ok(lines.join("\n"));
+      }
+      return ok(stdin);
+    }
+    case "sed": {
+      // Simple sed: sed 's/old/new/g'
+      const sedMatch = /^s\/(.+)\/(.+)\/g?$/.exec(stripQuotes(args[0] ?? ""));
+      if (sedMatch) {
+        const [, from, to] = sedMatch;
+        return ok(stdin.split(from).join(to));
+      }
+      return ok(stdin);
+    }
+    case "echo": {
+      // echo with stdin: just return stdin or args
+      if (stdin && args.length === 0) return ok(stdin);
+      return ok(stripQuotes(args.join(" ")));
+    }
+    case "tee": {
+      // tee: output to file and stdout
+      const file = args.find((a) => !a.startsWith("-"));
+      if (file) {
+        const s = currentShell(state);
+        const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
+        const path = resolvePath(s.cwd, file);
+        fs[path] = stdin;
+      }
+      return ok(stdin);
+    }
+    default: {
+      // Unknown command in pipe - try to execute normally but pass stdin
+      const parts = [cmd, ...args];
+      return execute(state, parts.join(" "));
+    }
+  }
+}
+
+function simpleHash(input: string, length: number): string {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    const char = input.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash;
+  }
+  const hex = Math.abs(hash).toString(16).padStart(length, "0");
+  return hex.slice(0, length).padEnd(length, "0");
+}
+
 /* ── Main dispatch ───────────────────────────────────────────── */
 
 export function execute(state: EngineState, raw: string): CommandResult {
@@ -120,6 +345,11 @@ export function execute(state: EngineState, raw: string): CommandResult {
   if (!line) return ok("");
 
   state.telemetry.commandCount += 1;
+
+  // Handle pipes
+  if (line.includes("|")) {
+    return executePipe(state, line);
+  }
 
   const parts = tokenize(line);
   const cmd = parts[0];
@@ -339,18 +569,6 @@ function cmdLs(state: EngineState, args: string[]): CommandResult {
     if (path.startsWith(norm)) {
       const rest = path.slice(norm.length).split("/")[0];
       if (rest) entries.add(rest);
-    } else if (path.startsWith(s.cwd === "/" ? "/" : s.cwd + "/")) {
-      const base = s.cwd === "/" ? "/" : s.cwd + "/";
-      const rest = path.slice(base.length).split("/")[0];
-      if (rest) entries.add(rest);
-    }
-  }
-
-  if (entries.size === 0) {
-    // Fallback: show basenames of all files in this fs that share cwd
-    for (const path of Object.keys(fs)) {
-      const segs = path.split("/");
-      entries.add(segs[segs.length - 1]);
     }
   }
 
@@ -687,7 +905,7 @@ function cmdGobuster(state: EngineState, args: string[]): CommandResult {
   const urlArg = args.find((a) => a.startsWith("http") || /\d+\.\d+\.\d+\.\d+/.test(a));
   if (!urlArg) return err("gobuster: -u <url> required");
   const { host } = parseUrl(state, urlArg);
-  if (!host || !host.web) return err("gobuster: maqsad veb-server topilmadi");
+  if (!host || !host.web) return err("gobuster: target web server not found");
 
   state.compromised.add(host.ip);
 
@@ -726,7 +944,7 @@ function cmdNetcat(state: EngineState, args: string[]): CommandResult {
 
   const port = host.ports.find((p) => p.port === Number(portArg));
   if (!port || port.state === "closed") {
-    return err(`nc: ${ipArg}:${portArg} — ulanish rad etildi (port yopiq)`);
+    return err(`nc: ${ipArg}:${portArg} — connection refused (port closed)`);
   }
 
   state.compromised.add(host.ip);
@@ -754,7 +972,7 @@ function cmdSsh(state: EngineState, args: string[]): CommandResult {
     return err(`ssh: connect to host ${ipRaw}: connection failed (not in sandbox network)`);
 
   const sshPort = host.ports.find((p) => p.port === 22 && p.service === "ssh");
-  if (!sshPort) return err(`ssh: connect to host ${ipRaw} port 22: ulanish rad etildi`);
+  if (!sshPort) return err(`ssh: connect to host ${ipRaw} port 22: connection refused`);
 
   const cred = host.credentials?.find((c) => c.service === "ssh" && c.username === user);
 
@@ -806,7 +1024,7 @@ function cmdFtp(state: EngineState, args: string[]): CommandResult {
   if (!host) return err(`ftp: could not connect to ${ipRaw} (not in sandbox network)`);
 
   const ftpPort = host.ports.find((p) => p.service === "ftp");
-  if (!ftpPort) return err(`ftp: ${ipRaw} — FTP xizmati yo'q`);
+  if (!ftpPort) return err(`ftp: ${ipRaw} — FTP service not available`);
 
   const anon = host.credentials?.find((c) => c.service === "ftp" && c.username === "anonymous");
   state.compromised.add(host.ip);
@@ -897,7 +1115,7 @@ function cmdSmb(state: EngineState, args: string[], tool: string): CommandResult
   if (!host) return err(`${tool}: ${ipRaw} not found (not in sandbox network)`);
 
   const hasSmb = host.ports.some((p) => p.port === 445 || p.port === 139);
-  if (!hasSmb) return err(`${tool}: ${ipRaw} — SMB xizmati yo'q`);
+  if (!hasSmb) return err(`${tool}: ${ipRaw} — SMB service not available`);
 
   state.compromised.add(host.ip);
 
@@ -1011,7 +1229,7 @@ function cmdFind(state: EngineState, args: string[]): CommandResult {
 
 function cmdPython(state: EngineState, args: string[]): CommandResult {
   const script = args.find(
-    (a) => a.endsWith(".py") || a.endsWith(".sh") || (!a.startsWith("-") && !a.startsWith("-")),
+    (a) => a.endsWith(".py") || a.endsWith(".sh") || (!a.startsWith("-") && !a.startsWith("--")),
   );
   if (!script)
     return ok(
@@ -1063,7 +1281,7 @@ function cmdExec(state: EngineState, cmd: string, args: string[]): CommandResult
   const s = currentShell(state);
   const fs = s.host ? (s.host.fs ?? {}) : state.localFs;
   const exists = Object.keys(fs).some((p) => p.endsWith("/" + bin) || p === cmd);
-  if (exists) return ok(`(fayl bajarildi — chiqish kodi: 0)`);
+  if (exists) return ok(`(file executed — exit code: 0)`);
 
   return err(`${cmd}: file not found or not executable`);
 }
@@ -1130,7 +1348,7 @@ function cmdBase64(state: EngineState, args: string[]): CommandResult {
     }
     return ok(b64encode(val));
   } catch {
-    return err("base64: noto'g'ri kiritma");
+    return err("base64: invalid input");
   }
 }
 
@@ -1141,26 +1359,10 @@ function b64encode(s: string): string {
   return btoa(s);
 }
 
-/* ── echo (supports `| base64 -d`, `| tr`, `| rot13`) ────────── */
+/* ── echo ──────────────────────────────────────────────────────── */
 
 function cmdEcho(state: EngineState, args: string[]): CommandResult {
-  const full = args.join(" ");
-  const pipeIdx = full.indexOf("|");
-  if (pipeIdx === -1) return ok(stripQuotes(full));
-
-  const payload = stripQuotes(full.slice(0, pipeIdx).trim());
-  const pipeCmd = full.slice(pipeIdx + 1).trim();
-
-  if (/base64\s+-d|base64\s+--decode/.test(pipeCmd)) {
-    try {
-      return ok(b64decode(payload));
-    } catch {
-      return err("base64: invalid input");
-    }
-  }
-  if (/^base64/.test(pipeCmd)) return ok(b64encode(payload));
-  if (/rot13/.test(pipeCmd) || /tr\s+/.test(pipeCmd)) return ok(rot13(payload));
-  return ok(payload);
+  return ok(stripQuotes(args.join(" ")));
 }
 
 function stripQuotes(s: string): string {
@@ -1252,7 +1454,7 @@ function cmdZip2John(state: EngineState, args: string[]): CommandResult {
   if (!f) return err("zip2john: .zip file required");
   state.localFs["/root/zip.hash"] = "secret.zip:$pkzip2$1*...*PKZIP-hash";
   return ok(
-    `${f}:$pkzip2$1*2*...*hash  -> zip.hash ga saqlandi\n(Endi: john --wordlist=rockyou.txt zip.hash)`,
+    `${f}:$pkzip2$1*2*...*hash  -> saved to zip.hash\n(Now: john --wordlist=rockyou.txt zip.hash)`,
   );
 }
 
@@ -1264,7 +1466,7 @@ function cmdUnzip(state: EngineState, args: string[]): CommandResult {
   if (state.challenge.id === "l2-06-zip-crack") {
     state.localFs["/root/flag.txt"] = "CYBERAI{z1p_cr4ck3d_w1th_j0hn}";
     return ok(
-      `Archive: ${f}\n[${f}] flag.txt password: \n inflating: flag.txt\n\nflag.txt ajratildi. Endi: cat flag.txt`,
+      `Archive: ${f}\n[${f}] flag.txt password: \n inflating: flag.txt\n\nflag.txt extracted. Now: cat flag.txt`,
     );
   }
   return ok(`Archive: ${f}\n(password required or empty archive)`);
@@ -1289,7 +1491,7 @@ function cmdSteghide(state: EngineState, args: string[]): CommandResult {
   if (args[0] !== "extract") return ok("steghide: usage: steghide extract -sf <file>");
   if (state.challenge.id === "l2-09-stego") {
     state.localFs["/root/hidden.txt"] = "CYBERAI{h1dd3n_1n_p1x3ls}";
-    return ok(`Enter passphrase: \nwrote extracted data to "hidden.txt".\n\nEndi: cat hidden.txt`);
+    return ok(`Enter passphrase: \nwrote extracted data to "hidden.txt".\n\nNow: cat hidden.txt`);
   }
   return ok("steghide: no hidden data found in this file");
 }
@@ -1302,7 +1504,7 @@ function cmdBinwalk(state: EngineState, args: string[]): CommandResult {
       `DECIMAL    HEXADECIMAL   DESCRIPTION\n0          0x0           PNG image\n12345      0x3039        Zlib compressed data\n(extract hidden text with steghide extract)`,
     );
   }
-  return ok(`DECIMAL  HEX  DESCRIPTION\n0  0x0  data\n(yashirin fayl topilmadi)`);
+  return ok(`DECIMAL  HEX  DESCRIPTION\n0  0x0  data\n(no hidden file found)`);
 }
 
 /* ── exiftool ────────────────────────────────────────────────── */
@@ -1321,7 +1523,7 @@ function cmdSearchsploit(state: EngineState, args: string[]): CommandResult {
   const q = args.join(" ").toLowerCase();
   if (q.includes("dirty") || q.includes("pipe") || state.challenge.id === "l3-08-kernel") {
     return ok(
-      `---------------------------------------------------------\n Exploit Title                              |  Path\n---------------------------------------------------------\n Linux Kernel 5.8 - DirtyPipe (CVE-2022-0847) | linux/local/50808.c\n---------------------------------------------------------\n(Kompilyatsiya: gcc 50808.c -o exploit && ./exploit -> root)`,
+      `---------------------------------------------------------\n Exploit Title                              |  Path\n---------------------------------------------------------\n Linux Kernel 5.8 - DirtyPipe (CVE-2022-0847) | linux/local/50808.c\n---------------------------------------------------------\n(Compile: gcc 50808.c -o exploit && ./exploit -> root)`,
     );
   }
   return ok(`No exploits found: '${q}'. Try a different keyword.`);
@@ -1340,7 +1542,7 @@ function cmdMysql(state: EngineState, args: string[]): CommandResult {
       `Welcome to MySQL.\nmysql> SELECT * FROM vault;\n${sqlFile[1]}\n\n[+] Data retrieved.`,
     );
   }
-  return ok("Welcome to MySQL.\nmysql> (jadvallarni ko'ring: SHOW DATABASES;)");
+  return ok("Welcome to MySQL.\nmysql> (show tables: SHOW DATABASES;)");
 }
 
 /* ── docker (privesc) ────────────────────────────────────────── */

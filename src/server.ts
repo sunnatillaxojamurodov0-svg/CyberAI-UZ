@@ -6,6 +6,7 @@ import { initDb, requireDb } from "./lib/db";
 import { processAiUsageBatch } from "./queues/ai-usage";
 import { initMonitoring, monitoring } from "./lib/monitoring";
 import { checkRateLimit, rateLimitKey } from "./lib/auth/rate-limit";
+import { buildSecurityHeaders, injectNonceIntoHtml } from "./lib/server-security";
 export { ChatSessionDO, ConsoleSessionDO } from "./durable-objects";
 export { ChallengeGenerator, UserOnboarding, ConsoleAnalysis } from "./workflows/workflows";
 
@@ -19,52 +20,15 @@ function generateNonce(): string {
   return btoa(String.fromCharCode(...array));
 }
 
-function buildCSP(nonce: string): string {
-  return [
-    "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.googleusercontent.com https://storage.googleapis.com",
-    "font-src 'self' https://fonts.gstatic.com",
-    "form-action 'self'",
-    "base-uri 'self'",
-    "frame-ancestors 'none'",
-    "connect-src 'self' https://*.googleapis.com https://github.com https://api.github.com",
-  ].join("; ");
-}
-
-function buildSecurityHeaders(nonce: string, isApiRoute: boolean): Record<string, string> {
-  const headers: Record<string, string> = {
-    "X-Content-Type-Options": "nosniff",
-    "X-Frame-Options": "DENY",
-    "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
-    "Content-Security-Policy": buildCSP(nonce),
-    "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
-    "X-XSS-Protection": "1; mode=block",
-    "X-Permitted-Cross-Domain-Policies": "none",
-    "Cross-Origin-Embedder-Policy": "credentialless",
-    "Cross-Origin-Resource-Policy": "same-origin",
-  };
-
-  if (isApiRoute) {
-    headers["Cross-Origin-Opener-Policy"] = "unsafe-none";
-  } else {
-    headers["Cross-Origin-Opener-Policy"] = "same-origin";
-  }
-
-  return headers;
-}
-
-function addSecurityHeaders(response: Response, nonce: string, isApiRoute: boolean = false): Response {
+function addSecurityHeaders(
+  response: Response,
+  nonce: string,
+  isApiRoute: boolean = false,
+): Response {
   for (const [key, value] of Object.entries(buildSecurityHeaders(nonce, isApiRoute))) {
     response.headers.set(key, value);
   }
   return response;
-}
-
-function injectNonceIntoHtml(html: string, _nonce: string): string {
-  return html;
 }
 
 let serverEntryPromise: Promise<ServerEntry> | undefined;
@@ -195,6 +159,14 @@ export default {
       const response = await handler.fetch(request, env, ctx);
       const duration = Date.now() - startTime;
       monitoring.trackRequest(url.pathname, request.method, response.status, duration);
+
+      // Add immutable cache headers for static assets with hashed filenames
+      if (staticExtensions.some((ext) => url.pathname.endsWith(ext))) {
+        const newResponse = new Response(response.body, response);
+        newResponse.headers.set("Cache-Control", "public, max-age=31536000, immutable");
+        return await normalizeCatastrophicSsrResponse(newResponse, nonce, isApiRoute);
+      }
+
       return await normalizeCatastrophicSsrResponse(response, nonce, isApiRoute);
     } catch (error) {
       monitoring.trackError(error instanceof Error ? error : new Error(String(error)));

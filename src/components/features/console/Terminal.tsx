@@ -3,6 +3,58 @@ import { cn } from "@/lib/utils";
 import { createEngineState, execute, promptString, type EngineState } from "@/lib/console/engine";
 import type { CTFChallenge, TerminalLine } from "@/lib/console/types";
 
+const AVAILABLE_COMMANDS = [
+  "nmap",
+  "ping",
+  "ip",
+  "ifconfig",
+  "curl",
+  "wget",
+  "gobuster",
+  "dirb",
+  "ffuf",
+  "nc",
+  "ncat",
+  "smbclient",
+  "enum4linux",
+  "ssh",
+  "ftp",
+  "hydra",
+  "evil-winrm",
+  "mysql",
+  "docker",
+  "sudo",
+  "find",
+  "searchsploit",
+  "uname",
+  "base64",
+  "tr",
+  "rot13",
+  "echo",
+  "hashid",
+  "john",
+  "hashcat",
+  "zip2john",
+  "unzip",
+  "strings",
+  "steghide",
+  "binwalk",
+  "exiftool",
+  "ls",
+  "cd",
+  "pwd",
+  "cat",
+  "chmod",
+  "whoami",
+  "id",
+  "clear",
+  "exit",
+  "ask-ai",
+  "hint",
+  "help",
+  "cat_flag",
+];
+
 export interface TerminalHandle {
   getState: () => EngineState;
   reset: () => void;
@@ -11,10 +63,8 @@ export interface TerminalHandle {
 
 interface TerminalProps {
   challenge: CTFChallenge;
+  theme?: "dark" | "light";
 }
-
-let _lid = 0;
-const lid = () => `ln_${++_lid}`;
 
 const BANNER = (c: CTFChallenge) =>
   `┌─────────────────────────────────────────────────────────────┐
@@ -30,15 +80,18 @@ Type 'help' for tools, 'ask-ai <question>' for guidance.
 `;
 
 export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Terminal(
-  { challenge },
+  { challenge, theme = "dark" },
   ref,
 ) {
   const [engine, setEngine] = useState<EngineState>(() => createEngineState(challenge));
   const engineRef = useRef(engine);
   engineRef.current = engine;
 
+  const lineIdCounter = useRef(0);
+  const getLineId = () => `ln_${++lineIdCounter.current}`;
+
   const [lines, setLines] = useState<TerminalLine[]>(() => [
-    { id: lid(), kind: "system", text: BANNER(challenge) },
+    { id: getLineId(), kind: "system", text: BANNER(challenge) },
   ]);
   const [input, setInput] = useState("");
   const [history, setHistory] = useState<string[]>([]);
@@ -60,7 +113,8 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
     const fresh = createEngineState(challenge);
     setEngine(fresh);
     engineRef.current = fresh;
-    setLines([{ id: lid(), kind: "system", text: BANNER(challenge) }]);
+    lineIdCounter.current = 0;
+    setLines([{ id: getLineId(), kind: "system", text: BANNER(challenge) }]);
     setHistory([]);
     setHistIdx(-1);
     setAiStreaming(false);
@@ -70,7 +124,7 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
 
   const fetchAiHint = useCallback(
     async (userMessage: string, state: EngineState) => {
-      const lineId = lid();
+      const lineId = getLineId();
       aiLineId.current = lineId;
       setAiStreaming(true);
       setAiStreamText("");
@@ -97,30 +151,44 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
         });
 
         if (!res.ok) {
-          const text = await res.text();
-          setAiStreamText(text || "AI Mentor unavailable.");
+          const errText =
+            res.status === 401 ? "AI requires authentication." : "AI service unavailable.";
+          setLines((prev) => prev.map((m) => (m.id === lineId ? { ...m, text: errText } : m)));
+          setAiStreaming(false);
           return;
         }
 
         const reader = res.body?.getReader();
         if (!reader) {
-          setAiStreamText("Failed to connect to AI Mentor.");
+          setLines((prev) =>
+            prev.map((m) => (m.id === lineId ? { ...m, text: "AI: no response stream." } : m)),
+          );
+          setAiStreaming(false);
           return;
         }
 
         const decoder = new TextDecoder();
-        let buffer = "";
+        let acc = "";
 
         while (true) {
           const { done, value } = await reader.read();
           if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          setAiStreamText(buffer);
+          acc += decoder.decode(value, { stream: true });
+          setAiStreamText(acc);
         }
+
+        setLines((prev) =>
+          prev.map((m) => (m.id === lineId ? { ...m, text: acc || "AI: (empty response)" } : m)),
+        );
       } catch {
-        setAiStreamText("Network error while contacting AI Mentor.");
+        setLines((prev) =>
+          prev.map((m) =>
+            m.id === lineId ? { ...m, text: "Network error — AI unavailable." } : m,
+          ),
+        );
       } finally {
         setAiStreaming(false);
+        aiLineId.current = null;
       }
     },
     [challenge, history],
@@ -128,57 +196,56 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
 
   const runCommand = useCallback(
     (cmd: string) => {
-      const state = engineRef.current;
-      const prompt = promptString(state);
+      const trimmed = cmd.trim();
+      if (!trimmed) return;
 
-      setLines((prev) => [...prev, { id: lid(), kind: "input", text: `${prompt}${cmd}` }]);
-
-      if (!cmd.trim()) return;
-
-      const result = execute(state, cmd);
-
-      if (result.output === "__CLEAR__") {
-        setLines([]);
+      // Handle ask-ai command
+      if (trimmed.toLowerCase().startsWith("ask-ai ")) {
+        const userMessage = trimmed.slice(7).trim();
+        if (userMessage) {
+          setLines((prev) => [
+            ...prev,
+            {
+              id: getLineId(),
+              kind: "input",
+              text: `${promptString(engineRef.current)} ${trimmed}`,
+            },
+          ]);
+          fetchAiHint(userMessage, engineRef.current);
+        }
         return;
       }
 
-      if (result.kind === "ai-hint") {
-        const question = result.output;
-        setLines((prev) => [
-          ...prev,
-          { id: lid(), kind: "output", text: "\u2514 Consulting CyberAI Mentor..." },
-        ]);
-        setEngine({ ...state });
-        fetchAiHint(question, state);
+      const result = execute(engineRef.current, trimmed);
+
+      if (result.output === "__CLEAR__") {
+        setLines([]);
+        setInput("");
+        setHistory((prev) => [...prev, trimmed]);
+        setHistIdx(-1);
         return;
       }
 
       setLines((prev) => [
         ...prev,
-        {
-          id: lid(),
-          kind: result.kind === "error" ? "error" : result.kind === "system" ? "system" : "output",
-          text: result.output,
-        },
+        { id: getLineId(), kind: "input", text: `${promptString(engineRef.current)} ${trimmed}` },
+        { id: getLineId(), kind: result.kind, text: result.output },
       ]);
 
-      setEngine({ ...state });
+      setInput("");
+      setHistory((prev) => [...prev, trimmed]);
+      setHistIdx(-1);
     },
     [fetchAiHint],
   );
 
   const handleSubmit = useCallback(() => {
-    const cmd = input;
+    runCommand(input);
     setInput("");
-    if (cmd.trim()) {
-      setHistory((prev) => [...prev, cmd]);
-    }
-    setHistIdx(-1);
-    runCommand(cmd);
   }, [input, runCommand]);
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
         handleSubmit();
@@ -187,15 +254,15 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
       if (e.key === "ArrowUp") {
         e.preventDefault();
         if (history.length === 0) return;
-        const next = histIdx < 0 ? history.length - 1 : Math.max(0, histIdx - 1);
+        const next = histIdx + 1;
+        if (next >= history.length) return;
         setHistIdx(next);
-        setInput(history[next] ?? "");
+        setInput(history[history.length - 1 - next] ?? "");
         return;
       }
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        if (histIdx < 0) return;
-        const next = histIdx + 1;
+        const next = histIdx - 1;
         if (next >= history.length) {
           setHistIdx(-1);
           setInput("");
@@ -209,6 +276,24 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
         e.preventDefault();
         setLines([]);
       }
+      if (e.key === "Tab") {
+        e.preventDefault();
+        const trimmed = input.trimStart();
+        const parts = trimmed.split(/\s+/);
+        const partial = parts[parts.length - 1];
+        if (partial) {
+          const matches = AVAILABLE_COMMANDS.filter((cmd) => cmd.startsWith(partial));
+          if (matches.length === 1) {
+            parts[parts.length - 1] = matches[0];
+            setInput(parts.join(" "));
+          } else if (matches.length > 1) {
+            setLines((prev) => [
+              ...prev,
+              { id: getLineId(), kind: "system", text: matches.join("  ") },
+            ]);
+          }
+        }
+      }
     },
     [history, histIdx, handleSubmit],
   );
@@ -219,7 +304,7 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
       const fresh = createEngineState(challenge);
       setEngine(fresh);
       engineRef.current = fresh;
-      setLines([{ id: lid(), kind: "system", text: BANNER(challenge) }]);
+      setLines([{ id: getLineId(), kind: "system", text: BANNER(challenge) }]);
       setHistory([]);
       setHistIdx(-1);
       setAiStreaming(false);
@@ -230,21 +315,36 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
   }));
 
   return (
-    <div className="flex flex-col h-full rounded-xl border border-border bg-[#0a0e17] overflow-hidden font-mono text-[13px]">
+    <div
+      className={cn(
+        "flex flex-col h-full rounded-xl border overflow-hidden font-mono text-[13px] md:text-[13px] text-[12px]",
+        theme === "dark" ? "border-border bg-[#0a0e17]" : "border-gray-300 bg-[#f8f9fa]",
+      )}
+    >
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto p-4 scrollbar-thin"
+        className="flex-1 overflow-y-auto p-3 md:p-4 scrollbar-thin"
         onClick={() => inputRef.current?.focus()}
       >
         {lines.map((line) => {
           if (line.id === aiLineId.current && aiStreamText) {
             return (
               <div key={line.id} className="mb-1">
-                <span className={cn("whitespace-pre-wrap break-all", "text-emerald-400")}>
+                <span
+                  className={cn(
+                    "whitespace-pre-wrap break-all",
+                    theme === "dark" ? "text-emerald-400" : "text-emerald-600",
+                  )}
+                >
                   {aiStreamText}
                 </span>
                 {aiStreaming && (
-                  <span className="inline-block w-2 h-4 ml-0.5 bg-emerald-400/70 animate-blink align-text-bottom" />
+                  <span
+                    className={cn(
+                      "inline-block w-2 h-4 ml-0.5 animate-blink align-text-bottom",
+                      theme === "dark" ? "bg-emerald-400/70" : "bg-emerald-600/70",
+                    )}
+                  />
                 )}
               </div>
             );
@@ -252,15 +352,34 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
           return (
             <div key={line.id} className="mb-1">
               {line.kind === "input" ? (
-                <span className="text-foreground">{line.text}</span>
+                <span className={theme === "dark" ? "text-foreground" : "text-gray-900"}>
+                  {line.text}
+                </span>
               ) : line.kind === "error" ? (
-                <span className="text-red-400 whitespace-pre-wrap break-all">{line.text}</span>
+                <span
+                  className={cn(
+                    "whitespace-pre-wrap break-all",
+                    theme === "dark" ? "text-red-400" : "text-red-600",
+                  )}
+                >
+                  {line.text}
+                </span>
               ) : line.kind === "ai-hint" ? (
-                <span className="text-emerald-400 whitespace-pre-wrap break-all">
+                <span
+                  className={cn(
+                    "whitespace-pre-wrap break-all",
+                    theme === "dark" ? "text-emerald-400" : "text-emerald-600",
+                  )}
+                >
                   {line.text || ""}
                 </span>
               ) : (
-                <span className="text-muted-foreground whitespace-pre-wrap break-all">
+                <span
+                  className={cn(
+                    "whitespace-pre-wrap break-all",
+                    theme === "dark" ? "text-muted-foreground" : "text-gray-600",
+                  )}
+                >
                   {line.text}
                 </span>
               )}
@@ -269,15 +388,27 @@ export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Termi
         })}
         {!aiStreaming && (
           <div className="flex items-center">
-            <span className="text-green-400/80 shrink-0">{promptString(engine)}</span>
+            <span
+              className={cn(
+                "shrink-0",
+                theme === "dark" ? "text-green-400/80" : "text-green-600/80",
+              )}
+            >
+              {promptString(engine)}
+            </span>
             <input
               ref={inputRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent text-foreground outline-none ml-1"
+              className={cn(
+                "flex-1 bg-transparent outline-none ml-1 min-h-[44px] md:min-h-[auto]",
+                theme === "dark" ? "text-foreground" : "text-gray-900",
+              )}
               spellCheck={false}
               autoComplete="off"
+              autoCapitalize="off"
+              autoCorrect="off"
               autoFocus
             />
           </div>

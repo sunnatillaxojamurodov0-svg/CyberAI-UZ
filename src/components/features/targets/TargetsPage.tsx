@@ -52,10 +52,13 @@ export function TargetsPage() {
   const [templates, setTemplates] = useState<TargetTemplate[]>([]);
   const [activeTargets, setActiveTargets] = useState<ActiveTarget[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [spawning, setSpawning] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
 
   const fetchTemplates = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const params = new URLSearchParams();
       if (filter !== "all") params.set("category", filter);
@@ -64,9 +67,11 @@ export function TargetsPage() {
       const json = await res.json();
       if (json.ok) {
         setTemplates(json.data);
+      } else {
+        setError(json.error ?? "Failed to load targets");
       }
     } catch {
-      // Handle error
+      setError("Network error");
     } finally {
       setLoading(false);
     }
@@ -116,6 +121,22 @@ export function TargetsPage() {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
         <RefreshCw className="size-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-4">
+        <p className="font-mono text-sm text-destructive">{error}</p>
+        <button
+          type="button"
+          onClick={fetchTemplates}
+          className="flex items-center gap-2 rounded-lg border border-border px-4 py-2 font-mono text-xs text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+        >
+          <RefreshCw size={14} />
+          Qayta urinish
+        </button>
       </div>
     );
   }
@@ -211,74 +232,92 @@ export function TargetsPage() {
       <h2 className="mb-4 font-mono text-sm font-semibold uppercase tracking-wider text-muted-foreground">
         Available Templates
       </h2>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {templates.map((template) => (
-          <GlassPanel key={template.id} className="flex flex-col p-5">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div className="grid size-10 place-items-center rounded-xl bg-accent/10">
-                  {CATEGORY_ICONS[template.category] ?? (
-                    <Server size={18} className="text-accent" />
-                  )}
-                </div>
-                <div>
-                  <div className="font-mono text-sm font-medium text-foreground">
-                    {template.name}
-                  </div>
-                  <div className="font-mono text-[10px] text-muted-foreground">{template.os}</div>
-                </div>
-              </div>
-              <span
-                className={cn(
-                  "font-mono text-xs font-bold",
-                  DIFFICULTY_COLORS[template.difficulty],
-                )}
-              >
-                {getDifficultyLabel(template.difficulty)}
-              </span>
-            </div>
-
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-              {template.description}
-            </p>
-
-            <div className="mt-4 flex flex-wrap gap-1.5">
-              {template.services.map((service) => (
-                <span
-                  key={service}
-                  className="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
-                >
-                  {service}
-                </span>
-              ))}
-            </div>
-
+      {templates.length === 0 ? (
+        <GlassPanel className="flex flex-col items-center justify-center py-16">
+          <Server size={48} className="text-muted-foreground/30" />
+          <p className="mt-4 font-mono text-sm text-muted-foreground">
+            No templates available{filter !== "all" ? ` for "${filter}"` : ""}.
+          </p>
+          {filter !== "all" && (
             <button
               type="button"
-              onClick={() => spawnTarget(template.id)}
-              disabled={spawning === template.id || !user}
-              className={cn(
-                "mt-4 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-mono text-xs font-bold transition-all",
-                spawning === template.id
-                  ? "bg-accent/20 text-accent"
-                  : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
-              )}
+              onClick={() => setFilter("all")}
+              className="mt-3 font-mono text-xs text-accent hover:underline"
             >
-              {spawning === template.id ? (
-                <>
-                  <RefreshCw size={12} className="animate-spin" />
-                  Spinning up...
-                </>
-              ) : (
-                <>
-                  <Play size={12} />
-                  Launch Target
-                </>
-              )}
+              Show all categories
             </button>
-          </GlassPanel>
-        ))}
-      </div>
+          )}
+        </GlassPanel>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {templates.map((template) => (
+            <GlassPanel key={template.id} className="flex flex-col p-5">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="grid size-10 place-items-center rounded-xl bg-accent/10">
+                    {CATEGORY_ICONS[template.category] ?? (
+                      <Server size={18} className="text-accent" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="font-mono text-sm font-medium text-foreground">
+                      {template.name}
+                    </div>
+                    <div className="font-mono text-[10px] text-muted-foreground">{template.os}</div>
+                  </div>
+                </div>
+                <span
+                  className={cn(
+                    "font-mono text-xs font-bold",
+                    DIFFICULTY_COLORS[template.difficulty],
+                  )}
+                >
+                  {getDifficultyLabel(template.difficulty)}
+                </span>
+              </div>
+
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
+                {template.description}
+              </p>
+
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {template.services.map((service) => (
+                  <span
+                    key={service}
+                    className="rounded-full border border-border bg-surface px-2 py-0.5 font-mono text-[10px] text-muted-foreground"
+                  >
+                    {service}
+                  </span>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => spawnTarget(template.id)}
+                disabled={spawning === template.id || !user}
+                className={cn(
+                  "mt-4 flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-mono text-xs font-bold transition-all",
+                  spawning === template.id
+                    ? "bg-accent/20 text-accent"
+                    : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
+                )}
+              >
+                {spawning === template.id ? (
+                  <>
+                    <RefreshCw size={12} className="animate-spin" />
+                    Spinning up...
+                  </>
+                ) : (
+                  <>
+                    <Play size={12} />
+                    Launch Target
+                  </>
+                )}
+              </button>
+            </GlassPanel>
+          ))}
+        </div>
+      )}
 
       {/* Info Banner */}
       <GlassPanel className="mt-8 p-6">

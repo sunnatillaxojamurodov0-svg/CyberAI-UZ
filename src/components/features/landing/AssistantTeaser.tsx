@@ -4,42 +4,34 @@ import { useNavigate } from "@tanstack/react-router";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { MagneticButton } from "@/components/shared/MagneticButton";
-
-const LINES: Array<{ from: "user" | "ai"; text: string }> = [
-  { from: "user", text: "Audit all SSH ingress in the last 24 hours and isolate anomalies." },
-  {
-    from: "ai",
-    text: "14,206 sessions scanned. 3 anomalies in EU-WEST-2 region isolated to quarantine VPC. Remediation diff being generated.",
-  },
-  { from: "user", text: "Verify edge gateway certificate integrity." },
-  {
-    from: "ai",
-    text: "All 12 gateway signatures match expected CA pins. Gateway-03 expires in 4 days — schedule automatic renewal?",
-  },
-];
+import { useTranslation } from "@/lib/i18n";
 
 export function AssistantTeaser() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const lines: Array<{ from: "user" | "ai"; text: string }> = [
+    { from: "user", text: t("assistant.chat_user1") },
+    { from: "ai", text: t("assistant.chat_ai1") },
+    { from: "user", text: t("assistant.chat_user2") },
+    { from: "ai", text: t("assistant.chat_ai2") },
+  ];
 
   return (
     <section className="px-6 py-28">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-12 gap-8 lg:gap-16">
           <div className="col-span-12 lg:col-span-5 flex flex-col justify-center">
-            <StatusPill tone="accent">Cyber-Pilot · v2</StatusPill>
+            <StatusPill tone="accent">{t("assistant.badge")}</StatusPill>
             <h2 className="mt-6 font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl text-balance">
-              Talk to your <span className="gradient-text">infrastructure.</span>
+              {t("assistant.title")}{" "}
+              <span className="gradient-text">{t("assistant.title.gradient")}</span>
             </h2>
             <p className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground">
-              No more cryptic log greps and fragile runbooks. Describe the state you need; CyberAI
-              translates your intent into hardened, audit-ready policy in milliseconds.
+              {t("assistant.description")}
             </p>
             <ul className="mt-8 space-y-3 text-sm">
-              {[
-                "Conversational threat hunting across petabyte-scale log lakes.",
-                "Use tools to ask, write, and deploy — never raw SQL again.",
-                "Every action signed, diffed, and reversible.",
-              ].map((l) => (
+              {[t("assistant.bullet1"), t("assistant.bullet2"), t("assistant.bullet3")].map((l) => (
                 <li key={l} className="flex items-start gap-3 text-foreground/85">
                   <span className="mt-2 size-1.5 shrink-0 rounded-full bg-primary shadow-[0_0_8px] shadow-primary" />
                   {l}
@@ -48,7 +40,7 @@ export function AssistantTeaser() {
             </ul>
             <div className="mt-10">
               <MagneticButton onClick={() => navigate({ to: "/chat" })}>
-                <Sparkles size={14} /> Open Assistant
+                <Sparkles size={14} /> {t("assistant.cta")}
               </MagneticButton>
             </div>
           </div>
@@ -66,15 +58,15 @@ export function AssistantTeaser() {
                   <div className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-primary animate-pulse" />
                     <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
-                      CYBERAI · ASSISTANT_V2
+                      {t("assistant.label")}
                     </span>
                   </div>
                   <span className="text-[10px] uppercase tracking-widest text-muted-foreground">
-                    42ms
+                    {t("assistant.response_time")}
                   </span>
                 </div>
                 <div className="mt-5 space-y-4 text-[13px] leading-relaxed">
-                  {LINES.map((l, i) => (
+                  {lines.map((l, i) => (
                     <motion.div
                       key={i}
                       initial={{ opacity: 0, y: 8 }}
@@ -90,7 +82,7 @@ export function AssistantTeaser() {
                       <span
                         className={l.from === "user" ? "text-muted-foreground" : "text-primary"}
                       >
-                        {l.from === "user" ? "USER:" : "CYBERAI:"}
+                        {l.from === "user" ? t("assistant.user_label") : t("assistant.ai_label")}
                       </span>
                       <span
                         className={l.from === "user" ? "text-foreground" : "text-foreground/90"}
@@ -102,9 +94,9 @@ export function AssistantTeaser() {
                 </div>
                 <div className="mt-5 flex items-center gap-3 rounded-lg border border-border bg-surface-2/80 px-4 py-3">
                   <span className="size-2 rounded-full bg-primary animate-pulse" />
-                  <span className="text-xs text-muted-foreground">Awaiting command_</span>
+                  <span className="text-xs text-muted-foreground">{t("assistant.awaiting")}</span>
                   <span className="ml-auto rounded border border-border px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">
-                    ⌘ K
+                    {t("assistant.shortcut")}
                   </span>
                 </div>
               </div>

@@ -8,12 +8,7 @@ type AnimatedLinkProps = {
   external?: boolean;
 };
 
-export function AnimatedLink({
-  href,
-  children,
-  className,
-  external,
-}: AnimatedLinkProps) {
+export function AnimatedLink({ href, children, className, external }: AnimatedLinkProps) {
   if (external) {
     return (
       <a

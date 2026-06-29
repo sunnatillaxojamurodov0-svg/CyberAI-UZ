@@ -93,7 +93,9 @@ export async function checkRateLimit(
 
     return { allowed: true, remaining: config.maxRequests - currentCount - 1, resetAt: windowEnd };
   } catch {
-    return { allowed: true, remaining: 1, resetAt: 0 };
+    // Fail closed for auth and chat (expensive/sensitive routes), open for others
+    const failClosed = category === "auth" || category === "chat";
+    return { allowed: !failClosed, remaining: failClosed ? 0 : 1, resetAt: 0 };
   }
 }
 

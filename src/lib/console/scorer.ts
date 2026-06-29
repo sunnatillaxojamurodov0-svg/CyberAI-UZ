@@ -1,16 +1,16 @@
 /* ──────────────────────────────────────────────────────────────
    CyberAI · CTF Scorer
-   OSCP-uslubidagi baholash. Telemetriya (qaysi toollar ishlatilgan,
-   metodologiya, samaradorlik, mustaqillik va VAEL bilan hamkorlik)
-   asosida foizli ball chiqaradi.
+   OSCP-style scoring. Telemetry (which tools were used,
+   methodology, efficiency, independence, and VAEL collaboration)
+   produces a percentage score.
 
-   Baholash o'lchovlari (jami 100%):
-   - Correctness    (40) — flag to'g'rimi
-   - Methodology    (20) — kutilgan toollar/bosqichlar qamrovi
-   - Tool coverage  (15) — kerakli toollarning ishlatilishi
-   - Efficiency     (10) — vaqt va buyruqlar soni (par bilan solishtirish)
-   - AI collab      (10) — VAEL bilan mazmunli, maqsadli hamkorlik
-   - Independence   ( 5) — kam maslahat (hint) va kam noto'g'ri urinish
+   Scoring dimensions (total 100%):
+   - Correctness    (40) — is the flag correct
+   - Methodology    (20) — coverage of expected tools/steps
+   - Tool coverage  (15) — use of required tools
+   - Efficiency     (10) — time and command count (compared to par)
+   - AI collab      (10) — meaningful, purposeful collaboration with VAEL
+   - Independence   ( 5) — few hints and few wrong attempts
    ────────────────────────────────────────────────────────────── */
 
 import type { CTFChallenge, ScoreBreakdown, SolveTelemetry } from "./types";

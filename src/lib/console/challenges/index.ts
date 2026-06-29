@@ -6,6 +6,10 @@ import { ELITE } from "./elite";
 
 export const ALL_CHALLENGES: CTFChallenge[] = [...LEVEL1, ...LEVEL2, ...LEVEL3, ...ELITE];
 
+export function getChallenges(): CTFChallenge[] {
+  return ALL_CHALLENGES;
+}
+
 export function getChallengesByLevel(level: CTFLevel): CTFChallenge[] {
   return ALL_CHALLENGES.filter((c) => c.level === level);
 }

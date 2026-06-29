@@ -17,6 +17,7 @@ import {
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n";
 import SpotlightCard from "@/components/ui/SpotlightCard";
 import Folder from "@/components/ui/Folder";
 import BlurText from "@/components/ui/BlurText";
@@ -200,6 +201,7 @@ function ProjectCard({
   index: number;
   onSelect: () => void;
 }) {
+  const { t } = useTranslation();
   const Icon = project.icon;
   const accent = project.accent;
 
@@ -217,8 +219,16 @@ function ProjectCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-60px" }}
       transition={{ duration: 0.7, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      role="button"
+      tabIndex={0}
       className="group cursor-pointer"
       onClick={onSelect}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
     >
       <SpotlightCard
         spotlightColor={accent ? "rgba(0, 255, 148, 0.15)" : "rgba(0, 200, 255, 0.15)"}
@@ -295,7 +305,7 @@ function ProjectCard({
                 : "text-primary/70 group-hover:text-primary",
             )}
           >
-            Learn{" "}
+            {t("projects.learn")}
             <ArrowUpRight
               size={12}
               className="ml-0.5 inline-block transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
@@ -341,6 +351,7 @@ function ProjectModal({
   open: boolean;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   if (!project) return null;
 
   const Icon = project.icon;
@@ -421,7 +432,7 @@ function ProjectModal({
           {/* Details */}
           <div>
             <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Overview
+              {t("projects.overview")}
             </h4>
             <p className="text-sm leading-relaxed text-foreground/85">{project.details}</p>
           </div>
@@ -429,7 +440,7 @@ function ProjectModal({
           {/* Metrics */}
           <div>
             <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Key Metrics
+              {t("projects.metrics")}
             </h4>
             <div className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
               {project.metrics.map((m) => (
@@ -453,7 +464,7 @@ function ProjectModal({
           {/* Features */}
           <div>
             <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Capabilities
+              {t("projects.capabilities")}
             </h4>
             <ul className="space-y-2.5">
               {project.features.map((f) => (
@@ -471,7 +482,7 @@ function ProjectModal({
           {/* Tech stack */}
           <div>
             <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-              Technology Stack
+              {t("projects.tech_stack")}
             </h4>
             <div className="flex flex-wrap gap-2">
               {project.tech.map((t) => (
@@ -499,6 +510,7 @@ function ProjectModal({
 
 export function ProjectsShowcase() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const selectedProject = PROJECTS.find((p) => p.id === selectedId) ?? null;
 
@@ -513,10 +525,10 @@ export function ProjectsShowcase() {
           transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           className="mb-14 flex flex-col items-start gap-6"
         >
-          <StatusPill tone="accent">Active Projects</StatusPill>
+          <StatusPill tone="accent">{t("projects.badge")}</StatusPill>
           <h2 className="max-w-3xl font-display text-4xl font-bold tracking-[-0.03em] md:text-5xl">
             <BlurText
-              text="Sovereign infrastructure for the autonomous era."
+              text={t("projects.title")}
               animateBy="words"
               direction="top"
               delay={150}
@@ -524,8 +536,7 @@ export function ProjectsShowcase() {
             />
           </h2>
           <p className="max-w-xl text-base leading-relaxed text-muted-foreground">
-            Every CyberAI project is built to one spec: silent strength at machine speed. Click any
-            card to explore architecture, metrics, and capabilities.
+            {t("projects.description")}
           </p>
         </motion.div>
 

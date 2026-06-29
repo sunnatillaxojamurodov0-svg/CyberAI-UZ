@@ -1,14 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type {} from "@tanstack/react-start";
+import type { } from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { checkAiQuota, trackTokenUsage } from "@/lib/auth/ai-quota";
-import {
-  writeAnalytics,
-  trackAiUsage,
-  trackInjectionAttempt,
-} from "@/lib/analytics";
+import { writeAnalytics, trackAiUsage, trackInjectionAttempt } from "@/lib/analytics";
 import { checkPromptInjection, sanitizeInput, createSecureSystemPrompt } from "@/lib/prompt-guard";
 import { createOptimizedMessages } from "@/lib/context-optimizer";
 import { getCachedResponse, setCachedResponse } from "@/lib/prompt-cache";
@@ -39,8 +35,22 @@ export const Route = createFileRoute("/api/chat")({
           }
 
           const token = getSessionToken(request);
-          const session = token ? await verifySession(token) : null;
-          const userId = session?.ok ? (session.user?.id ?? null) : null;
+          if (!token) {
+            return new Response("Authentication required.", {
+              status: 401,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
+
+          const session = await verifySession(token);
+          if (!session.ok || !session.user) {
+            return new Response("Invalid session.", {
+              status: 401,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
+
+          const userId = session.user.id;
 
           const quota = await checkAiQuota(userId);
           if (!quota.allowed) {
@@ -101,20 +111,21 @@ export const Route = createFileRoute("/api/chat")({
           }
 
           const selectedModel = body.model || "groq-gpt";
-          const groqModel = selectedModel === "groq-llama"
-            ? "llama-3.3-70b-versatile"
-            : "openai/gpt-oss-120b";
+          const groqModel =
+            selectedModel === "groq-llama" ? "llama-3.3-70b-versatile" : "openai/gpt-oss-120b";
 
-          const secureSystemPrompt = body.systemPrompt
-            ? createSecureSystemPrompt(body.systemPrompt)
-            : undefined;
+          // Do not allow user-supplied system prompts for security
+          const secureSystemPrompt = undefined;
 
           const historyMessages = history.map((h) => ({
             role: h.role === "assistant" ? "assistant" : "user",
             content: sanitizeInput(h.content),
           }));
 
-          let userContent: string | Array<{ type: string; text?: string; image_url?: { url: string } }> = sanitizedMessage;
+          let userContent:
+            | string
+            | Array<{ type: string; text?: string; image_url?: { url: string } }> =
+            sanitizedMessage;
 
           if (body.imageBase64 && body.imageMimeType) {
             const dataUrl = `data:${body.imageMimeType};base64,${body.imageBase64}`;
@@ -136,7 +147,15 @@ export const Route = createFileRoute("/api/chat")({
             { role: "user", content: userContent },
           ];
 
-          const cacheKey = `groq:${selectedModel}:${body.imageBase64 ? "img:" : ""}${sanitizedMessage.slice(0, 100)}`;
+          // Use SHA-256 hash for cache key to prevent collisions
+          const cacheInput = `${selectedModel}:${body.imageBase64 ? "img:" : ""}:${sanitizedMessage}:${JSON.stringify(historyMessages)}`;
+          const cacheKeyHash = await crypto.subtle.digest(
+            "SHA-256",
+            new TextEncoder().encode(cacheInput),
+          );
+          const cacheKey = `groq:${Array.from(new Uint8Array(cacheKeyHash))
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("")}`;
           const cachedResponse = await getCachedResponse(messages, cacheKey);
           if (cachedResponse && !body.imageBase64) {
             trackAiUsage(
@@ -153,22 +172,19 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          const groqResponse = await fetch(
-            "https://api.groq.com/openai/v1/chat/completions",
-            {
-              method: "POST",
-              headers: {
-                Authorization: `Bearer ${groqKey}`,
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                model: groqModel,
-                messages,
-                stream: true,
-                max_tokens: 4096,
-              }),
+          const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${groqKey}`,
+              "Content-Type": "application/json",
             },
-          );
+            body: JSON.stringify({
+              model: groqModel,
+              messages,
+              stream: true,
+              max_tokens: 4096,
+            }),
+          });
 
           if (!groqResponse.ok) {
             const errText = await groqResponse.text();
@@ -220,7 +236,8 @@ export const Route = createFileRoute("/api/chat")({
 
                 const estimatedPromptTokens = Math.ceil(
                   messages.reduce((acc, m) => {
-                    const content = typeof m.content === "string" ? m.content : JSON.stringify(m.content);
+                    const content =
+                      typeof m.content === "string" ? m.content : JSON.stringify(m.content);
                     return acc + content.length / 4;
                   }, 0),
                 );
@@ -229,10 +246,10 @@ export const Route = createFileRoute("/api/chat")({
                   promptTokens: estimatedPromptTokens,
                   completionTokens: estimatedCompletionTokens,
                   totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
-                }).catch(() => {});
+                }).catch(() => { });
 
                 if (totalContent && !body.imageBase64) {
-                  setCachedResponse(messages, totalContent, cacheKey).catch(() => {});
+                  setCachedResponse(messages, totalContent, cacheKey).catch(() => { });
                 }
               } catch (err) {
                 console.error("Groq stream error:", err);

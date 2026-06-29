@@ -13,7 +13,11 @@ import {
   XCircle,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { TextureCardStyled, TextureCardContent, TextureSeparator } from "@/components/ui/texture-card";
+import {
+  TextureCardStyled,
+  TextureCardContent,
+  TextureSeparator,
+} from "@/components/ui/texture-card";
 import { TextureButton } from "@/components/ui/texture-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -211,7 +215,10 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       </div>
       <OrDivider />
       <div className="space-y-2">
-        <Label htmlFor="login-email" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+        <Label
+          htmlFor="login-email"
+          className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+        >
           Email
         </Label>
         <Input
@@ -220,12 +227,16 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="operator@cyberai.dev"
+          autoComplete="email"
           autoFocus
           className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="login-password" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+        <Label
+          htmlFor="login-password"
+          className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+        >
           Password
         </Label>
         <Input
@@ -245,7 +256,10 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
           exit={{ opacity: 0, height: 0 }}
           className="space-y-2"
         >
-          <Label htmlFor="login-2fa" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          <Label
+            htmlFor="login-2fa"
+            className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+          >
             2FA Code
           </Label>
           <Input
@@ -280,7 +294,12 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
         </motion.p>
       )}
 
-      <TextureButton variant="accent" className="w-full" type="submit" disabled={submitting || !email || !password || (requires2FA && !totpToken)}>
+      <TextureButton
+        variant="accent"
+        className="w-full"
+        type="submit"
+        disabled={submitting || !email || !password || (requires2FA && !totpToken)}
+      >
         <div className="flex gap-1 items-center justify-center">
           {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
           {submitting ? "Verifying..." : requires2FA ? "Verify 2FA" : "Sign In"}
@@ -338,7 +357,10 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
       </div>
       <OrDivider />
       <div className="space-y-2">
-        <Label htmlFor="signup-username" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+        <Label
+          htmlFor="signup-username"
+          className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+        >
           Username
         </Label>
         <Input
@@ -350,7 +372,10 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="signup-email" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+        <Label
+          htmlFor="signup-email"
+          className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+        >
           Email
         </Label>
         <Input
@@ -363,7 +388,10 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="signup-password" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+        <Label
+          htmlFor="signup-password"
+          className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+        >
           Password
         </Label>
         <Input
@@ -388,7 +416,12 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
         </motion.p>
       )}
 
-      <TextureButton variant="accent" className="w-full" type="submit" disabled={submitting || !email || !password}>
+      <TextureButton
+        variant="accent"
+        className="w-full"
+        type="submit"
+        disabled={submitting || !email || !password}
+      >
         <div className="flex gap-1 items-center justify-center">
           {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
           {submitting ? "Creating..." : "Create Account"}
@@ -444,7 +477,10 @@ function ResetForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       </p>
 
       <div className="space-y-2">
-        <Label htmlFor="reset-email" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+        <Label
+          htmlFor="reset-email"
+          className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground"
+        >
           Email
         </Label>
         <Input
@@ -468,7 +504,12 @@ function ResetForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
         </motion.p>
       )}
 
-      <TextureButton variant="accent" className="w-full" type="submit" disabled={submitting || !email}>
+      <TextureButton
+        variant="accent"
+        className="w-full"
+        type="submit"
+        disabled={submitting || !email}
+      >
         <div className="flex gap-1 items-center justify-center">
           {submitting ? <Loader2 size={15} className="animate-spin" /> : <Mail size={15} />}
           {submitting ? "Sending..." : "Send Reset Link"}

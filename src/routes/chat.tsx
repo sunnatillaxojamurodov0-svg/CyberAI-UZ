@@ -21,10 +21,10 @@ export const Route = createFileRoute("/chat")({
           "Autonomous infrastructure defense through natural language commands. Real-time threat scanning, querying, and remediation.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/chat" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/chat" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/chat" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/chat" }],
   }),
   component: ChatRoute,
 });

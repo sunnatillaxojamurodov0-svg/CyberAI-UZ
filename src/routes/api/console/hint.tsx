@@ -143,8 +143,22 @@ export const Route = createFileRoute("/api/console/hint")({
           }
 
           const token = getSessionToken(request);
-          const session = token ? await verifySession(token) : null;
-          const userId = session?.ok ? (session.user?.id ?? null) : null;
+          if (!token) {
+            return new Response("Authentication required.", {
+              status: 401,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
+
+          const session = await verifySession(token);
+          if (!session.ok || !session.user) {
+            return new Response("Invalid session.", {
+              status: 401,
+              headers: { "Content-Type": "text/plain" },
+            });
+          }
+
+          const userId = session.user.id;
 
           const quota = await checkAiQuota(userId);
           if (!quota.allowed) {

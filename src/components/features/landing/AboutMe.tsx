@@ -18,6 +18,7 @@ import {
   User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n";
 
 const SKILLS = {
   languages: [
@@ -33,18 +34,19 @@ const SKILLS = {
     "JSON",
   ],
   interests: [
-    { icon: Shield, label: "Cyber Security" },
-    { icon: Bot, label: "Artificial Intelligence" },
-    { icon: Globe, label: "Web Development" },
-    { icon: Code2, label: "Automation Systems" },
-    { icon: Bot, label: "AI Assistants" },
-    { icon: User, label: "Digital Literacy" },
-    { icon: Code2, label: "Software Engineering" },
+    { icon: Shield, labelKey: "about.cyber_security" },
+    { icon: Bot, labelKey: "about.artificial_intelligence" },
+    { icon: Globe, labelKey: "about.web_development" },
+    { icon: Code2, labelKey: "about.automation" },
+    { icon: Bot, labelKey: "about.ai_assistants" },
+    { icon: User, labelKey: "about.digital_literacy" },
+    { icon: Code2, labelKey: "about.software_engineering" },
   ],
 };
 
 export function AboutMe() {
   const [open, setOpen] = useState(false);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -53,7 +55,7 @@ export function AboutMe() {
         onClick={() => setOpen(true)}
         className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-border bg-surface/60 px-6 py-3 text-sm font-medium text-foreground/80 transition-all duration-300 hover:border-accent/30 hover:bg-accent/5 hover:text-accent"
       >
-        <span className="relative z-10">About Me</span>
+        <span className="relative z-10">{t("about.title")}</span>
         <ChevronRight
           size={14}
           className="relative z-10 transition-transform duration-300 group-hover:translate-x-0.5"
@@ -105,21 +107,21 @@ export function AboutMe() {
 
               <div className="flex-1">
                 <DialogTitle className="font-display text-3xl font-bold tracking-tight text-foreground">
-                  Sunnatilla Xo'jamurodov
+                  {t("about.name")}
                 </DialogTitle>
                 <DialogDescription className="mt-1 text-sm text-muted-foreground/80">
-                  Founder & Creator of CyberAI
+                  {t("about.role")}
                 </DialogDescription>
 
                 <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground/60">
                   <span className="flex items-center gap-1.5">
-                    <Calendar size={12} /> Born: 2009
+                    <Calendar size={12} /> {t("about.born")}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <MapPin size={12} /> Ohangaron, Uzbekistan
+                    <MapPin size={12} /> {t("about.location")}
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <User size={12} /> Male
+                    <User size={12} /> {t("about.gender")}
                   </span>
                 </div>
               </div>
@@ -133,7 +135,7 @@ export function AboutMe() {
                 rel="noopener noreferrer"
                 className="group flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-red-500/30 hover:bg-red-500/5 hover:text-red-400"
               >
-                <Video size={13} /> YouTube
+                <Video size={13} /> {t("about.youtube")}
                 <svg
                   className="size-[0.6em] -translate-x-0.5 rotate-45 opacity-50 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
                   fill="none"
@@ -156,7 +158,7 @@ export function AboutMe() {
                 rel="noopener noreferrer"
                 className="group flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-sky-500/30 hover:bg-sky-500/5 hover:text-sky-400"
               >
-                <MessageCircle size={13} /> Telegram Community
+                <MessageCircle size={13} /> {t("about.telegram")}
                 <svg
                   className="size-[0.6em] -translate-x-0.5 rotate-45 opacity-50 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
                   fill="none"
@@ -181,20 +183,10 @@ export function AboutMe() {
             {/* Bio */}
             <div>
               <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-                About Me
+                {t("about.title")}
               </h4>
-              <p className="text-sm leading-relaxed text-foreground/85">
-                Sunnatilla is a self-taught technologist, cybersecurity researcher, and AI architect
-                from Ohangaron, Uzbekistan. His passion for technology, artificial intelligence, and
-                cybersecurity led to the creation of CyberAI — a sovereign platform that makes
-                advanced technical knowledge accessible to everyone.
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-foreground/85">
-                His work focuses on building practical, real-world systems that bridge the gap
-                between complex AI research and everyday utility. CyberAI and its intelligent
-                assistant VAEL are the result of years of independent study in programming,
-                security, and machine learning.
-              </p>
+              <p className="text-sm leading-relaxed text-foreground/85">{t("about.bio1")}</p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/85">{t("about.bio2")}</p>
             </div>
 
             {/* Mission */}
@@ -203,12 +195,10 @@ export function AboutMe() {
                 <Target size={16} className="mt-0.5 shrink-0 text-accent" />
                 <div>
                   <h4 className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-                    Mission
+                    {t("about.mission")}
                   </h4>
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    Empowering people with practical AI, cybersecurity, and programming knowledge —
-                    turning complex technologies into accessible and applicable skills for the
-                    digital age.
+                    {t("about.mission_text")}
                   </p>
                 </div>
               </div>
@@ -217,10 +207,12 @@ export function AboutMe() {
             {/* Skills */}
             <div>
               <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-                Technical Skills
+                {t("about.skills")}
               </h4>
               <div className="mb-4">
-                <span className="text-[11px] font-medium text-muted-foreground/70">Languages</span>
+                <span className="text-[11px] font-medium text-muted-foreground/70">
+                  {t("about.languages")}
+                </span>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {SKILLS.languages.map((lang) => (
                     <span
@@ -234,17 +226,17 @@ export function AboutMe() {
               </div>
               <div>
                 <span className="text-[11px] font-medium text-muted-foreground/70">
-                  Areas of Interest
+                  {t("about.interests")}
                 </span>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   {SKILLS.interests.map((item) => {
                     const Icon = item.icon;
                     return (
                       <span
-                        key={item.label}
+                        key={item.labelKey}
                         className="inline-flex items-center gap-1.5 rounded-lg border border-accent/10 bg-accent/5 px-2.5 py-1 font-mono text-[10px] font-medium text-accent/80"
                       >
-                        <Icon size={11} /> {item.label}
+                        <Icon size={11} /> {t(item.labelKey)}
                       </span>
                     );
                   })}
@@ -258,15 +250,10 @@ export function AboutMe() {
                 <Shield size={16} className="mt-0.5 shrink-0 text-primary" />
                 <div>
                   <h4 className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
-                    About CyberAI
+                    {t("about.about_cyberai")}
                   </h4>
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    CyberAI is a modern educational platform designed for learning AI,
-                    cybersecurity, and programming. It provides users with tools, courses, and
-                    hands-on projects to understand technology, build practical skills, and stay
-                    informed about the latest industry developments. At the heart of the platform is
-                    VAEL — an intelligent assistant that answers questions, explains concepts, and
-                    supports the learning journey.
+                    {t("about.cyberai_desc1")}
                   </p>
                 </div>
               </div>
@@ -275,23 +262,23 @@ export function AboutMe() {
             {/* Vision */}
             <div>
               <h4 className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-                Vision
+                {t("about.vision")}
               </h4>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                 {[
-                  "Advanced AI services",
-                  "Interactive learning systems",
-                  "Cybersecurity labs",
-                  "Programming courses",
-                  "Building a tech community",
-                  "Digital literacy initiatives",
-                ].map((item) => (
+                  "about.vision_ai",
+                  "about.vision_learning",
+                  "about.vision_security",
+                  "about.vision_code",
+                  "about.vision_community",
+                  "about.vision_literacy",
+                ].map((key) => (
                   <div
-                    key={item}
+                    key={key}
                     className="flex items-center gap-2.5 rounded-lg border border-border bg-surface/30 px-3.5 py-2.5"
                   >
                     <Eye size={13} className="shrink-0 text-accent/70" />
-                    <span className="text-xs text-foreground/75">{item}</span>
+                    <span className="text-xs text-foreground/75">{t(key)}</span>
                   </div>
                 ))}
               </div>
@@ -303,13 +290,10 @@ export function AboutMe() {
                 <Bot size={16} className="mt-0.5 shrink-0 text-accent" />
                 <div>
                   <h4 className="mb-2 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
-                    Current Project — VAEL
+                    {t("about.current_project")}
                   </h4>
                   <p className="text-sm leading-relaxed text-foreground/80">
-                    VAEL is an AI assistant being developed for the CyberAI ecosystem. It provides
-                    rapid responses to queries, educational support, clear explanations of technical
-                    concepts, natural conversation, and serves as the foundation for a future
-                    expanded AI platform. VAEL is currently in active development.
+                    {t("about.vael_desc1")}
                   </p>
                 </div>
               </div>
@@ -319,17 +303,16 @@ export function AboutMe() {
             <div className="relative border-l-2 border-accent/40 pl-5 py-3">
               <Quote size={14} className="absolute -left-2 -top-1 text-accent/30" />
               <p className="text-sm leading-relaxed italic text-foreground/70">
-                Technology is not just a tool. When used correctly, it becomes a force that
-                amplifies human potential.
+                {t("about.quote")}
               </p>
               <p className="mt-2 text-[11px] text-muted-foreground/50">
-                — Sunnatilla Xo'jamurodov, Founder of CyberAI
+                — {t("about.quote_author")}
               </p>
             </div>
 
             {/* Watermark footer */}
             <div className="select-none text-center text-[10px] font-mono text-muted-foreground/20 tracking-[0.15em] uppercase">
-              CyberAI · Sovereign intelligence
+              {t("about.watermark")}
             </div>
           </div>
         </DialogContent>

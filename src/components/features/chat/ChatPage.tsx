@@ -6,7 +6,7 @@ import { ChatInput } from "./ChatInput";
 import { useChatScroll } from "@/hooks/useChatScroll";
 import { streamChat } from "@/lib/ai";
 import { MODELS, type AIModel } from "@/lib/models";
-import type { Skill } from "@/lib/skills";
+import { SKILLS, type Skill } from "@/lib/skills";
 import type { FileAttachment } from "./FilePreview";
 import { useAuth } from "@/lib/auth-context";
 import { useProfile } from "@/hooks/useProfile";
@@ -35,30 +35,39 @@ export function ChatPage() {
   const { user, loading: authLoading } = useAuth();
   const { profile } = useProfile();
   const userName = profile?.name ?? user?.email?.split("@")[0] ?? "Operator";
-  const [messages, setMessages] = useState<Message[]>(() => {
-    try {
-      const saved = localStorage.getItem("cyberai_chat_messages");
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  });
+  const [hydrated, setHydrated] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [apiKeyMissing, setApiKeyMissing] = useState(false);
 
-  const [selectedModel, setSelectedModel] = useState<AIModel>(() => {
-    try {
-      const saved = localStorage.getItem("cyberai_selected_model");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return MODELS.find((m) => m.id === parsed.id) || MODELS[0];
-      }
-    } catch {}
-    return MODELS[0];
-  });
+  const [selectedModel, setSelectedModel] = useState<AIModel>(MODELS[0]);
   const [showModelPicker, setShowModelPicker] = useState(false);
   const modelPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("cyberai_chat_messages");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setMessages(
+          parsed.map((m: Message) => ({
+            ...m,
+            skill: m.skill ? (SKILLS.find((s) => s.id === m.skill.id) ?? undefined) : undefined,
+          })),
+        );
+      }
+      const savedModel = localStorage.getItem("cyberai_selected_model");
+      if (savedModel) {
+        const parsed = JSON.parse(savedModel);
+        const found = MODELS.find((m) => m.id === parsed.id);
+        if (found) setSelectedModel(found);
+      }
+    } catch {
+      // Ignore localStorage errors
+    }
+    setHydrated(true);
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -219,7 +228,9 @@ export function ChatPage() {
                       setShowModelPicker(false);
                     }}
                     className={`flex items-center gap-3 w-full px-4 py-3 text-left transition-colors hover:bg-accent/10 ${
-                      selectedModel.id === model.id ? "bg-accent/10 text-accent" : "text-muted-foreground"
+                      selectedModel.id === model.id
+                        ? "bg-accent/10 text-accent"
+                        : "text-muted-foreground"
                     }`}
                   >
                     {model.id === "groq-gpt" ? <Zap size={16} /> : <Bot size={16} />}

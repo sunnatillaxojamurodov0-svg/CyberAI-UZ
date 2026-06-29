@@ -21,10 +21,10 @@ export const Route = createFileRoute("/targets")({
         content: "Real-time vulnerable environments for hands-on practice.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/targets" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/targets" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/targets" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/targets" }],
   }),
   component: TargetsRoute,
 });

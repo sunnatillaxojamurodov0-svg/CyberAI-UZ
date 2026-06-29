@@ -21,10 +21,10 @@ export const Route = createFileRoute("/console")({
           "Fully isolated Kali sandbox. 30 CTFs · 3 levels · VAEL AI co-pilot · OSCP-style scoring.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/console" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/console" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/console" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/console" }],
   }),
   component: ConsoleRoute,
 });
