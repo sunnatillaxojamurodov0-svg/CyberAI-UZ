@@ -22,8 +22,8 @@ export const Route = createFileRoute("/api/threats")({
       POST: async ({ request }) => {
         try {
           const env = getEnv();
-          const apiKey = env.OPENROUTER_API_KEY as string;
-          if (!apiKey) {
+          const ai = env.AI as Ai | undefined;
+          if (!ai) {
             return new Response("AI service is not configured.", {
               status: 503,
               headers: { "Content-Type": "text/plain" },
@@ -81,42 +81,24 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
 - Remote workers
 - Third-party integrations`;
 
-          const orResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-              "HTTP-Referer": "https://cyberaiuz.com",
-              "X-OpenRouter-Title": "CyberAI",
-            },
-            body: JSON.stringify({
-              model: "nvidia/nemotron-3-super-120b-a12b:free",
-              messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: prompt },
-              ],
-            }),
+          const aiResponse = await ai.run("@cf/meta/llama-3.2-3b-instruct", {
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: prompt },
+            ],
           });
 
-          if (!orResponse.ok) {
-            return new Response(JSON.stringify({ ok: false, error: "AI service error" }), {
-              status: 500,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const orData = await orResponse.json();
-          const response = orData.choices?.[0]?.message?.content || "";
+          const responseText = (aiResponse as { response?: string }).response || "";
 
           // Parse the JSON response
           let threats: ThreatVector[];
           try {
             // Try to extract JSON from the response
-            const jsonMatch = response.match(/\[[\s\S]*\]/);
+            const jsonMatch = responseText.match(/\[[\s\S]*\]/);
             if (jsonMatch) {
               threats = JSON.parse(jsonMatch[0]);
             } else {
-              threats = JSON.parse(response);
+              threats = JSON.parse(responseText);
             }
           } catch {
             // If parsing fails, return a formatted error

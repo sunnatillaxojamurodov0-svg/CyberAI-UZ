@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CursorSpotlight } from "@/components/shared/CursorSpotlight";
+import { ProgressiveBlur } from "@/components/shared/ProgressiveBlur";
 import { Hero } from "@/components/features/landing/Hero";
 import { BentoCommand } from "@/components/features/landing/BentoCommand";
 import { TrustStrip } from "@/components/features/landing/TrustStrip";
@@ -38,6 +39,8 @@ function Landing() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <CursorSpotlight />
+      <ProgressiveBlur position="top" />
+      <ProgressiveBlur position="bottom" />
       <Navbar />
       <main className="relative z-10">
         <Hero />

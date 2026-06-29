@@ -75,74 +75,75 @@
   --radius-3xl: 1.5rem; /* 24px */
 
   /* ─── Glow Shadows ─── */
-  --shadow-glow-primary: 0 0 20px rgba(0, 245, 160, 0.2);
-  --shadow-glow-accent: 0 0 20px rgba(0, 166, 224, 0.2);
-  --shadow-glow-emerald: 0 0 20px rgba(0, 226, 147, 0.2);
+  --shadow-glow-primary: 0 0 20px rgba(5, 150, 105, 0.15);
+  --shadow-glow-accent: 0 0 20px rgba(8, 145, 178, 0.15);
+  --shadow-glow-emerald: 0 0 20px rgba(4, 120, 87, 0.15);
 
   /* ─── Gradients ─── */
-  --gradient-hero: linear-gradient(90deg, #00f5a0, #00a6e0);
+  --gradient-hero: linear-gradient(90deg, #059669, #0891b2);
   --gradient-glass: linear-gradient(
     135deg,
-    rgba(255, 255, 255, 0.06) 0%,
-    rgba(255, 255, 255, 0.015) 50%,
-    rgba(255, 255, 255, 0.04) 100%
+    rgba(0, 255, 148, 0.06) 0%,
+    rgba(0, 212, 255, 0.03) 50%,
+    rgba(0, 255, 148, 0.04) 100%
   );
 }
 
 :root {
   /* ═══════════════════════════════════════════════════════════════════
-     LIGHT MODE — Material Design 3
+     LIGHT MODE — Sovereign Cipher Light
+     Clean, professional, high-contrast
      ═══════════════════════════════════════════════════════════════════ */
 
-  /* Surface hierarchy (lightest → darkest) */
+  /* Surface hierarchy — clean whites with subtle warmth */
   --stitch-void: #ffffff;
-  --stitch-background: #f8fafc;
-  --stitch-surface-dim: #f1f5f9;
+  --stitch-background: #fafbfc;
+  --stitch-surface-dim: #f3f4f6;
   --stitch-surface: #ffffff;
   --stitch-surface-container-lowest: #ffffff;
-  --stitch-surface-container-low: #f8fafc;
-  --stitch-surface-container: #f1f5f9;
-  --stitch-surface-container-high: #e2e8f0;
-  --stitch-surface-container-highest: #cbd5e1;
-  --stitch-surface-variant: #e2e8f0;
-  --stitch-surface-bright: #f1f5f9;
+  --stitch-surface-container-low: #f9fafb;
+  --stitch-surface-container: #f3f4f6;
+  --stitch-surface-container-high: #e5e7eb;
+  --stitch-surface-container-highest: #d1d5db;
+  --stitch-surface-variant: #e5e7eb;
+  --stitch-surface-bright: #f9fafb;
 
-  /* Text colors */
-  --stitch-on-surface: #0f172a;
-  --stitch-on-background: #0f172a;
-  --stitch-on-surface-variant: #475569;
-  --stitch-inverse-surface: #f8fafc;
+  /* Text colors — high contrast */
+  --stitch-on-surface: #111827;
+  --stitch-on-background: #111827;
+  --stitch-on-surface-variant: #4b5563;
+  --stitch-inverse-surface: #f9fafb;
 
-  /* Outline */
-  --stitch-outline: #64748b;
-  --stitch-outline-variant: #e2e8f0;
+  /* Outline — visible but subtle */
+  --stitch-outline: #6b7280;
+  --stitch-outline-variant: #e5e7eb;
 
-  /* Primary — Cyber Green (#00a86b) */
-  --stitch-primary: #00a86b;
-  --stitch-primary-container: #00c97a;
-  --stitch-on-primary-container: #004d30;
-  --stitch-primary-fixed-dim: #00b872;
-  --stitch-surface-tint: #00b872;
+  /* Primary — Deep Emerald (WCAG AA on white) */
+  --stitch-primary: #059669;
+  --stitch-primary-container: #059669;
+  --stitch-on-primary-container: #ffffff;
+  --stitch-primary-fixed-dim: #047857;
+  --stitch-surface-tint: #059669;
 
-  /* Secondary — Signal Blue (#0077b6) */
-  --stitch-secondary: #0077b6;
-  --stitch-secondary-container: #0096e0;
-  --stitch-on-secondary-container: #003348;
+  /* Secondary — Deep Cyan */
+  --stitch-secondary: #0891b2;
+  --stitch-secondary-container: #0e7490;
+  --stitch-on-secondary-container: #ffffff;
 
-  /* Tertiary — Intel Purple */
-  --stitch-tertiary: #6b21a8;
-  --stitch-tertiary-container: #a855f7;
-  --stitch-tertiary-fixed-dim: #9333ea;
+  /* Tertiary — Deep Purple */
+  --stitch-tertiary: #7c3aed;
+  --stitch-tertiary-container: #6d28d9;
+  --stitch-tertiary-fixed-dim: #5b21b6;
 
-  /* Error — Threat Red (#dc2626) */
+  /* Error — Deep Red */
   --stitch-error: #dc2626;
   --stitch-error-container: #fef2f2;
   --stitch-on-error: #ffffff;
 
-  /* Warning — Amber */
-  --stitch-warning: #f59e0b;
+  /* Warning — Deep Amber */
+  --stitch-warning: #d97706;
 
-  /* ─── Keep existing CSS variables for compatibility ─── */
+  /* ─── Compatibility tokens ─── */
   --background: var(--stitch-background);
   --foreground: var(--stitch-on-surface);
   --surface: var(--stitch-surface);
@@ -154,17 +155,17 @@
   --border: var(--stitch-outline-variant);
   --border-strong: var(--stitch-outline);
   --primary: var(--stitch-primary-container);
-  --primary-foreground: var(--stitch-void);
+  --primary-foreground: #ffffff;
   --accent: var(--stitch-secondary);
-  --accent-foreground: var(--stitch-on-surface);
+  --accent-foreground: #ffffff;
   --emerald: var(--stitch-primary-fixed-dim);
-  --emerald-foreground: var(--stitch-void);
+  --emerald-foreground: #ffffff;
 
   /* Sidebar */
   --sidebar: var(--stitch-surface-container-lowest);
   --sidebar-foreground: var(--stitch-on-surface);
   --sidebar-primary: var(--stitch-primary-container);
-  --sidebar-primary-foreground: var(--stitch-void);
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: var(--stitch-surface-container);
   --sidebar-accent-foreground: var(--stitch-on-surface);
   --sidebar-border: var(--stitch-outline-variant);
@@ -184,53 +185,53 @@
   color-scheme: dark;
 
   /* ═══════════════════════════════════════════════════════════════════
-     DARK MODE OVERRIDES
+     DARK MODE — Sovereign Cipher
      ═══════════════════════════════════════════════════════════════════ */
 
   /* Surface hierarchy (darkest → lightest) */
-  --stitch-void: #020408;
-  --stitch-background: #0c141f;
-  --stitch-surface-dim: #0c141f;
-  --stitch-surface: #151c27;
-  --stitch-surface-container-lowest: #070e19;
-  --stitch-surface-container-low: #151c27;
-  --stitch-surface-container: #19202c;
-  --stitch-surface-container-high: #232a36;
-  --stitch-surface-container-highest: #2e3541;
-  --stitch-surface-variant: #2e3541;
-  --stitch-surface-bright: #323946;
+  --stitch-void: #030B0A;
+  --stitch-background: #030B0A;
+  --stitch-surface-dim: #030B0A;
+  --stitch-surface: #071210;
+  --stitch-surface-container-lowest: #030B0A;
+  --stitch-surface-container-low: #071210;
+  --stitch-surface-container: #0D2A20;
+  --stitch-surface-container-high: #132E24;
+  --stitch-surface-container-highest: #1A3D30;
+  --stitch-surface-variant: #1A3D30;
+  --stitch-surface-bright: #204A38;
 
-  /* Text colors */
-  --stitch-on-surface: #dce3f3;
-  --stitch-on-background: #dce3f3;
-  --stitch-on-surface-variant: #b9cbbd;
-  --stitch-inverse-surface: #dce3f3;
+  /* Text colors — WHITE for body, GREEN for headings */
+  --stitch-on-surface: #FFFFFF;
+  --stitch-on-background: #FFFFFF;
+  --stitch-on-surface-variant: rgba(255, 255, 255, 0.6);
+  --stitch-inverse-surface: #FFFFFF;
 
   /* Outline */
-  --stitch-outline: #849588;
-  --stitch-outline-variant: #3b4a40;
+  --stitch-outline: #1A6640;
+  --stitch-outline-variant: #0D2A20;
 
-  /* Primary — Cyber Green */
-  --stitch-primary: #cdffde;
-  --stitch-primary-container: #00f5a0;
-  --stitch-on-primary-container: #006b43;
-  --stitch-primary-fixed-dim: #00e293;
-  --stitch-surface-tint: #00e293;
+  /* Primary — Sovereign Green */
+  --stitch-primary: #00FF94;
+  --stitch-primary-container: #00FF94;
+  --stitch-on-primary-container: #030B0A;
+  --stitch-primary-fixed-dim: #00cc76;
+  --stitch-surface-tint: #00cc76;
 
-  /* Secondary — Signal Blue */
-  --stitch-secondary: #7bd0ff;
-  --stitch-secondary-container: #00a6e0;
-  --stitch-on-secondary-container: #003348;
+  /* Secondary — AI Cyan */
+  --stitch-secondary: #00D4FF;
+  --stitch-secondary-container: #00b8e6;
+  --stitch-on-secondary-container: #030B0A;
 
-  /* Tertiary — Intel Purple */
-  --stitch-tertiary: #f8f1ff;
-  --stitch-tertiary-container: #ded0ff;
-  --stitch-tertiary-fixed-dim: #cebdff;
+  /* Tertiary — Crypto Purple */
+  --stitch-tertiary: #7B61FF;
+  --stitch-tertiary-container: #6a4fe6;
+  --stitch-tertiary-fixed-dim: #5a40cc;
 
   /* Error — Threat Red */
-  --stitch-error: #ffb4ab;
-  --stitch-error-container: #93000a;
-  --stitch-on-error: #690005;
+  --stitch-error: #FF0039;
+  --stitch-error-container: #33000d;
+  --stitch-on-error: #ffffff;
 
   /* Warning — Amber */
   --stitch-warning: #ff8e00;
@@ -250,10 +251,10 @@
   --accent: var(--stitch-secondary);
   --accent-foreground: var(--stitch-on-surface);
 
-  /* Glows */
-  --shadow-glow-primary: 0 0 20px rgba(0, 245, 160, 0.3);
-  --shadow-glow-accent: 0 0 20px rgba(0, 166, 224, 0.3);
-  --shadow-glow-emerald: 0 0 20px rgba(0, 226, 147, 0.3);
+  /* Glows — Sovereign Cipher */
+  --shadow-glow-primary: 0 0 20px rgba(0, 255, 148, 0.25);
+  --shadow-glow-accent: 0 0 20px rgba(0, 212, 255, 0.25);
+  --shadow-glow-emerald: 0 0 20px rgba(0, 255, 148, 0.15);
 }
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -508,6 +509,35 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════════
+   SPOTLIGHT NAVBAR
+   ═══════════════════════════════════════════════════════════════════ */
+
+.spotlight-nav {
+  --spotlight-x: 50%;
+  --ambience-x: 50%;
+}
+
+.spotlight-nav-bg {
+  background: var(--color-surface);
+}
+
+.dark .spotlight-nav-bg {
+  background: var(--color-surface);
+}
+
+.glass-border {
+  border: 1px solid var(--color-border);
+}
+
+.spotlight-nav-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dark .spotlight-nav-shadow {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
    BASE STYLES
    ═══════════════════════════════════════════════════════════════════ */
 
@@ -525,6 +555,15 @@
     font-feature-settings: "ss01", "cv11";
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 {
+    color: var(--color-primary);
+  }
+  strong, b {
+    color: var(--color-primary);
+  }
+  .highlight {
+    color: var(--color-primary);
   }
   ::selection {
     background: color-mix(in oklab, var(--stitch-primary-container) 35%, transparent);
@@ -545,31 +584,52 @@
 @layer utilities {
   /* ─── Glass Panels ─── */
   .glass-panel {
-    background: rgba(12, 20, 31, 0.85);
+    background: color-mix(in oklab, var(--stitch-surface) 85%, transparent);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(0, 226, 147, 0.2);
+    border: 1px solid var(--color-border);
     box-shadow:
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.06),
+      inset 0 1px 1px 0 color-mix(in oklab, var(--stitch-primary-container) 6%, transparent),
+      0 8px 32px -12px color-mix(in oklab, var(--stitch-void) 50%, transparent);
+  }
+  .dark .glass-panel {
+    background: rgba(3, 11, 10, 0.85);
+    border-color: rgba(0, 255, 148, 0.15);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(0, 255, 148, 0.06),
       0 8px 32px -12px rgba(0, 0, 0, 0.5);
   }
   .glass-panel-strong {
-    background: rgba(7, 14, 25, 0.92);
+    background: color-mix(in oklab, var(--stitch-surface) 92%, transparent);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid rgba(0, 226, 147, 0.25);
+    border: 1px solid var(--color-border-strong);
     box-shadow:
-      inset 0 1px 1px 0 rgba(255, 255, 255, 0.08),
+      inset 0 1px 1px 0 color-mix(in oklab, var(--stitch-primary-container) 8%, transparent),
+      0 12px 48px -16px color-mix(in oklab, var(--stitch-void) 60%, transparent);
+  }
+  .dark .glass-panel-strong {
+    background: rgba(3, 11, 10, 0.92);
+    border-color: rgba(0, 255, 148, 0.2);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(0, 255, 148, 0.08),
       0 12px 48px -16px rgba(0, 0, 0, 0.6);
   }
   .glass-panel-cyan {
-    background: linear-gradient(135deg, rgba(0, 166, 224, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: linear-gradient(135deg, color-mix(in oklab, var(--stitch-secondary) 8%, transparent) 0%, color-mix(in oklab, var(--stitch-primary-container) 1%, transparent) 100%);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(0, 166, 224, 0.2);
+    border: 1px solid color-mix(in oklab, var(--stitch-secondary) 20%, transparent);
     box-shadow:
-      inset 0 1px 1px 0 rgba(0, 166, 224, 0.2),
-      0 0 40px -12px rgba(0, 166, 224, 0.25);
+      inset 0 1px 1px 0 color-mix(in oklab, var(--stitch-secondary) 20%, transparent),
+      0 0 40px -12px color-mix(in oklab, var(--stitch-secondary) 25%, transparent);
+  }
+  .dark .glass-panel-cyan {
+    background: linear-gradient(135deg, rgba(0, 212, 255, 0.08) 0%, rgba(0, 255, 148, 0.01) 100%);
+    border-color: rgba(0, 212, 255, 0.2);
+    box-shadow:
+      inset 0 1px 1px 0 rgba(0, 212, 255, 0.2),
+      0 0 40px -12px rgba(0, 212, 255, 0.25);
   }
 
   /* ─── Glow Effects ─── */
@@ -580,13 +640,13 @@
       transform 0.3s ease-out;
   }
   .glow-hover:hover {
-    box-shadow: 0 0 20px rgba(0, 245, 160, 0.15);
-    border-color: rgba(0, 245, 160, 0.3);
+    box-shadow: 0 0 20px color-mix(in oklab, var(--stitch-primary-container) 20%, transparent);
+    border-color: color-mix(in oklab, var(--stitch-primary-container) 35%, transparent);
   }
 
   /* ─── Gradient Text ─── */
   .gradient-text {
-    background: linear-gradient(90deg, #00f5a0, #00a6e0);
+    background: linear-gradient(90deg, var(--color-primary), var(--color-accent));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -596,17 +656,17 @@
   .grid-bg {
     background-image: radial-gradient(
       circle at center,
-      rgba(255, 255, 255, 0.1) 1px,
+      color-mix(in oklab, var(--stitch-on-surface) 10%, transparent) 1px,
       transparent 1px
     );
     background-size: 24px 24px;
   }
   .noise {
-    background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-image: linear-gradient(color-mix(in oklab, var(--stitch-on-surface) 1.5%, transparent) 1px, transparent 1px);
     background-size: 100% 4px;
   }
   .dot-grid {
-    background-image: radial-gradient(circle, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+    background-image: radial-gradient(circle, color-mix(in oklab, var(--stitch-on-surface) 8%, transparent) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
@@ -627,7 +687,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background: linear-gradient(color-mix(in oklab, var(--stitch-on-surface) 1.5%, transparent) 1px, transparent 1px);
     background-size: 100% 4px;
     pointer-events: none;
   }
@@ -660,10 +720,10 @@
 @keyframes pulse-glow {
   0%,
   100% {
-    box-shadow: 0 0 8px rgba(0, 245, 160, 0.3);
+    box-shadow: 0 0 8px rgba(0, 255, 148, 0.3);
   }
   50% {
-    box-shadow: 0 0 20px rgba(0, 245, 160, 0.6);
+    box-shadow: 0 0 20px rgba(0, 255, 148, 0.6);
   }
 }
 
@@ -800,7 +860,7 @@
 
 .scrollbar-thin {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 245, 160, 0.3) transparent;
+  scrollbar-color: color-mix(in oklab, var(--stitch-primary-container) 30%, transparent) transparent;
 }
 .scrollbar-thin::-webkit-scrollbar {
   width: 6px;
@@ -810,11 +870,11 @@
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(0, 245, 160, 0.3);
+  background: color-mix(in oklab, var(--stitch-primary-container) 30%, transparent);
   border-radius: 9999px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 245, 160, 0.5);
+  background: color-mix(in oklab, var(--stitch-primary-container) 50%, transparent);
 }
 
 /* ═══════════════════════════════════════════════════════════════════

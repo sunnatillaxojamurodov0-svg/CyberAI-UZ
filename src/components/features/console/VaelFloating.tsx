@@ -149,7 +149,7 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
             <span className="absolute inset-0 rounded-full bg-gradient-to-br from-accent to-primary opacity-90" />
             <span className="absolute inset-0 animate-pulse-soft rounded-full ring-2 ring-accent/50" />
             <span className="relative grid size-12 place-items-center rounded-full bg-background/40 backdrop-blur-sm">
-              <Bot size={22} className="text-white" />
+              <Bot size={22} className="text-foreground" />
             </span>
             <span className="absolute -right-0.5 -top-0.5 flex h-3.5 w-3.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />

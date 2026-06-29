@@ -7,22 +7,21 @@ import { checkAiQuota, trackTokenUsage } from "@/lib/auth/ai-quota";
 import {
   writeAnalytics,
   trackAiUsage,
-  trackModelSwitch,
   trackInjectionAttempt,
 } from "@/lib/analytics";
 import { checkPromptInjection, sanitizeInput, createSecureSystemPrompt } from "@/lib/prompt-guard";
 import { createOptimizedMessages } from "@/lib/context-optimizer";
-import { fetchWithFallback } from "@/lib/fallback-models";
 import { getCachedResponse, setCachedResponse } from "@/lib/prompt-cache";
 
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const startTime = Date.now();
         try {
           const env = getEnv();
-          const apiKey = env.OPENROUTER_API_KEY as string;
-          if (!apiKey) {
+          const groqKey = (env as Record<string, unknown>).GROQ_API_KEY as string;
+          if (!groqKey) {
             return new Response("AI service is not configured.", {
               status: 503,
               headers: { "Content-Type": "text/plain" },
@@ -30,7 +29,6 @@ export const Route = createFileRoute("/api/chat")({
           }
 
           const ip = request.headers.get("cf-connecting-ip") || "unknown";
-          const startTime = Date.now();
           const rl = await checkRateLimit(rateLimitKey(ip, "chat"), "chat");
           if (!rl.allowed) {
             writeAnalytics("chat", "denied", null, "/api/chat", Date.now() - startTime);
@@ -89,7 +87,6 @@ export const Route = createFileRoute("/api/chat")({
           }
 
           const sanitizedMessage = sanitizeInput(body.message);
-
           const history = (body.history ?? []).slice(-100);
 
           const now = new Date();
@@ -103,26 +100,49 @@ export const Route = createFileRoute("/api/chat")({
             /* non-fatal */
           }
 
-          const modelName = body.model || "nvidia/nemotron-3-ultra-550b-a55b:free";
+          const selectedModel = body.model || "groq-gpt";
+          const groqModel = selectedModel === "groq-llama"
+            ? "llama-3.3-70b-versatile"
+            : "openai/gpt-oss-120b";
+
           const secureSystemPrompt = body.systemPrompt
             ? createSecureSystemPrompt(body.systemPrompt)
             : undefined;
 
-          const messages = createOptimizedMessages(
-            secureSystemPrompt,
-            history.map((h) => ({
-              role: h.role === "assistant" ? "assistant" : "user",
-              content: sanitizeInput(h.content),
-            })),
-            sanitizedMessage,
-          );
+          const historyMessages = history.map((h) => ({
+            role: h.role === "assistant" ? "assistant" : "user",
+            content: sanitizeInput(h.content),
+          }));
 
-          const cachedResponse = await getCachedResponse(messages, modelName);
-          if (cachedResponse) {
+          let userContent: string | Array<{ type: string; text?: string; image_url?: { url: string } }> = sanitizedMessage;
+
+          if (body.imageBase64 && body.imageMimeType) {
+            const dataUrl = `data:${body.imageMimeType};base64,${body.imageBase64}`;
+            userContent = [
+              {
+                type: "text",
+                text: sanitizedMessage,
+              },
+              {
+                type: "image_url",
+                image_url: { url: dataUrl },
+              },
+            ];
+          }
+
+          const messages = [
+            ...(secureSystemPrompt ? [{ role: "system", content: secureSystemPrompt }] : []),
+            ...historyMessages,
+            { role: "user", content: userContent },
+          ];
+
+          const cacheKey = `groq:${selectedModel}:${body.imageBase64 ? "img:" : ""}${sanitizedMessage.slice(0, 100)}`;
+          const cachedResponse = await getCachedResponse(messages, cacheKey);
+          if (cachedResponse && !body.imageBase64) {
             trackAiUsage(
               userId,
-              modelName,
-              modelName,
+              selectedModel,
+              selectedModel,
               0,
               { prompt: 0, completion: 0, total: 0 },
               true,
@@ -133,50 +153,41 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          const fallbackResult = await fetchWithFallback(
-            "https://openrouter.ai/api/v1/chat/completions",
+          const groqResponse = await fetch(
+            "https://api.groq.com/openai/v1/chat/completions",
             {
               method: "POST",
               headers: {
-                Authorization: `Bearer ${apiKey}`,
+                Authorization: `Bearer ${groqKey}`,
                 "Content-Type": "application/json",
-                "HTTP-Referer": "https://cyberaiuz.workers.dev",
-                "X-OpenRouter-Title": "CyberAI",
               },
               body: JSON.stringify({
-                model: modelName,
+                model: groqModel,
                 messages,
                 stream: true,
+                max_tokens: 4096,
               }),
             },
-            modelName,
-            { maxRetries: 3, retryDelay: 1000, enableFallback: true },
           );
 
-          if (!fallbackResult.success || !fallbackResult.response) {
-            console.error("All models failed:", fallbackResult.error);
+          if (!groqResponse.ok) {
+            const errText = await groqResponse.text();
+            console.error("Groq API error:", groqResponse.status, errText);
             writeAnalytics("chat", "error", userId, "/api/chat", Date.now() - startTime, {
-              model: modelName,
-              error: fallbackResult.error,
-              attempts: fallbackResult.attempts,
-              fallbackModel: fallbackResult.model,
+              model: selectedModel,
+              error: errText,
+              status: groqResponse.status,
             });
-            return new Response("AI service error. All models unavailable. Please try again.", {
+            return new Response("AI service error. Please try again.", {
               status: 502,
               headers: { "Content-Type": "text/plain" },
             });
           }
 
-          const orResponse = fallbackResult.response;
-          const usedModel = fallbackResult.model;
-          if (usedModel !== modelName) {
-            trackModelSwitch(userId, modelName, usedModel, "primary model unavailable");
-          }
-
           const stream = new ReadableStream({
             async start(controller) {
               try {
-                const reader = orResponse.body!.getReader();
+                const reader = groqResponse.body!.getReader();
                 const decoder = new TextDecoder();
                 let buffer = "";
                 let totalContent = "";
@@ -200,13 +211,6 @@ export const Route = createFileRoute("/api/chat")({
                           controller.enqueue(new TextEncoder().encode(content));
                           totalContent += content;
                         }
-                        if (parsed.usage) {
-                          trackTokenUsage(userId, modelName, {
-                            promptTokens: parsed.usage.prompt_tokens || 0,
-                            completionTokens: parsed.usage.completion_tokens || 0,
-                            totalTokens: parsed.usage.total_tokens || 0,
-                          }).catch(() => {});
-                        }
                       } catch {
                         // skip malformed chunks
                       }
@@ -214,28 +218,30 @@ export const Route = createFileRoute("/api/chat")({
                   }
                 }
 
-                if (totalContent && !orResponse!.headers.get("x-openrouter-processing")) {
-                  const estimatedPromptTokens = Math.ceil(
-                    messages.reduce((acc, m) => acc + m.content.length / 4, 0),
-                  );
-                  const estimatedCompletionTokens = Math.ceil(totalContent.length / 4);
-                  trackTokenUsage(userId, modelName, {
-                    promptTokens: estimatedPromptTokens,
-                    completionTokens: estimatedCompletionTokens,
-                    totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
-                  }).catch(() => {});
+                const estimatedPromptTokens = Math.ceil(
+                  messages.reduce((acc, m) => {
+                    const content = typeof m.content === "string" ? m.content : JSON.stringify(m.content);
+                    return acc + content.length / 4;
+                  }, 0),
+                );
+                const estimatedCompletionTokens = Math.ceil(totalContent.length / 4);
+                trackTokenUsage(userId, selectedModel, {
+                  promptTokens: estimatedPromptTokens,
+                  completionTokens: estimatedCompletionTokens,
+                  totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
+                }).catch(() => {});
+
+                if (totalContent && !body.imageBase64) {
+                  setCachedResponse(messages, totalContent, cacheKey).catch(() => {});
                 }
               } catch (err) {
-                console.error("Stream error:", err);
+                console.error("Groq stream error:", err);
                 controller.enqueue(
                   new TextEncoder().encode(
                     `[AI response interrupted: ${err instanceof Error ? err.message : String(err)}]`,
                   ),
                 );
               } finally {
-                if (totalContent) {
-                  setCachedResponse(messages, totalContent, usedModel).catch(() => {});
-                }
                 controller.close();
               }
             },
@@ -243,12 +249,12 @@ export const Route = createFileRoute("/api/chat")({
 
           trackAiUsage(
             userId,
-            usedModel,
-            modelName,
+            selectedModel,
+            selectedModel,
             Date.now() - startTime,
             { prompt: 0, completion: 0, total: 0 },
             true,
-            usedModel !== modelName,
+            false,
           );
           return new Response(stream, {
             headers: { "Content-Type": "text/plain", "X-Cache": "MISS" },

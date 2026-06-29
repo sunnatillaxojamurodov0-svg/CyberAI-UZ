@@ -54,10 +54,21 @@ export function CommunitySection() {
                   className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary"
                 >
                   Apply for early access
-                  <ArrowUpRight
-                    size={16}
-                    className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
+                  <svg
+                    className="size-[0.9em] -translate-x-1 rotate-45 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                    fill="none"
+                    viewBox="0 0 10 10"
+                    xmlns="http://www.w3.org/2000/svg"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
+                      stroke="currentColor"
+                      strokeWidth="1.25"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
                 </a>
               </div>
 
@@ -74,7 +85,7 @@ export function CommunitySection() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-4 rounded-xl border border-border bg-black/40 p-5">
+                <div className="mt-4 rounded-xl border border-border bg-surface-2/80 p-5">
                   <div className="mb-3 font-mono text-[10px] uppercase tracking-[0.2em] text-primary">
                     // Operator Log
                   </div>

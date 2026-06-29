@@ -13,6 +13,10 @@ import {
   XCircle,
 } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { TextureCardStyled, TextureCardContent, TextureSeparator } from "@/components/ui/texture-card";
+import { TextureButton } from "@/components/ui/texture-button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth-context";
 import { cn } from "@/lib/utils";
 
@@ -26,79 +30,40 @@ const formVariants = {
 
 const transition = { duration: 0.35, ease: [0.16, 1, 0.3, 1] as const };
 
-/* ── Input field ────────────────────────────────────────── */
-
-function Field({
-  icon: Icon,
-  label,
-  type = "text",
-  value,
-  onChange,
-  placeholder,
-  autoFocus,
-}: {
-  icon: typeof Mail;
-  label: string;
-  type?: string;
-  value: string;
-  onChange: (v: string) => void;
-  placeholder?: string;
-  autoFocus?: boolean;
-}) {
-  return (
-    <div className="space-y-1.5">
-      <label className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
-        {label}
-      </label>
-      <div className="relative">
-        <Icon
-          size={14}
-          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40"
-        />
-        <input
-          type={type}
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder={placeholder}
-          autoFocus={autoFocus}
-          className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground/30 transition-all focus:border-accent/40 focus:shadow-[0_0_25px_-8px] focus:shadow-accent/20 font-mono"
-        />
-      </div>
-    </div>
-  );
-}
-
 /* ── OAuth buttons ──────────────────────────────────────── */
 
 function GoogleButton() {
   const { signInWithGoogle } = useAuth();
 
   return (
-    <button
-      type="button"
-      onClick={signInWithGoogle}
-      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface py-3 text-sm font-semibold text-foreground transition-all hover:border-accent/30 hover:bg-surface-2 hover:shadow-[0_0_25px_-8px] hover:shadow-accent/20"
-    >
-      <svg viewBox="0 0 24 24" width="17" height="17" aria-hidden>
+    <TextureButton variant="icon" onClick={signInWithGoogle}>
+      <svg
+        width="256"
+        height="262"
+        viewBox="0 0 256 262"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid"
+        className="h-5 w-5"
+      >
         <path
+          d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
           fill="#4285F4"
-          d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
         />
         <path
+          d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
           fill="#34A853"
-          d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
         />
         <path
+          d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
           fill="#FBBC05"
-          d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
         />
         <path
-          fill="#EA4335"
-          d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+          d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
+          fill="#EB4335"
         />
       </svg>
-      Continue with Google
-    </button>
+      <span className="pl-2">Google</span>
+    </TextureButton>
   );
 }
 
@@ -106,16 +71,23 @@ function GithubButton() {
   const { signInWithGithub } = useAuth();
 
   return (
-    <button
-      type="button"
-      onClick={signInWithGithub}
-      className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-border bg-surface py-3 text-sm font-semibold text-foreground transition-all hover:border-accent/30 hover:bg-surface-2 hover:shadow-[0_0_25px_-8px] hover:shadow-accent/20"
-    >
-      <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden>
-        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+    <TextureButton variant="icon" onClick={signInWithGithub}>
+      <svg
+        viewBox="0 0 256 250"
+        width="256"
+        height="250"
+        fill="currentColor"
+        xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="xMidYMid"
+        className="h-5 w-5"
+      >
+        <path
+          d="M128.001 0C57.317 0 0 57.307 0 128.001c0 56.554 36.676 104.535 87.535 121.46 6.397 1.185 8.746-2.777 8.746-6.158 0-3.052-.12-13.135-.174-23.83-35.61 7.742-43.124-15.103-43.124-15.103-5.823-14.795-14.213-18.73-14.213-18.73-11.613-7.944.876-7.78.876-7.78 12.853.902 19.621 13.19 19.621 13.19 11.417 19.568 29.945 13.911 37.249 10.64 1.149-8.272 4.466-13.92 8.127-17.116-28.431-3.236-58.318-14.212-58.318-63.258 0-13.975 5-25.394 13.188-34.358-1.329-3.224-5.71-16.242 1.24-33.874 0 0 10.749-3.44 35.21 13.121 10.21-2.836 21.16-4.258 32.038-4.307 10.878.049 21.837 1.47 32.066 4.307 24.431-16.56 35.165-13.12 35.165-13.12 6.967 17.63 2.584 30.65 1.255 33.873 8.207 8.964 13.173 20.383 13.173 34.358 0 49.163-29.944 59.988-58.447 63.157 4.591 3.972 8.682 11.762 8.682 23.704 0 17.126-.148 30.91-.148 35.126 0 3.407 2.304 7.398 8.792 6.14C219.37 232.5 256 184.537 256 128.002 256 57.307 198.691 0 128.001 0Zm-80.06 182.34c-.282.636-1.283.827-2.194.39-.929-.417-1.45-1.284-1.15-1.922.276-.655 1.279-.838 2.205-.399.93.418 1.46 1.293 1.139 1.931Zm6.296 5.618c-.61.566-1.804.303-2.614-.591-.837-.892-.994-2.086-.375-2.66.63-.566 1.787-.301 2.626.591.838.903 1 2.088.363 2.66Zm4.32 7.188c-.785.545-2.067.034-2.86-1.104-.784-1.138-.784-2.503.017-3.05.795-.547 2.058-.055 2.861 1.075.782 1.157.782 2.522-.019 3.08Zm7.304 8.325c-.701.774-2.196.566-3.29-.49-1.119-1.032-1.43-2.496-.726-3.27.71-.776 2.213-.558 3.315.49 1.11 1.03 1.45 2.505.701 3.27Zm9.442 2.81c-.31 1.003-1.75 1.459-3.199 1.033-1.448-.439-2.395-1.613-2.103-2.626.301-1.01 1.747-1.484 3.207-1.028 1.446.436 2.396 1.602 2.095 2.622Zm10.744 1.193c.036 1.055-1.193 1.93-2.715 1.95-1.53.034-2.769-.82-2.786-1.86 0-1.065 1.202-1.932 2.733-1.958 1.522-.03 2.768.818 2.768 1.868Zm10.555-.405c.182 1.03-.875 2.088-2.387 2.37-1.485.271-2.861-.365-3.05-1.386-.184-1.056.893-2.114 2.376-2.387 1.514-.263 2.868.356 3.061 1.403Z"
+          fill="#545454"
+        />
       </svg>
-      Continue with GitHub
-    </button>
+      <span className="pl-2">Github</span>
+    </TextureButton>
   );
 }
 
@@ -231,43 +203,59 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       exit="exit"
       transition={transition}
       onSubmit={handleSubmit}
-      className="space-y-5"
+      className="space-y-4"
     >
-      <GoogleButton />
-      <GithubButton />
+      <div className="flex justify-center gap-2">
+        <GoogleButton />
+        <GithubButton />
+      </div>
       <OrDivider />
-      <Field
-        icon={Mail}
-        label="Email"
-        type="email"
-        value={email}
-        onChange={setEmail}
-        placeholder="operator@cyberai.dev"
-        autoFocus
-      />
-      <Field
-        icon={Lock}
-        label="Password"
-        type="password"
-        value={password}
-        onChange={setPassword}
-        placeholder="••••••••"
-      />
+      <div className="space-y-2">
+        <Label htmlFor="login-email" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          Email
+        </Label>
+        <Input
+          id="login-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="operator@cyberai.dev"
+          autoFocus
+          className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="login-password" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          Password
+        </Label>
+        <Input
+          id="login-password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+          className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
+        />
+      </div>
 
       {requires2FA && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
+          className="space-y-2"
         >
-          <Field
-            icon={Lock}
-            label="2FA Code"
+          <Label htmlFor="login-2fa" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+            2FA Code
+          </Label>
+          <Input
+            id="login-2fa"
             type="text"
             value={totpToken}
-            onChange={setTotpToken}
+            onChange={(e) => setTotpToken(e.target.value)}
             placeholder="000000"
             autoFocus
+            className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
           />
         </motion.div>
       )}
@@ -292,14 +280,12 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
         </motion.p>
       )}
 
-      <button
-        type="submit"
-        disabled={submitting || !email || !password || (requires2FA && !totpToken)}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-semibold text-white shadow-[0_0_30px_-8px] shadow-accent/40 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
-        {submitting ? "Verifying..." : requires2FA ? "Verify 2FA" : "Sign In"}
-      </button>
+      <TextureButton variant="accent" className="w-full" type="submit" disabled={submitting || !email || !password || (requires2FA && !totpToken)}>
+        <div className="flex gap-1 items-center justify-center">
+          {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+          {submitting ? "Verifying..." : requires2FA ? "Verify 2FA" : "Sign In"}
+        </div>
+      </TextureButton>
 
       <p className="text-center font-mono text-[10px] text-muted-foreground">
         Don't have an account?{" "}
@@ -344,34 +330,51 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
       exit="exit"
       transition={transition}
       onSubmit={handleSubmit}
-      className="space-y-5"
+      className="space-y-4"
     >
-      <GoogleButton />
-      <GithubButton />
+      <div className="flex justify-center gap-2">
+        <GoogleButton />
+        <GithubButton />
+      </div>
       <OrDivider />
-      <Field
-        icon={User}
-        label="Username"
-        value={username}
-        onChange={setUsername}
-        placeholder="operator"
-      />
-      <Field
-        icon={Mail}
-        label="Email"
-        type="email"
-        value={email}
-        onChange={setEmail}
-        placeholder="operator@cyberai.dev"
-      />
-      <Field
-        icon={Lock}
-        label="Password"
-        type="password"
-        value={password}
-        onChange={setPassword}
-        placeholder="••••••••"
-      />
+      <div className="space-y-2">
+        <Label htmlFor="signup-username" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          Username
+        </Label>
+        <Input
+          id="signup-username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="operator"
+          className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="signup-email" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          Email
+        </Label>
+        <Input
+          id="signup-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="operator@cyberai.dev"
+          className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="signup-password" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          Password
+        </Label>
+        <Input
+          id="signup-password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+          className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
+        />
+      </div>
 
       <AnimatePresence>{password && <PasswordStrengthMeter password={password} />}</AnimatePresence>
 
@@ -385,14 +388,12 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
         </motion.p>
       )}
 
-      <button
-        type="submit"
-        disabled={submitting || !email || !password}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-semibold text-white shadow-[0_0_30px_-8px] shadow-accent/40 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
-        {submitting ? "Creating..." : "Create Account"}
-      </button>
+      <TextureButton variant="accent" className="w-full" type="submit" disabled={submitting || !email || !password}>
+        <div className="flex gap-1 items-center justify-center">
+          {submitting ? <Loader2 size={15} className="animate-spin" /> : <Sparkles size={15} />}
+          {submitting ? "Creating..." : "Create Account"}
+        </div>
+      </TextureButton>
 
       <p className="text-center font-mono text-[10px] text-muted-foreground">
         Already registered?{" "}
@@ -436,21 +437,26 @@ function ResetForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       exit="exit"
       transition={transition}
       onSubmit={handleSubmit}
-      className="space-y-5"
+      className="space-y-4"
     >
       <p className="text-sm leading-relaxed text-muted-foreground">
         Enter your email address and we'll send you a reset link.
       </p>
 
-      <Field
-        icon={Mail}
-        label="Email"
-        type="email"
-        value={email}
-        onChange={setEmail}
-        placeholder="operator@cyberai.dev"
-        autoFocus
-      />
+      <div className="space-y-2">
+        <Label htmlFor="reset-email" className="font-mono text-[10px] font-bold uppercase tracking-[0.15em] text-muted-foreground">
+          Email
+        </Label>
+        <Input
+          id="reset-email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="operator@cyberai.dev"
+          autoFocus
+          className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
+        />
+      </div>
 
       {authError && (
         <motion.p
@@ -462,14 +468,12 @@ function ResetForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
         </motion.p>
       )}
 
-      <button
-        type="submit"
-        disabled={submitting || !email}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3 text-sm font-semibold text-white shadow-[0_0_30px_-8px] shadow-accent/40 transition-all hover:brightness-110 disabled:opacity-40 disabled:cursor-not-allowed"
-      >
-        {submitting ? <Loader2 size={15} className="animate-spin" /> : <Mail size={15} />}
-        {submitting ? "Sending..." : "Send Reset Link"}
-      </button>
+      <TextureButton variant="accent" className="w-full" type="submit" disabled={submitting || !email}>
+        <div className="flex gap-1 items-center justify-center">
+          {submitting ? <Loader2 size={15} className="animate-spin" /> : <Mail size={15} />}
+          {submitting ? "Sending..." : "Send Reset Link"}
+        </div>
+      </TextureButton>
 
       <p className="text-center font-mono text-[10px] text-muted-foreground">
         Remember your password?{" "}
@@ -544,56 +548,70 @@ export function AuthModal() {
 
   return (
     <Dialog open={authModalOpen} onOpenChange={(v) => !v && handleClose()}>
-      <DialogContent
-        className={cn("max-w-sm border-border bg-background p-0 sm:rounded-2xl overflow-hidden")}
-      >
-        {/* Header */}
-        <div className="relative px-8 pt-8 pb-4">
-          <div
-            className="pointer-events-none absolute -inset-40 opacity-30"
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 0%, color-mix(in oklab, var(--accent) 18%, transparent) 0%, transparent 70%)",
-            }}
-          />
+      <DialogContent className="max-w-sm border-0 bg-transparent p-0 sm:rounded-2xl overflow-hidden shadow-none">
+        <TextureCardStyled>
+          <TextureCardContent className="p-0">
+            {/* Header */}
+            <div className="relative px-6 pt-6 pb-4">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground/50 transition-colors hover:text-foreground z-10"
+              >
+                <X size={16} />
+              </button>
 
-          <button
-            type="button"
-            onClick={handleClose}
-            className="absolute right-6 top-6 rounded-md p-1 text-muted-foreground/50 transition-colors hover:text-foreground"
-          >
-            <X size={16} />
-          </button>
+              <div className="flex flex-col items-center gap-2">
+                <div className="p-3 bg-surface-2 rounded-full">
+                  <Sparkles className="h-6 w-6 stroke-neutral-200" />
+                </div>
+                <h2 className="font-display text-lg font-bold tracking-tight text-foreground">
+                  {formTitles[mode]}
+                </h2>
+                <p className="text-center text-sm text-muted-foreground">
+                  {mode === "login" && "Welcome back! Sign in to continue."}
+                  {mode === "signup" && "Create your account to get started."}
+                  {mode === "reset" && "Enter your email to reset password."}
+                  {mode === "reset-sent" && "Check your inbox for the reset link."}
+                </p>
+              </div>
+            </div>
 
-          <div className="relative flex items-center gap-3">
-            <span className="relative grid size-8 place-items-center">
-              <span className="absolute inset-0 rotate-45 rounded-[5px] bg-accent" />
-              <span className="absolute inset-[5px] rotate-45 rounded-[3px] bg-background" />
-              <span className="absolute size-1.5 rounded-full bg-accent" />
-            </span>
-            <span className="font-display text-lg font-extrabold tracking-tight">
-              CYBER<span className="text-accent">AI</span>
-            </span>
-          </div>
+            <TextureSeparator />
 
-          <h2 className="relative mt-5 font-display text-xl font-bold tracking-tight text-foreground">
-            {formTitles[mode]}
-          </h2>
-        </div>
+            {/* Forms */}
+            <div className="px-6 py-4">
+              <div className="relative min-h-[260px]">
+                <AnimatePresence mode="wait">
+                  {mode === "login" && <LoginForm key="login" onModeChange={handleModeChange} />}
+                  {mode === "signup" && <SignupForm key="signup" onModeChange={handleModeChange} />}
+                  {mode === "reset" && <ResetForm key="reset" onModeChange={handleModeChange} />}
+                  {mode === "reset-sent" && (
+                    <ResetSent key="reset-sent" onModeChange={handleModeChange} />
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
 
-        {/* Forms */}
-        <div className="px-8 pb-8">
-          <div className="relative min-h-[280px]">
-            <AnimatePresence mode="wait">
-              {mode === "login" && <LoginForm key="login" onModeChange={handleModeChange} />}
-              {mode === "signup" && <SignupForm key="signup" onModeChange={handleModeChange} />}
-              {mode === "reset" && <ResetForm key="reset" onModeChange={handleModeChange} />}
-              {mode === "reset-sent" && (
-                <ResetSent key="reset-sent" onModeChange={handleModeChange} />
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+            <TextureSeparator />
+
+            {/* Footer */}
+            <div className="px-6 py-3 text-center">
+              <p className="text-xs text-muted-foreground">
+                {mode === "login" || mode === "reset" || mode === "reset-sent"
+                  ? "Don't have an account? "
+                  : "Already have an account? "}
+                <button
+                  type="button"
+                  onClick={() => onModeChange(mode === "signup" ? "login" : "signup")}
+                  className="text-primary font-semibold hover:underline"
+                >
+                  {mode === "signup" ? "Sign in" : "Sign up"}
+                </button>
+              </p>
+            </div>
+          </TextureCardContent>
+        </TextureCardStyled>
       </DialogContent>
     </Dialog>
   );

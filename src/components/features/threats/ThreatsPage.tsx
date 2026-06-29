@@ -270,10 +270,24 @@ export function ThreatsPage() {
                         href={`https://nvd.nist.gov/vuln/detail/${threat.cve}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 font-mono text-sm text-accent hover:underline"
+                        className="group inline-flex items-center gap-1.5 font-mono text-sm text-accent"
                       >
                         {threat.cve}
-                        <ExternalLink size={12} />
+                        <svg
+                          className="size-[0.7em] -translate-x-1 rotate-45 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                          fill="none"
+                          viewBox="0 0 10 10"
+                          xmlns="http://www.w3.org/2000/svg"
+                          aria-hidden="true"
+                        >
+                          <path
+                            d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
+                            stroke="currentColor"
+                            strokeWidth="1.25"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
                       </a>
                     </div>
                   )}
@@ -290,10 +304,24 @@ export function ThreatsPage() {
                             href={ref}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[10px] text-muted-foreground hover:border-accent/30 hover:text-accent"
+                            className="group inline-flex items-center gap-1 rounded-full border border-border bg-surface px-3 py-1 font-mono text-[10px] text-muted-foreground hover:border-accent/30 hover:text-accent"
                           >
-                            <ExternalLink size={10} />
                             Reference {i + 1}
+                            <svg
+                              className="size-[0.6em] -translate-x-0.5 rotate-45 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                              fill="none"
+                              viewBox="0 0 10 10"
+                              xmlns="http://www.w3.org/2000/svg"
+                              aria-hidden="true"
+                            >
+                              <path
+                                d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
+                                stroke="currentColor"
+                                strokeWidth="1.25"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
                           </a>
                         ))}
                       </div>

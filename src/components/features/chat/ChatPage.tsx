@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { MessageSquare, Eraser, AlertTriangle, PanelLeftClose, PanelLeft } from "lucide-react";
+import { MessageSquare, Eraser, AlertTriangle, ChevronDown, Bot, Zap } from "lucide-react";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ChatMessage } from "./ChatMessage";
 import { ChatInput } from "./ChatInput";
 import { useChatScroll } from "@/hooks/useChatScroll";
 import { streamChat } from "@/lib/ai";
-import { MODELS, getModel, type AIModel } from "@/lib/models";
+import { MODELS, type AIModel } from "@/lib/models";
 import type { Skill } from "@/lib/skills";
 import type { FileAttachment } from "./FilePreview";
 import { useAuth } from "@/lib/auth-context";
@@ -31,92 +31,6 @@ function uid() {
   return `msg_${Date.now()}_${++_id}`;
 }
 
-function ModelSidebar({
-  selectedModel,
-  onSelectModel,
-  isOpen,
-  onToggle,
-}: {
-  selectedModel: AIModel;
-  onSelectModel: (model: AIModel) => void;
-  isOpen: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div
-      className={`transition-all duration-300 ease-in-out ${
-        isOpen ? "w-72" : "w-0"
-      } overflow-hidden border-r border-border bg-surface/50 flex-shrink-0 h-full`}
-    >
-      <div className="w-72 h-full flex flex-col">
-        <div className="p-4 border-b border-border">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
-              AI Models
-            </h3>
-            <button
-              type="button"
-              onClick={onToggle}
-              className="p-1 rounded hover:bg-accent/10 text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <PanelLeftClose size={16} />
-            </button>
-          </div>
-          <p className="text-[10px] text-muted-foreground">
-            Tanlang — har biri o'z sohasida ixtisoslashgan
-          </p>
-        </div>
-
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
-          {MODELS.map((model) => {
-            const Icon = model.icon;
-            const isActive = selectedModel.id === model.id;
-            return (
-              <button
-                key={model.id}
-                type="button"
-                onClick={() => onSelectModel(model)}
-                className={`w-full text-left p-3 rounded-xl border transition-all duration-200 ${
-                  isActive
-                    ? "border-accent/50 bg-accent/10 shadow-lg shadow-accent/5"
-                    : "border-border bg-background hover:border-accent/30 hover:bg-accent/5"
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`p-2 rounded-lg ${
-                      isActive ? "bg-accent/20 text-accent" : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    <Icon size={18} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div
-                      className={`font-mono text-sm font-medium ${
-                        isActive ? "text-accent" : "text-foreground"
-                      }`}
-                    >
-                      {model.label}
-                    </div>
-                  </div>
-                </div>
-                {isActive && (
-                  <div className="mt-2 pt-2 border-t border-accent/20">
-                    <div className="flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-                      <span className="text-[10px] font-mono text-accent">ACTIVE</span>
-                    </div>
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export function ChatPage() {
   const { user, loading: authLoading } = useAuth();
   const { profile } = useProfile();
@@ -132,16 +46,29 @@ export function ChatPage() {
   const [streamingId, setStreamingId] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [apiKeyMissing, setApiKeyMissing] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const [selectedModel, setSelectedModel] = useState<AIModel>(() => {
-    const saved = localStorage.getItem("cyberai_selected_model");
-    if (saved) {
-      const model = getModel(saved);
-      if (model) return model;
-    }
+    try {
+      const saved = localStorage.getItem("cyberai_selected_model");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return MODELS.find((m) => m.id === parsed.id) || MODELS[0];
+      }
+    } catch {}
     return MODELS[0];
   });
+  const [showModelPicker, setShowModelPicker] = useState(false);
+  const modelPickerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modelPickerRef.current && !modelPickerRef.current.contains(e.target as Node)) {
+        setShowModelPicker(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     if (!user && !authLoading) {
@@ -161,10 +88,6 @@ export function ChatPage() {
   useEffect(() => {
     messagesRef.current = messages;
   }, [messages]);
-
-  useEffect(() => {
-    localStorage.setItem("cyberai_selected_model", selectedModel.id);
-  }, [selectedModel]);
 
   const { containerRef, bottomRef } = useChatScroll(messages.length);
 
@@ -218,7 +141,7 @@ export function ChatPage() {
         }
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
-        console.error(`[${selectedModel.modelName}]`, message);
+        console.error(`[VAEL Assistant]`, message);
 
         if (
           message.includes("API_KEY") ||
@@ -235,7 +158,7 @@ export function ChatPage() {
             m.id === aiId
               ? {
                   ...m,
-                  content: `[${selectedModel.modelName}] ${message}`,
+                  content: `[VAEL Assistant] ${message}`,
                 }
               : m,
           ),
@@ -272,26 +195,42 @@ export function ChatPage() {
 
   return (
     <div className="relative flex h-full max-w-7xl mx-auto">
-      <ModelSidebar
-        selectedModel={selectedModel}
-        onSelectModel={setSelectedModel}
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen(!sidebarOpen)}
-      />
-
       <div className="flex-1 flex flex-col min-w-0">
         <div className="mb-4 flex items-center justify-between px-6 pt-6">
-          <div className="flex items-center gap-3">
-            {!sidebarOpen && (
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(true)}
-                className="p-2 rounded-lg hover:bg-accent/10 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <PanelLeft size={18} />
-              </button>
+          <div className="flex items-center gap-3 relative" ref={modelPickerRef}>
+            <button
+              type="button"
+              onClick={() => setShowModelPicker(!showModelPicker)}
+              className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-mono text-muted-foreground hover:border-accent/30 hover:text-accent transition-colors"
+            >
+              {selectedModel.id === "groq-gpt" ? <Zap size={12} /> : <Bot size={12} />}
+              {selectedModel.shortLabel}
+              <ChevronDown size={10} />
+            </button>
+            {showModelPicker && (
+              <div className="absolute top-full left-0 mt-1 z-50 w-64 rounded-xl border border-border bg-surface shadow-xl">
+                {MODELS.map((model) => (
+                  <button
+                    key={model.id}
+                    type="button"
+                    onClick={() => {
+                      setSelectedModel(model);
+                      localStorage.setItem("cyberai_selected_model", JSON.stringify(model));
+                      setShowModelPicker(false);
+                    }}
+                    className={`flex items-center gap-3 w-full px-4 py-3 text-left transition-colors hover:bg-accent/10 ${
+                      selectedModel.id === model.id ? "bg-accent/10 text-accent" : "text-muted-foreground"
+                    }`}
+                  >
+                    {model.id === "groq-gpt" ? <Zap size={16} /> : <Bot size={16} />}
+                    <div>
+                      <div className="text-xs font-semibold">{model.shortLabel}</div>
+                      <div className="text-[10px] opacity-60">{model.description}</div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             )}
-            <StatusPill tone="accent">{selectedModel.label} · Active</StatusPill>
           </div>
           {hasMessages && (
             <button
@@ -310,7 +249,7 @@ export function ChatPage() {
             <AlertTriangle size={16} className="text-destructive shrink-0" />
             <div className="text-xs text-muted-foreground">
               <span className="font-semibold text-foreground">AI service is not configured.</span>{" "}
-              The server OPENROUTER_API_KEY is missing. Contact the administrator.
+              Contact the administrator.
             </div>
           </div>
         )}

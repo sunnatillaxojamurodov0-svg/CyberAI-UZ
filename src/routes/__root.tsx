@@ -15,7 +15,7 @@ import { AuthModal } from "@/components/features/auth/AuthModal";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#0a0e17] px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-xl w-full">
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-8 font-mono shadow-[0_0_60px_-20px] shadow-destructive/20">
           <div className="mb-6 flex items-center gap-2 text-destructive">
@@ -130,13 +130,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         property: "og:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0",
+        content: "/logo.png",
       },
       {
         name: "twitter:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/708cf964-2a2c-4a0a-b091-e4c6ca7db4a0",
+        content: "/logo.png",
       },
     ],
     links: [
