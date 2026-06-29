@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Flag, CheckCircle2, XCircle, Trophy, Award } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { playSuccessSound, playErrorSound } from "@/lib/console/sounds";
 import type { CTFChallenge, ScoreBreakdown } from "@/lib/console/types";
 
 interface FlagSubmitProps {
@@ -13,25 +14,32 @@ interface FlagSubmitProps {
 
 export function FlagSubmit({ challenge, onSubmit }: FlagSubmitProps) {
   const [value, setValue] = useState("");
-  const [status, setStatus] = useState<"idle" | "correct" | "wrong">("idle");
+  const [status, setStatus] = useState<"idle" | "correct" | "wrong" | "loading">("idle");
   const [score, setScore] = useState<ScoreBreakdown | null>(null);
   const [points, setPoints] = useState(0);
 
   const handle = async () => {
-    if (!value.trim()) return;
-    const res = await onSubmit(value.trim());
-    if (res.correct) {
-      setStatus("correct");
-      setScore(res.score ?? null);
-      setPoints(res.points ?? 0);
-    } else {
-      setStatus("wrong");
-      setTimeout(() => setStatus("idle"), 1600);
+    if (!value.trim() || status === "loading") return;
+    setStatus("loading");
+    try {
+      const res = await onSubmit(value.trim());
+      if (res.correct) {
+        setStatus("correct");
+        setScore(res.score ?? null);
+        setPoints(res.points ?? 0);
+        playSuccessSound();
+      } else {
+        setStatus("wrong");
+        playErrorSound();
+        setTimeout(() => setStatus("idle"), 1600);
+      }
+    } catch {
+      setStatus("idle");
     }
   };
 
   return (
-    <div className="rounded-xl border border-border bg-surface/50 p-4">
+    <div className="rounded-xl border border-border bg-surface/50 p-3 md:p-4">
       <div className="mb-3 flex items-center gap-2">
         <Flag size={14} className="text-accent" />
         <span className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
@@ -50,7 +58,7 @@ export function FlagSubmit({ challenge, onSubmit }: FlagSubmitProps) {
           placeholder="CYBERAI{...}"
           disabled={status === "correct"}
           className={cn(
-            "flex-1 rounded-lg border bg-background/60 px-3 py-2.5 font-mono text-sm text-foreground outline-none transition-colors",
+            "flex-1 rounded-lg border bg-background/60 px-3 py-3 font-mono text-sm text-foreground outline-none transition-colors md:py-2.5",
             status === "wrong"
               ? "border-red-500/50 animate-[shake_0.4s]"
               : status === "correct"
@@ -61,15 +69,26 @@ export function FlagSubmit({ challenge, onSubmit }: FlagSubmitProps) {
         <button
           type="button"
           onClick={handle}
-          disabled={status === "correct" || !value.trim()}
+          disabled={status === "correct" || status === "loading" || !value.trim()}
           className={cn(
-            "shrink-0 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all",
+            "shrink-0 rounded-lg px-4 py-3 text-sm font-semibold transition-all md:py-2.5",
             status === "correct"
               ? "bg-emerald-500/20 text-emerald-400"
-              : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
+              : status === "loading"
+                ? "bg-accent/50 text-white/70 cursor-not-allowed"
+                : "bg-accent text-white shadow-[0_0_18px_-6px] shadow-accent/50 hover:brightness-110 disabled:opacity-40 disabled:shadow-none",
           )}
         >
-          {status === "correct" ? <CheckCircle2 size={16} /> : "Verify"}
+          {status === "loading" ? (
+            <span className="flex items-center gap-2">
+              <span className="size-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              Verifying
+            </span>
+          ) : status === "correct" ? (
+            <CheckCircle2 size={16} />
+          ) : (
+            "Verify"
+          )}
         </button>
       </div>
 

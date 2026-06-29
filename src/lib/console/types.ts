@@ -98,6 +98,8 @@ export interface CTFChallenge {
   summary: string;
   /** Full narrative briefing. */
   scenario: string;
+  /** Step-by-step solution walkthrough (shown after solve). */
+  solution?: string[];
   objectives: string[];
   hints: string[];
   /** Primary target IP (entry point). */

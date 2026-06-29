@@ -1,7 +1,8 @@
+import { useCallback } from "react";
 import { useAuth } from "@/lib/auth-context";
 
 export function useProfile() {
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuth();
 
   const profile = user
     ? {
@@ -15,13 +16,15 @@ export function useProfile() {
       }
     : null;
 
+  const refetch = useCallback(async () => {
+    await refreshUser();
+  }, [refreshUser]);
+
   return {
     profile,
     loading,
     saving: false,
     error: null as string | null,
-    refresh: async () => {},
-    save: async () => null as string | null,
-    changeAvatar: async () => null as string | null,
+    refetch,
   };
 }

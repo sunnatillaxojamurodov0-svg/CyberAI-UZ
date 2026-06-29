@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -9,10 +9,21 @@ import {
   Skull,
   ShieldAlert,
   Star,
+  Search,
+  X,
+  Globe,
+  Bookmark,
+  BookmarkCheck,
 } from "lucide-react";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { StatusPill } from "@/components/shared/StatusPill";
-import { getChallengesByLevel, LEVEL_META, isEliteUnlocked } from "@/lib/console/challenges";
+import {
+  getChallengesByLevel,
+  getChallenges,
+  LEVEL_META,
+  isEliteUnlocked,
+} from "@/lib/console/challenges";
+import { useTranslation } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import type { CTFChallenge, CTFLevel } from "@/lib/console/types";
 
@@ -22,7 +33,7 @@ interface ChallengeGridProps {
   bestScore: (id: string) => number | undefined;
   totalPoints: number;
   solvedCount: number;
-  base30Solved: number;
+  base60Solved: number;
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -39,6 +50,25 @@ const CATEGORY_COLORS: Record<string, string> = {
 };
 
 const LEVELS: CTFLevel[] = [1, 2, 3, 4];
+const BOOKMARKS_KEY = "cyberai_console_bookmarks";
+
+function loadBookmarks(): Set<string> {
+  if (typeof window === "undefined") return new Set();
+  try {
+    const raw = localStorage.getItem(BOOKMARKS_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveBookmarks(bookmarks: Set<string>) {
+  try {
+    localStorage.setItem(BOOKMARKS_KEY, JSON.stringify([...bookmarks]));
+  } catch {
+    // ignore
+  }
+}
 
 export function ChallengeGrid({
   onSelect,
@@ -46,33 +76,208 @@ export function ChallengeGrid({
   bestScore,
   totalPoints,
   solvedCount,
-  base30Solved,
+  base60Solved,
 }: ChallengeGridProps) {
-  const [activeLevel, setActiveLevel] = useState<CTFLevel>(1);
-  const eliteUnlocked = isEliteUnlocked(base30Solved);
-  const challenges = getChallengesByLevel(activeLevel);
+  const [activeLevel, setActiveLevel] = useState<CTFLevel | "all">("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [showBookmarksOnly, setShowBookmarksOnly] = useState(false);
+  const [bookmarks, setBookmarks] = useState<Set<string>>(() => loadBookmarks());
+  const { t } = useTranslation();
+  const eliteUnlocked = isEliteUnlocked(base60Solved);
+
+  // Save bookmarks to localStorage
+  useEffect(() => {
+    saveBookmarks(bookmarks);
+  }, [bookmarks]);
+
+  const toggleBookmark = useCallback((e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
+    setBookmarks((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  // Get all challenges or challenges by level
+  const allChallenges = useMemo(() => {
+    if (activeLevel === "all") return getChallenges();
+    return getChallengesByLevel(activeLevel);
+  }, [activeLevel]);
+
+  // Get unique categories from visible challenges
+  const categories = useMemo(() => {
+    const cats = new Set(allChallenges.map((c) => c.category));
+    return Array.from(cats).sort();
+  }, [allChallenges]);
+
+  // Filter challenges based on search, category, and bookmarks
+  const filteredChallenges = useMemo(() => {
+    return allChallenges.filter((c) => {
+      const matchesSearch =
+        !searchQuery ||
+        c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.summary.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        c.id.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = !activeCategory || c.category === activeCategory;
+      const matchesBookmark = !showBookmarksOnly || bookmarks.has(c.id);
+      return matchesSearch && matchesCategory && matchesBookmark;
+    });
+  }, [allChallenges, searchQuery, activeCategory, showBookmarksOnly, bookmarks]);
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       {/* Stats */}
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard label="Solved" value={`${solvedCount}/70`} icon={CheckCircle2} />
-        <StatCard label="Total points" value={totalPoints.toLocaleString()} icon={Trophy} />
         <StatCard
-          label="Progress"
-          value={`${Math.round((base30Solved / 60) * 100)}%`}
+          label={t("console.challenges_solved")}
+          value={`${solvedCount}/70`}
+          icon={CheckCircle2}
+        />
+        <StatCard
+          label={t("console.total_points")}
+          value={totalPoints.toLocaleString()}
+          icon={Trophy}
+        />
+        <StatCard
+          label={t("console.progress_title")}
+          value={`${Math.round((base60Solved / 60) * 100)}%`}
           icon={TermIcon}
         />
         <StatCard
           label="Master"
-          value={eliteUnlocked ? "UNLOCKED" : `${base30Solved}/60`}
+          value={eliteUnlocked ? "UNLOCKED" : `${base60Solved}/60`}
           icon={eliteUnlocked ? Star : Lock}
           highlight={eliteUnlocked}
         />
       </div>
 
+      {/* Search and Filter */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        {/* Search */}
+        <div className="relative flex-1">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50"
+          />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={`${t("common.search")} challenges...`}
+            className="w-full rounded-lg border border-border bg-surface/40 py-2.5 pl-9 pr-8 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-accent/40 focus:outline-none"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/50 hover:text-foreground"
+            >
+              <X size={14} />
+            </button>
+          )}
+        </div>
+
+        {/* Bookmarks filter */}
+        <button
+          type="button"
+          onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
+          className={cn(
+            "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-medium transition-all",
+            showBookmarksOnly
+              ? "border-amber-500/40 bg-amber-500/10 text-amber-400"
+              : "border-border bg-surface/40 text-muted-foreground hover:border-accent/20",
+          )}
+        >
+          <Bookmark size={14} />
+          <span className="hidden sm:inline">Bookmarks</span>
+          {bookmarks.size > 0 && (
+            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-bold text-amber-400">
+              {bookmarks.size}
+            </span>
+          )}
+        </button>
+
+        {/* Category filter */}
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveCategory(null)}
+            className={cn(
+              "rounded-lg border px-3 py-2 text-xs font-medium transition-all",
+              !activeCategory
+                ? "border-accent/40 bg-accent/10 text-accent"
+                : "border-border bg-surface/40 text-muted-foreground hover:border-accent/20",
+            )}
+          >
+            {t("common.all")}
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+              className={cn(
+                "rounded-lg border px-3 py-2 text-xs font-medium transition-all",
+                activeCategory === cat
+                  ? "border-accent/40 bg-accent/10 text-accent"
+                  : "border-border bg-surface/40 text-muted-foreground hover:border-accent/20",
+              )}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Level tabs */}
       <div className="flex flex-wrap gap-2">
+        {/* All levels button */}
+        <button
+          type="button"
+          onClick={() => {
+            setActiveLevel("all");
+            setActiveCategory(null);
+            setSearchQuery("");
+          }}
+          className={cn(
+            "group flex items-center gap-3 rounded-xl border px-4 py-3 transition-all",
+            activeLevel === "all"
+              ? "border-accent/40 bg-accent/10"
+              : "border-border bg-surface/40 hover:border-accent/20",
+          )}
+        >
+          <span
+            className={cn(
+              "grid size-9 place-items-center rounded-lg font-display text-lg font-bold",
+              activeLevel === "all"
+                ? "bg-accent/20 text-accent"
+                : "bg-surface-2 text-muted-foreground",
+            )}
+          >
+            <Globe size={16} />
+          </span>
+          <div className="text-left">
+            <div
+              className={cn(
+                "text-sm font-semibold",
+                activeLevel === "all" ? "text-foreground" : "text-foreground/70",
+              )}
+            >
+              All Levels
+            </div>
+            <div className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              {getChallenges().length} challenges
+            </div>
+          </div>
+        </button>
+
         {LEVELS.map((lvl) => {
           const meta = LEVEL_META[lvl];
           const active = activeLevel === lvl;
@@ -85,7 +290,13 @@ export function ChallengeGrid({
             <button
               key={lvl}
               type="button"
-              onClick={() => !locked && setActiveLevel(lvl)}
+              onClick={() => {
+                if (!locked) {
+                  setActiveLevel(lvl);
+                  setActiveCategory(null);
+                  setSearchQuery("");
+                }
+              }}
               disabled={locked}
               className={cn(
                 "group flex items-center gap-3 rounded-xl border px-4 py-3 transition-all",
@@ -138,7 +349,9 @@ export function ChallengeGrid({
 
       {/* Level description */}
       <p className={cn("text-sm", activeLevel === 4 ? "text-red-400/80" : "text-muted-foreground")}>
-        {LEVEL_META[activeLevel].description}
+        {activeLevel === "all"
+          ? "Browse all 70 CTF challenges across every difficulty tier."
+          : LEVEL_META[activeLevel].description}
       </p>
 
       {/* Master Tier locked banner */}
@@ -160,12 +373,12 @@ export function ChallengeGrid({
               <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                 This level only unlocks for operators who have successfully completed all{" "}
                 <span className="font-semibold text-foreground">60 CTFs</span>. Currently{" "}
-                <span className="font-mono font-bold text-accent">{base30Solved}/60</span> solved.
+                <span className="font-mono font-bold text-accent">{base60Solved}/60</span> solved.
               </p>
               <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-2">
                 <motion.div
                   initial={{ width: 0 }}
-                  animate={{ width: `${(base30Solved / 60) * 100}%` }}
+                  animate={{ width: `${(base60Solved / 60) * 100}%` }}
                   transition={{ duration: 1, ease: "easeOut" }}
                   className="h-full rounded-full bg-gradient-to-r from-accent to-red-500"
                 />
@@ -182,7 +395,7 @@ export function ChallengeGrid({
           activeLevel === 4 ? "lg:grid-cols-1 xl:grid-cols-2" : "lg:grid-cols-3",
         )}
       >
-        {challenges.map((c, i) => {
+        {filteredChallenges.map((c, i) => {
           const solved = isSolved(c.id);
           const score = bestScore(c.id);
           const isElite = c.level === 4;
@@ -230,24 +443,38 @@ export function ChallengeGrid({
                   >
                     {c.category}
                   </span>
-                  {solved ? (
-                    <span className="flex items-center gap-1 text-emerald-400">
-                      <CheckCircle2 size={15} />
-                      {score !== undefined && (
-                        <span className="font-mono text-[10px] font-bold">{score}%</span>
-                      )}
-                    </span>
-                  ) : (
-                    <ChevronRight
-                      size={16}
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => toggleBookmark(e, c.id)}
                       className={cn(
-                        "transition-transform group-hover:translate-x-0.5",
-                        isElite
-                          ? "text-red-400/40 group-hover:text-red-400"
-                          : "text-muted-foreground/40 group-hover:text-accent",
+                        "rounded-md p-1 transition-colors",
+                        bookmarks.has(c.id)
+                          ? "text-amber-400 hover:text-amber-300"
+                          : "text-muted-foreground/40 hover:text-muted-foreground",
                       )}
-                    />
-                  )}
+                    >
+                      {bookmarks.has(c.id) ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}
+                    </button>
+                    {solved ? (
+                      <span className="flex items-center gap-1 text-emerald-400">
+                        <CheckCircle2 size={15} />
+                        {score !== undefined && (
+                          <span className="font-mono text-[10px] font-bold">{score}%</span>
+                        )}
+                      </span>
+                    ) : (
+                      <ChevronRight
+                        size={16}
+                        className={cn(
+                          "transition-transform group-hover:translate-x-0.5",
+                          isElite
+                            ? "text-red-400/40 group-hover:text-red-400"
+                            : "text-muted-foreground/40 group-hover:text-accent",
+                        )}
+                      />
+                    )}
+                  </div>
                 </div>
 
                 <h3
@@ -288,6 +515,24 @@ export function ChallengeGrid({
           );
         })}
       </div>
+
+      {/* Empty state */}
+      {filteredChallenges.length === 0 && (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <Search size={32} className="mb-3 text-muted-foreground/30" />
+          <p className="text-sm text-muted-foreground">No challenges match your search</p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearchQuery("");
+              setActiveCategory(null);
+            }}
+            className="mt-2 text-xs text-accent hover:underline"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
     </div>
   );
 }

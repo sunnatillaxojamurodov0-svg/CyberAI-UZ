@@ -69,6 +69,7 @@ export function CodeBlock({ language, code }: CodeBlockProps) {
         <button
           type="button"
           onClick={handleCopy}
+          aria-label={copied ? "Code copied" : "Copy code"}
           className="flex items-center gap-1.5 rounded-md px-2 py-1 text-[10px] font-medium text-muted-foreground opacity-0 transition-all duration-200 hover:bg-white/5 hover:text-foreground group-hover:opacity-100"
         >
           {copied ? (

@@ -1,22 +1,24 @@
 import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useTranslation } from "@/lib/i18n";
 
 type Theme = "light" | "dark" | "system";
 
 export function ThemeToggle({ className = "" }: { className?: string }) {
+  const { t } = useTranslation();
   const [theme, setTheme] = useState<Theme>("system");
   const [isDark, setIsDark] = useState(true);
 
-  const applyTheme = useCallback((t: Theme) => {
+  const applyTheme = useCallback((theme: Theme) => {
     const root = document.documentElement;
     root.classList.remove("light", "dark");
 
     let dark = true;
-    if (t === "system") {
+    if (theme === "system") {
       dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     } else {
-      dark = t === "dark";
+      dark = theme === "dark";
     }
     root.classList.add(dark ? "dark" : "light");
     setIsDark(dark);
@@ -48,8 +50,8 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         isDark ? "bg-surface text-foreground" : "bg-surface text-foreground",
         className,
       )}
-      title={isDark ? "Light mode" : "Dark mode"}
-      aria-label="Toggle theme"
+      title={isDark ? t("theme.light") : t("theme.dark")}
+      aria-label={t("theme.toggle")}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -68,7 +70,7 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
         </clipPath>
         <g clipPath="url(#theme-toggle-clip)">
           <motion.circle
-            r={isDark ? 10 : 8}
+            initial={{ r: 8 }}
             animate={{ r: isDark ? 10 : 8 }}
             transition={{ ease: "easeInOut", duration: 0.35 }}
             cx="16"

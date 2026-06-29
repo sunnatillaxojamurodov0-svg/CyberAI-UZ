@@ -2,12 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb, getEnv } from "@/lib/db";
 import { writeAnalytics } from "@/lib/analytics";
+import { requireAdmin } from "@/lib/auth/auth-admin";
 
 export const Route = createFileRoute("/api/dashboard/stats")({
   server: {
     handlers: {
-      GET: async () => {
+      GET: async ({ request }) => {
         try {
+          const auth = await requireAdmin(request);
+          if (!auth.ok) {
+            return new Response(JSON.stringify({ ok: false, error: auth.error }), {
+              status: auth.status ?? 403,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const startTime = Date.now();
           const db = requireDb();
           const env = getEnv();
@@ -31,12 +40,6 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             .prepare("SELECT COALESCE(SUM(count), 0) as total FROM ai_usage WHERE date LIKE ?")
             .bind(`${thisMonth}%`)
             .first<{ total: number }>();
-
-          const recentUsers = await db
-            .prepare(
-              "SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 5",
-            )
-            .all<{ id: string; email: string; name: string | null; created_at: number }>();
 
           const challengeCount = await db
             .prepare("SELECT COUNT(*) as count FROM challenges")
@@ -86,7 +89,6 @@ export const Route = createFileRoute("/api/dashboard/stats")({
                   total: challengeCount?.count ?? 0,
                   completed: completedChallenges?.count ?? 0,
                 },
-                recentUsers: recentUsers?.results ?? [],
                 workflows: workflowBindings,
               },
             }),
@@ -95,11 +97,11 @@ export const Route = createFileRoute("/api/dashboard/stats")({
               headers: { "Content-Type": "application/json" },
             },
           );
-        } catch (err) {
+        } catch {
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to load dashboard stats",
+              error: "Failed to load dashboard stats",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

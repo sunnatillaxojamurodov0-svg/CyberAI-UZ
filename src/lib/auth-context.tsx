@@ -5,6 +5,8 @@ export interface AuthUser {
   email: string;
   name: string | null;
   avatar_url: string | null;
+  bio?: string | null;
+  is_admin?: number;
 }
 
 interface AuthContextValue {
@@ -24,6 +26,7 @@ interface AuthContextValue {
   clearError: () => void;
   requires2FA: boolean;
   setRequires2FA: (v: boolean) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -48,6 +51,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((res) => res.json())
       .then((data: { ok: boolean; user: AuthUser | null }) => {
         if (data.ok && data.user) {
+          if (data.user.avatar_url && !data.user.avatar_url.startsWith("http")) {
+            data.user.avatar_url = `/api/user/avatar?user=${data.user.id}`;
+          }
           setUser(data.user);
         }
       })
@@ -158,6 +164,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const clearError = useCallback(() => setAuthError(null), []);
 
+  const refreshUser = useCallback(async () => {
+    try {
+      const res = await apiFetch("/api/auth/me");
+      const data = (await res.json()) as { ok: boolean; user: AuthUser | null };
+      if (data.ok && data.user) {
+        if (data.user.avatar_url && !data.user.avatar_url.startsWith("http")) {
+          data.user.avatar_url = `/api/user/avatar?user=${data.user.id}`;
+        }
+        setUser(data.user);
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -181,6 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearError,
         requires2FA,
         setRequires2FA,
+        refreshUser,
       }}
     >
       {children}

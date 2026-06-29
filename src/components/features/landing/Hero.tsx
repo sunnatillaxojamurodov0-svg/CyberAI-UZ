@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Component, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
@@ -6,14 +6,26 @@ import { StatusPill } from "@/components/shared/StatusPill";
 import { MagneticButton } from "@/components/shared/MagneticButton";
 import { AnimatedGrid } from "@/components/shared/AnimatedGrid";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/i18n";
 import { AboutMe } from "./AboutMe";
 import BlurText from "@/components/ui/BlurText";
 import Silk from "@/components/ui/Silk";
 import DotField from "@/components/ui/DotField";
 
+class WebGLErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  state = { hasError: false };
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  render() {
+    return this.state.hasError ? null : this.props.children;
+  }
+}
+
 export function Hero() {
   const navigate = useNavigate();
   const { user, openAuthModal } = useAuth();
+  const { t } = useTranslation();
 
   const launchCtfLab = () => {
     if (user) {
@@ -30,7 +42,9 @@ export function Hero() {
 
       {/* Silk - binafsharang ipak fon */}
       <div className="absolute inset-0 z-0 opacity-25">
-        <Silk speed={5} scale={1} color="#7B2FBE" noiseIntensity={1.5} rotation={0} />
+        <WebGLErrorBoundary>
+          <Silk speed={5} scale={1} color="#7B2FBE" noiseIntensity={1.5} rotation={0} />
+        </WebGLErrorBoundary>
       </div>
 
       {/* DotField - nuqtalar tarmog'i */}
@@ -51,13 +65,13 @@ export function Hero() {
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-border">
               <span className="size-2 rounded-full bg-primary animate-pulse" />
               <span className="font-mono text-[10px] uppercase tracking-wider text-primary">
-                v2.0 Beta Live
+                {t("hero.badge")}
               </span>
             </div>
 
             <h1 className="font-display text-[clamp(2.5rem,6vw,5rem)] font-extrabold leading-[1.1] tracking-[-0.04em] text-balance">
               <BlurText
-                text="Secure the Synthetic Era"
+                text={t("hero.title")}
                 animateBy="words"
                 direction="top"
                 delay={200}
@@ -67,32 +81,15 @@ export function Hero() {
             </h1>
 
             <p className="text-base md:text-xl text-muted-foreground max-w-xl">
-              Elite cybersecurity training powered by advanced AI. Experience real-world threats in
-              our secure cloud environments, guided by your personal AI mentor.
+              {t("hero.description")}
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
               <MagneticButton onClick={launchCtfLab}>
-                Start for Free
+                {t("hero.cta")}
                 <ArrowUpRight size={16} className="opacity-80" />
               </MagneticButton>
               <AboutMe />
-            </div>
-
-            <div className="flex items-center gap-4 mt-4">
-              <div className="flex -space-x-3">
-                {["P1", "P2", "P3"].map((p, i) => (
-                  <div
-                    key={p}
-                    className="size-10 rounded-full border-2 border-background bg-surface-2 flex items-center justify-center text-[10px] font-mono text-muted-foreground"
-                  >
-                    {p}
-                  </div>
-                ))}
-              </div>
-              <p className="font-mono text-[10px] text-muted-foreground">
-                Join 50,000+ elite researchers
-              </p>
             </div>
           </motion.div>
 
@@ -119,7 +116,12 @@ function TerminalVisual() {
     { text: "sudo su", prompt: "┌──(kali㉿cyberai)-[~]", delay: 1200 },
     { text: "[sudo] password for operator: ••••••••", color: "text-white/50", delay: 800 },
     { text: "", delay: 400 },
-    { text: "root@cyberai:~# nmap -sV -sC 192.168.1.0/24", prompt: "root@cyberai:~#", color: "text-white", delay: 1500 },
+    {
+      text: "root@cyberai:~# nmap -sV -sC 192.168.1.0/24",
+      prompt: "root@cyberai:~#",
+      color: "text-white",
+      delay: 1500,
+    },
     { text: "Starting Nmap 7.94 ( https://nmap.org )", color: "text-white/60", delay: 600 },
     { text: "Nmap scan report for 192.168.1.1", color: "text-white/80", delay: 400 },
     { text: "PORT     STATE SERVICE  VERSION", color: "text-white/60", delay: 300 },
@@ -128,11 +130,21 @@ function TerminalVisual() {
     { text: "443/tcp  open  https    nginx 1.24", color: "text-primary", delay: 300 },
     { text: "3306/tcp open  mysql    MySQL 8.0.35", color: "text-destructive", delay: 400 },
     { text: "", delay: 300 },
-    { text: "root@cyberai:~# whoami && id", prompt: "root@cyberai:~#", color: "text-white", delay: 1200 },
+    {
+      text: "root@cyberai:~# whoami && id",
+      prompt: "root@cyberai:~#",
+      color: "text-white",
+      delay: 1200,
+    },
     { text: "root", color: "text-primary", delay: 200 },
     { text: "uid=0(root) gid=0(root) groups=0(root)", color: "text-white/80", delay: 300 },
     { text: "", delay: 200 },
-    { text: "root@cyberai:~# msfconsole -q", prompt: "root@cyberai:~#", color: "text-white", delay: 1800 },
+    {
+      text: "root@cyberai:~# msfconsole -q",
+      prompt: "root@cyberai:~#",
+      color: "text-white",
+      delay: 1800,
+    },
     { text: "=[ metasploit v6.4.19-dev ]", color: "text-destructive", delay: 500 },
     { text: "+ -- --=[ 2414 exploits - 1242 auxiliary ]", color: "text-white/60", delay: 300 },
     { text: "+ -- --=[ 429 payloads - 47 encoders ]", color: "text-white/60", delay: 300 },
@@ -146,7 +158,11 @@ function TerminalVisual() {
     { text: "msf6 > exploit -j", color: "text-white", delay: 1200 },
     { text: "[*] Exploit running as background job 1.", color: "text-destructive", delay: 400 },
     { text: "[*] Started reverse TCP handler on 0.0.0.0:4444", color: "text-white/60", delay: 300 },
-    { text: "[*] Sending stage (3045380 bytes) to 192.168.1.50", color: "text-white/60", delay: 400 },
+    {
+      text: "[*] Sending stage (3045380 bytes) to 192.168.1.50",
+      color: "text-white/60",
+      delay: 400,
+    },
     { text: "[+] Meterpreter session 2 opened", color: "text-primary", delay: 500 },
   ];
 
@@ -190,9 +206,11 @@ function TerminalVisual() {
           </div>
           <div className="flex items-center gap-2 ml-2">
             <svg viewBox="0 0 24 24" className="size-4 text-primary" fill="currentColor">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
             </svg>
-            <span className="font-mono text-xs text-primary font-bold tracking-wider">kali㉿cyberai</span>
+            <span className="font-mono text-xs text-primary font-bold tracking-wider">
+              kali㉿cyberai
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -208,12 +226,8 @@ function TerminalVisual() {
 
           {lines.map((line, i) => (
             <div key={i} className="leading-relaxed">
-              {line.prompt && (
-                <span className="text-primary font-bold">{line.prompt} </span>
-              )}
-              <span className={line.color || "text-slate-300"}>
-                {line.text || "\u00A0"}
-              </span>
+              {line.prompt && <span className="text-primary font-bold">{line.prompt} </span>}
+              <span className={line.color || "text-slate-300"}>{line.text || "\u00A0"}</span>
             </div>
           ))}
           {lines.length > 0 && lines.length <= fullLines.length && (
@@ -228,8 +242,16 @@ function TerminalVisual() {
               className="mt-3 p-3 bg-surface rounded-lg border border-primary/30 flex items-start gap-3"
             >
               <span className="text-primary mt-0.5">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-pulse">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  className="animate-pulse"
+                >
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                 </svg>
               </span>
               <div>
@@ -237,7 +259,8 @@ function TerminalVisual() {
                   VAEL AI · Root Access Confirmed
                 </p>
                 <p className="text-[10px] mt-1 text-white/60">
-                  Meterpreter session established. Target: 192.168.1.50. Ready for post-exploitation.
+                  Meterpreter session established. Target: 192.168.1.50. Ready for
+                  post-exploitation.
                 </p>
               </div>
             </motion.div>

@@ -1,0 +1,446 @@
+⬡ CYBERAI UZ
+app.cyberaiuz.workers.dev
+XAVFSIZLIK VA MAHSULOT AUDITI HISOBOTI
+TASNIF: MAXFIY
+Audit sanasi: 2026-yil 29-iyun
+Hisobot versiyasi: 1.0
+Auditorlar: Katta xavfsizlik va mahsulot auditi guruhi
+Metodologiya: Qora quti / Tashqi kuzatuv
+⚠ Ushbu hisobotda xavfsizlikka oid maxfiy ma'lumotlar mavjud. Shunga muvofiq ish tuting.
+# Mundarija
+# 1. Qisqacha mazmuni
+## 1.1 Veb-saytga umumiy nuqtai nazar
+CyberAI UZ (app.cyberaiuz.workers.dev) - bu xavfsizlik mutaxassislari va tadqiqotchilariga qaratilgan kiberxavfsizlik bo'yicha dastlabki bosqichdagi trening va sun'iy intellekt platformasi. Platforma o'zini sun'iy intellekt yordamida tahdidlarni qidirish, nol bilimga ega bo'lmagan ma'lumotlar va jonli bulutli nishonlar bilan birlashtirilgan elit CTF (Capture The Flag) trening muhiti sifatida ko'rsatadi. U Cloudflare Workers (serversiz chekka infratuzilma) platformasida joylashtirilgan va React/TypeScript/Vite yordamida yaratilgan bitta sahifali ilova (SPA) bo'lib ko'rinadi.
+Platforma hozirda bosh sahifada o'zini o'zi e'lon qilganidek, "v2.0 Beta" holatida. Audit tashqi qora quti kuzatuvi orqali amalga oshirildi — hech qanday manba kodi, hisob ma'lumotlari yoki ichki kirish ta'minlanmagan. Qisqacha havola qilingan GitHub ombori 404 (maxfiy yoki o'chirilgan) natijasini berdi, shuning uchun kodni ko'rib chiqish faqat ko'rsatilgan natija va HTTP darajasidagi kuzatuvlar bilan cheklangan.
+## 1.2 Ballar paneli
+## 1.3 Muhim topilmalar xulosasi
+Ushbu audit davomida quyidagi muhim/yuqori darajadagi muammolar aniqlandi va har qanday ommaviy ishga tushirish yoki marketing faoliyatidan oldin darhol e'tibor talab qiladi:
+MUHIM: Barcha himoyalangan marshrutlarga (Boshqaruv paneli, Yetakchilar taxtasi, Maqsadlar, Konsol) autentifikatsiyasiz to'liq kirish mumkin — faqat mijoz tomonidan autentifikatsiya.
+MUHIM: Tahdid emulyatsiyasi so'nggi nuqtasi (/tahdidlar) autentifikatsiyasiz, tezlikni cheklamasdan yoki suiiste'mol qilish nazoratisiz AI API-ni chaqirayotganga o'xshaydi.
+MUHIM: Xavfsizlik HTTP sarlavhalari kuzatilmadi (CSP, X-Frame-Options, HSTS, X-Content-Type-Options, Permissions-Policy).
+YUQORI: Bo'rttirilgan/soxtalashtirilgan statistika ("50 000+ elita tadqiqotchilari", "1 operator", "7 mamlakat", "kuniga 200+ signal") ishonchlilikka jiddiy putur yetkazadi.
+YUQORI: Ikki tomonlama navigatsiya tizimi (ommaviy navigatsiya va tasdiqlangan navigatsiya) foydalanuvchi interfeysi va marshrutizatsiya o'rtasida jiddiy nomuvofiqlikni keltirib chiqaradi.
+YUQORI: Bir nechta sahifalar faqat yuklanish holatini ko'rsatadi, konsol, boshqaruv paneli, yetakchilar jadvali, nishonlar esa bo'sh qobiqlardir.
+YUQORI: workers.dev domeni (maxsus domen yo'q) dastlabki prototipni signallaydi; xavfsizlik hamjamiyati obro'si ma'lumotlar bazalaridagi fishing kampaniyalari bilan bog'liq.
+YUQORI: ZKP ni amalga oshirish oddiy xesh funksiyasi bo'lib ko'rinadi, haqiqiy nol bilimga ega tizim emas - potentsial aldamchi marketing da'vosi.
+O'RTA: Foydalanuvchi ma'lumotlari to'planishiga qaramay, Maxfiylik siyosati, Xizmat ko'rsatish shartlari yoki Cookie siyosati sahifalari mavjud emas.
+O'RTA: Bir nechta sahifalardagi OG tasviri Google Storage URL manziliga (storage.googleapis.com) ishora qiladi — tashqi bog'liqlik, potentsial 404 xavfi.
+# 2. UI/UX auditi
+## 2.1 Dizayn tizimi va vizual identifikatsiya
+Xulosa: Mustahkam poydevor, ikkinchi darajali sahifalarda ijro etish zaif.
+Bosh sahifa deyarli qora fon (#020408), kiber-yalpiz aksent rangi (#00E5CC nazarda tutilgan) va kinematografik tipografiya bilan izchil "Sovereign Terminal" estetikasini namoyish etadi. Brend o'ziga xos, esda qolarli va maqsadli auditoriyasi uchun professional tarzda joylashtirilgan. Dizayn lug'ati (terminal interfeysi, orbital til, qorong'u-sovereign ranglar palitrasi) kiberxavfsizlik platformasi uchun yaxshi tanlangan.
+## 2.2 Navigatsiya arxitekturasi muammosi — muhim UX xatosi
+Bu platformadagi eng jiddiy foydalanuvchi tajribasi muammosi. Ikkita tubdan farq qiluvchi navigatsiya tizimlari birga mavjud:
+Ommaviy navigatsiya (Bosh sahifa, Konsol, Chat) — 3 ta element, quyidagi joylarda ko'rsatilgan: /, /konsol, /leaderboard, /targets, /threats, /projects, /zkp
+Ilova navigatsiyasi (Platforma, Konsol, Chat, Loyihalar, Ko'rsatmalar, Haqida) — 6 ta element, quyidagi joylarda ko'rsatilgan: /boshqaruv paneli, /ko'rsatmalar, /about, /chat
+Bu tizimga kirish/chiqish tugmasi emas — ikkala navigatsiya ham autentifikatsiya holatidan qat'i nazar ko'rsatiladi. Marshrut /boshqaruv paneli ilova navigatsiyasini ko'rsatadi, lekin /leaderboard ikkalasi ham "autentifikatsiya qilingan" marshrutlar bo'lishiga qaramay, umumiy navigatsiyani ko'rsatadi. Ushbu ikkita navigatsiya tizimini bog'laydigan mantiqiy foydalanuvchi safari yo'q.
+Tuzatish: Yagona moslashuvchan navigatsiya tizimiga birlashtiring. Ikkita alohida qattiq kodlangan navigatsiya tuzilmasi emas, balki progressiv oshkor qilishdan foydalaning (kirishdan keyin to'liq navigatsiyani ko'rsatish).
+## 2.3 Kontentning haqiqiyligi inqirozi
+Bosh sahifa da'volari:
+"50 000 dan ortiq elita tadqiqotchilariga qo'shiling" — ammo Missiya bo'limida "1 operator, 7 mamlakat, 200 dan ortiq signal/kun" ko'rsatilgan.
+"2024: Bizning mulohaza yurituvchi agentimiz 12 000 ta so'nggi nuqtada jonli ransomware tarqalishini o'z ichiga olgan - 47 soniya" - yakka/dastlabki bosqichdagi loyihaga o'xshagan tasdiqlanmagan da'vo.
+"2025: Uchta qit'a va bitta Yer orbitasidagi yulduz turkumi bo'ylab joylashtirildi" — g'ayrioddiy da'vo, hech qanday dalil yo'q
+"2026: KiberAI yuqori darajadagi infratuzilma uchun standart kognitiv qatlamga aylanadi" — kelajakdagi da'vo amalga oshirilgan fakt sifatida taqdim etildi
+Bu qarama-qarshiliklar soxta ko'rsatkichlarni aniqlashga o'rgatilgan aniq auditoriya (xavfsizlik mutaxassislari) bilan ishonchni yo'q qiladi. Tuzatish: Halol, tekshirilishi mumkin bo'lgan raqamlar bilan almashtiring. "1 Operator" aslida dastlabki bosqichdagi mahsulot uchun halol va o'xshashdir.
+# 3. Frontend kodini ko'rib chiqish
+## 3.1 Texnologiyalar to'plami
+Aktivlarni nomlash konventsiyalari va sahifa metama'lumotlaridan kelib chiqadi:
+Yaratish vositasi: Vite (brand-logo-BgXj89Up.png, neural-topology-BTDDI2HL.jpg kabi xeshlangan aktiv fayl nomlaridan ko'rinib turibdi)
+Framework: React (SPA marshrutizatsiya xatti-harakati va Cloudflare Workers joylashtirish naqshidan kelib chiqadi)
+Joylashtirish: Cloudflare Workers (serversiz chekka, ehtimol, Workers Site yoki Cloudflare Pages dan foydalaniladi)
+Til: TypeScript (About/Loyihalar sahifalaridagi loyiha stekida keltirilgan)
+## 3.2 Aktivlar strategiyasi bilan bog'liq muammolar
+## 3.3 HTML va semantik sifat
+Kuzatiladigan meta teglar va sahifa tuzilishiga asoslanib:
+✅ Barcha kuzatilgan sahifalarda kanonik teglar mavjud
+✅ Har bir sahifada mavjud bo'lgan va tegishli meta tavsiflar
+✅ OG va Twitter karta meta teglari joriy etildi
+✅ Mavzu rangi meta teglar to'plami (#020408)
+❌ Hech bir sahifada strukturaviy ma'lumotlar (JSON-LD) aniqlanmadi
+❌ Manbaga kirish imkonisiz semantik HTMLni tekshirib bo'lmaydi, lekin SPA freymvorklari ko'pincha semantik bo'lmagan div sho'rvasini ishlab chiqaradi.
+❌ Tekshirish uchun sitemap.xml fayliga kirish imkoni yo'q
+⚠ robots.txt holati: tashqi kuzatuv orqali tasdiqlab bo'lmadi
+# 4. Orqa tomon va arxitektura sharhi
+Ushbu bo'lim butunlay tashqi HTTP darajasidagi kuzatuvga asoslangan. Ichki kirish imkoni yo'q edi.
+## 4.1 Infratuzilmaga umumiy nuqtai nazar
+Platforma: Cloudflare Workers (serversiz chekka hisoblash, global miqyosda tarqatilgan)
+Domen: workers.dev subdomen (maxsus domen emas - sezilarli ishonch va SEO xavfi)
+Protokol: HTTPS majburiy (Cloudflare orqali TLS, .dev TLD HSTS oldindan yuklangan)
+CDN: Cloudflare global chekka tarmog'i (ishchilarni joylashtirishning ajralmas afzalligi)
+## 4.2 Autentifikatsiya va avtorizatsiya
+Bu kashf etilgan eng muhim me'moriy muammo:
+Barcha "himoyalangan" marshrutlar (/dashboard, /leaderboard, /targets, /console) to'liq mijoz tomonida ko'rsatiladi. Tashqi kuzatuvdan to'g'ridan-to'g'ri /dashboard ga o'tish sahifani kirish oqimiga yo'naltirmasdan yuklaydi.
+"Kirish" tugmasi navigatsiyada ko'rinadi, ammo haqiqiy autentifikatsiya oqimi kuzatilmadi. Boshqaruv paneli sahifasida noma'lum vaqt davomida "Yuklanmoqda..." yozuvi ko'rsatiladi, bu autentifikatsiya tekshiruvi navigatsiyadan oldin emas, balki dastlabki renderdan keyin amalga oshirilishini anglatadi.
+Agar haqiqiy ma'lumotlar API so'nggi nuqtalari server tomonidan ham himoyalanmagan bo'lsa, bu naqsh (mijoz tomonidagi marshrutni himoya qilish) o'z-o'zidan xavfli hisoblanadi.
+Javoblarda Set-Cookie sarlavhalari kuzatilmadi, bu sessiyani boshqarish amalga oshirilmagan bo'lishi yoki butunlay mijoz tomonidagi saqlashga (localStorage/IndexedDB) bog'liq bo'lishi mumkinligini ko'rsatadi.
+## 4.3 API xatti-harakati
+## 4.4 HTTP sarlavhalarini tahlil qilish
+web_fetch javoblaridan kuzatilgan sarlavhalar:
+kontent turi: matn/html; charset=utf-8 ✅
+HTTPS .dev TLD tomonidan majburiy HSTS oldindan yuklangan ✅
+x-deny-reason: host_not_allowed — Eslatma: Bu standart brauzerdan emas, balki sinov muhitidan curl qilishga urinayotganda paydo bo'ldi. Foydalanuvchi bilan bog'liq muammo emas.
+MISSING xavfsizlik sarlavhalari (hech qanday javobda kuzatilmadi):
+❌ Kontent-Xavfsizlik-Siyosati (CSP) — o'rnatilmagan
+❌ X-Frame-Options — sozlanmagan (bosish xavfi)
+❌ X-Content-Type-Options: nosniff — o'rnatilmagan
+❌ Yo'naltiruvchi siyosati — o'rnatilmagan
+❌ Ruxsatnomalar siyosati — o'rnatilmagan
+❌ X-XSS-himoyasi (eskirgan, lekin hali ham kutilmoqda) — o'rnatilmagan
+❌ Maxfiy sahifalar uchun Cache-Control sarlavhalari — tasdiqlanmagan
+# 5. Xavfsizlik auditi — OWASP Top 10 (2021)
+# 6. Ishlash auditi
+Ishlash testi javob tahlili va aktiv URL manzilini tekshirish orqali o'tkazildi. Lighthouse yoki WebPageTest ma'lumotlari mavjud emas edi (bu kontekstda brauzer asosidagi testni o'tkazish mumkin emas).
+## 6.1 Arxitektura samaradorligi profili
+## 6.2 Ishlash bo'yicha tavsiyalar
+Marshrutga asoslangan kodni ajratishni amalga oshiring: Har bir marshrut (/boshqaruv paneli, /konsol, /chat) alohida dinamik import qismi bo'lishi kerak.
+LCP metrikasini yaxshilash uchun LCP tasviri (qahramon fon) uchun <link rel="preload"> qo'shing.
+Avtomatik WebP konversiyasi va sekin yuklash uchun Cloudflare Polish va Mirage funksiyalarini yoqing.
+Spinnerlarni yuklash o'rniga skelet ekranlarini qo'llang - bu tezroq seziladigan samaradorlik.
+Tezkor FCP uchun statik marshrutlarni (/, /about, /prompts, /projects) oldindan renderlashni ko'rib chiqing.
+Katta bog'liqliklar uchun audit to'plami — rechartlar, three.js yoki shunga o'xshashlar SPAni sezilarli darajada shishirib yuborishi mumkin.
+# 7. SEO auditi
+# 8. Kirish imkoniyati auditi
+Kuzatiladigan meta va kontent naqshlariga asoslangan kirish imkoniyatini baholash. To'liq WCAG 2.1 AA auditi brauzer renderlash va ekran o'quvchi sinovini talab qiladi.
+Umumiy kirish imkoniyati: 30/100 — Asosiy muammo shundaki, ushbu platforma kirish ehtiyojlariga ega bo'lishi mumkin bo'lgan xavfsizlik mutaxassislariga qaratilgan. "Elita" pozitsiyasi uni WCAG muvofiqligidan ozod qilmaydi, ayniqsa har qanday tijorat joylashtirish uchun.
+# 9. Funktsional sinov
+Barcha sinovlar autentifikatsiya qilinmagan tashqi foydalanuvchi sifatida o'tkazildi. Natijalar ommaga ochiq holatni aks ettiradi.
+MUHIM HISOB: Sinovdan o'tkazilishi mumkin bo'lgan 11 ta sahifa funksiyasidan 5 tasi mutlaqo ishlamaydi (cheksiz yuklanish yoki bo'sh kontent). Ushbu platforma ishlab chiqarishga tayyor emasligi aniq.
+# 10. Xato haqida hisobot
+## 1-xato: Konsol — Cheksiz yuklanish (ishlab chiqarishda o'zbekcha satr)
+## Xato #2: Boshqaruv paneli — Bo'sh yuklanish holati, avtorizatsiyasiz kirish mumkin
+## Xato #3: Ikkita navigatsiya tizimlari — nomuvofiqlik
+## Xato #4: Statistika ziddiyati (50 000 foydalanuvchi va 1 operator)
+## Xato #5: Google xotirasiga tashqi OG tasvirining bog'liqligi
+## Xato #6: Chat sahifasi butunlay bo'sh ko'rinadi
+# 11. Ijobiy topilmalar
+Topilgan muammolarning jiddiyligiga qaramay, CyberAI UZ to'g'ri bajarilganda mustahkam poydevorni tashkil etuvchi haqiqiy kuchli tomonlarini namoyish etadi:
+## 11.1 Platforma nimani to'g'ri bajaradi
+# 12. Yaxshilash yo'l xaritasi
+## 🚨 Muhim tuzatishlar (Har qanday ommaviy ishga tushirishdan oldin)
+## 🔴 Yuqori ustuvorlik (2 hafta ichida)
+Maxsus domenni ro'yxatdan o'tkazing va sozlang (cyberai.uz yoki shunga o'xshash). Kesilgandan so'ng workers.dev marshrutini o'chirib qo'ying.
+Navigatsiya tizimini birlashtirish. Avtorizatsiya shartli elementlari bilan bitta javob beruvchi navigatsiya komponenti.
+Ikkita logotipli aktiv muammosi tuzatildi. Hamma joyda ishlatiladigan bitta brand-logo.svg yoki brand-logo.png.
+Cloudflare R2 da tashqi OG tasvir URL manzillarini o'z-o'zidan joylashtirilgan aktivlar bilan almashtiring.
+Foydalanuvchi ro'yxatdan o'tishdan oldin Maxfiylik siyosati va Xizmat ko'rsatish shartlari sahifalarini qo'shing.
+Fix /console cheksiz yuklagichi — funksiyani amalga oshiring yoki vaqt jadvali bilan halol "Tez orada" ni ko'rsating.
+/dashboard autentifikatsiyasini qayta yo'naltirishni tuzatish — autentifikatsiya qilinmaganda /login ga yo'naltirilishi kerak.
+/Leaderboard, /targets bo'sh holatlarni tuzatish — haqiqiy ma'lumotlarni yoki halol bo'sh holat foydalanuvchi interfeysini ko'rsatish.
+## 🟡 O'rta ustuvorlik (1 oy ichida)
+snarkjs/circom yordamida haqiqiy nol bilim dalillarini amalga oshiring yoki soxta reklamalardan qochish uchun funksiyaning nomini "Kriptografik majburiyat" ga o'zgartiring.
+Barcha ommaviy marshrutlar bilan sitemap.xml faylini qo'shing.
+JSON-LD tuzilgan ma'lumotlarini qo'shing (Tashkilot, Dasturiy ta'minot sxemalari).
+Bo'sh sahifalarning ishdan chiqishini oldini olish uchun Reactda to'g'ri xato chegaralarini qo'llang.
+404 maxsus xato sahifasini qo'shing.
+Kodni marshrut bo'yicha ajratishni amalga oshiring — dangasa yuk / boshqaruv paneli, / konsol, / chat.
+Umumiy spinnerlar o'rniga skelet yuklanish holatlarini qo'shing.
+Mahalliylashtirishni tuzatish — faqat oʻzbek tilida yozilgan "Sandbox yuklanmoqda..." ni ishlab chiqarishdan olib tashlash yoki i18n tizimini qoʻshish.
+Barcha holatni o'zgartiradigan shakl topshirishlarida CSRF tokenlarini qo'llang.
+## 🟢 Past ustuvorlik (Keyingi chorak)
+Tezkor FCP va SEOni yaxshiroq tekshirish uchun statik marshrutlarni (/, /about, /prompts, /projects) oldindan render qiling.
+Avtomatik WebP tasvirini o'zgartirish uchun Cloudflare Polish dasturini qo'llang.
+Barcha animatsiyalar uchun prefers-reduced-motion qo'llab-quvvatlashini qo'shing.
+Klaviaturadan foydalanish imkoniyati uchun o'tkazib yuborish navigatsiya havolalarini qo'shing.
+Klaviatura foydalanuvchilari uchun to'g'ri fokus ko'rinadigan ko'rsatkichlarini qo'llang.
+Barcha interaktiv elementlarga ARIA rollari va yorliqlarini qo'shing.
+Yorug'lik rejimini yoki tizim afzal ko'rgan rang sxemasini qo'llab-quvvatlashni ko'rib chiqing.
+Pastki katlamali rasmlarga loading="dangasa" qo'shing.
+## 💡 Yaxshi bo'lgani uchun (Kelajak yo'l xaritasi)
+Groth16 yoki PLONK (circom + snarkjs stack) yordamida haqiqiy ZKP hisobga olish tizimini joriy eting.
+Ommaviy API tugash nuqtalari uchun OpenAPI / Swagger hujjatlarini qo'shing.
+Haqiqiy CTF sinov infratuzilmasini joriy qilish (har bir foydalanuvchi sessiyasi uchun ajratilgan Docker/Firecracker VMlari).
+Haqiqiy foydalanuvchi ma'lumotlari bilan haqiqiy yetakchilar jadvalini qo'shing.
+Terminalda foydalanuvchi tugmachalarini bosishni kuzatadigan haqiqiy "Adaptive AI Mentor" ni yarating.
+Agar korxonaga yo'naltirilgan bo'lsa, SOC2 / ISO 27001 muvofiqlik hujjatlarini qo'shing.
+Oflayn rejimda ishlash uchun progressiv veb-ilova (PWA) konfiguratsiyasini ko'rib chiqing.
+# 13. Yakuniy hukm
+## 13.1 Ishlab chiqarishga tayyorlikni baholash
+## 13.2 Eng muhim 10 ta muammo
+## 13.3 Eng yaxshi 10 ta haqiqiy kuchli tomon
+## 13.4 Umumiy xulosa
+CyberAI UZ - bu haqiqiy mahsulot vizyoni, ajoyib vizual dizayn va texnik jihatdan to'g'ri infratuzilma tanlovlariga ega istiqbolli kiberxavfsizlik bo'yicha o'quv platformasi. Biroq, hozirda u mahsulot niqobi ostida yuqori aniqlikdagi prototipdir. Eng zararli muammo texnik emas - bu ishonch. Xavfsizlik platformasida firibgarlikni aniqlashga o'rgatilgan mutaxassislarga qaratilgan soxta statistika ("50 000 dan ortiq elita tadqiqotchilari") mavjud brend xavfidir. Boshqa biron bir yaxshilanishdan oldin, avval buni tuzating. Xavfsizlik sarlavhasidagi farq ikkinchi o'rinda turadi. Content-Security-Policy, X-Frame-Options va X-Content-Type-Options sarlavhalari bo'lmagan kiberxavfsizlik platformasi o'z eshigini qulflamaydigan chilangarning professional ekvivalentidir. Ushbu hisobotdagi muhim va yuqori ustuvorlikdagi elementlarni hal qilish uchun 2-3 haftalik diqqat bilan ish olib borilgan holda, platforma yopiq beta-versiyada ishonchli tarzda kirishi mumkin. Poydevor mustahkam. Bajarish vizyonga yetib borishi kerak.
+Audit o'tkazildi: Katta xavfsizlik va mahsulot auditi guruhi
+Sana: 2026-yil 29-iyun
+Qo'llanish doirasi: Tashqi qora quti kuzatuvi — app.cyberaiuz.workers.dev
+GitHub: Omborxona 404 ni qaytardi — kodni ko'rib chiqish faqat ko'rsatilgan natija bilan cheklangan
+Tasnif: MAXFIY — Faqat ichki foydalanish uchun
+
+--- TABLE ---
+UMUMIY BAL | 42 / 100 | BETA — ISHLAB CHIQARISHGA TAYYOR EMAS
+--- END TABLE ---
+
+
+--- TABLE ---
+1. Qisqacha mazmuni | 3
+2. UI/UX auditi | 4
+3. Frontend kodini ko'rib chiqish | 6
+4. Orqa tomon va arxitektura sharhi | 7
+5. Xavfsizlik auditi (OWASP Top 10) | 8
+6. Ishlash auditi | 12
+7. SEO auditi | 13
+8. Kirish imkoniyati auditi | 14
+9. Funktsional sinov | 15
+10. Xato haqida hisobot | 16
+11. Ijobiy topilmalar | 18
+12. Yaxshilash yo'l xaritasi | 19
+13. Yakuniy hukm | 21
+--- END TABLE ---
+
+
+--- TABLE ---
+KATEGORIYA | XOL | ESLATMALAR
+Umumiy ball | 42/100 | Funksionallik, xavfsizlik sarlavhalari va kontentning haqiqiyligida jiddiy kamchiliklarga ega beta-mahsulot
+Xavfsizlik reytingi | 28/100 | Ko'rinadigan xavfsizlik sarlavhalari yo'q, ochiq AI so'nggi nuqtasi, himoyalangan marshrutlarda avtorizatsiya yo'q, workers.dev domen xavfi
+Ishlash ballari | 55/100 | Chegaradagi CDNdagi SPA statik qobiq uchun tez, lekin dangasa yuklanish, bir nechta blokirovka qiluvchi aktivlar, optimallashtirilmagan tasvirlar yo'q
+UI/UX reytingi | 70/100 | Ajoyib estetik tasavvur va brendning uyg'unligi; bo'sh sahifalar, nomuvofiq navigatsiya, haqiqiy ma'lumotlar yo'qligi bilan buzilgan
+Kirish imkoniyati ballari | 30/100 | ARIA rollari ko'rinmayapti, klaviatura navigatsiyasi yomon bo'lishi mumkin, o'tkazib yuborish havolalari yo'q, asosiy rasmlarda alternativ matnlar yo'q
+SEO reytingi | 62/100 | Yaxshi meta teglar va OG/Twitter kartalari; sayt xaritasi yo'q, robots.txt faylini tekshirib bo'lmaydi, tuzilgan ma'lumotlar yo'q
+Kod sifati ballari | 45/100 | Zamonaviy stek (Vite + React), ammo aktiv xeshini nomlash kodni ajratish yo'qligini anglatadi; kuzatiladigan xato chegaralari yo'q
+Ta'mirlashga yaroqlilik darajasi | 40/100 | Ishchilarni joylashtirish yaxshi; versiyalash strategiyasi ko'rinmaydi, sahifalar orasidagi navigatsiya nomuvofiq, qattiq kodlangan nusxa
+--- END TABLE ---
+
+
+--- TABLE ---
+UI ELEMENTI | HOLATI | ESLATMALAR
+Rang tizimi | ✅ YAXSHI | To'q rangli mavzu izchil, urg'u ranglari yaxshi ishlatilgan. Yorug'lik rejimi yo'q.
+Tipografiya | ✅ YAXSHI | Toza ierarxiya, o'qilishi mumkin bo'lgan o'lchamlar. Tizim/veb shriftlaridan foydalanayotganga o'xshaydi.
+Bo'shliq va joylashuv | ⚠ O'RTA | Bosh sahifa yaxshi joylashtirilgan; ikkilamchi sahifalar minimal tartibda joylashtirilgan (faqat sarlavha + pastki qism).
+Animatsiyalar | ✅ YAXSHI | Sahifa manbasi metama'lumotlarida aylantirish tikeri, terminal miltillashi, nozik o'tishlar ko'rinadi.
+Navigatsiya izchilligi | ❌ MUVAFFAQIYATSIZ | Ikkita butunlay boshqacha navigatsiya tizimi mavjud (ommaviy 3 elementli va tasdiqlangan 7 elementli). Bir xil URL, boshqa navigatsiya.
+Vizual ierarxiya | ✅ YAXSHI | H1 qahramoni → xususiyatlar → Bosh sahifada yaxshi tartiblangan CTAlar.
+Bo'sh shtatlar | ❌ MUVAFFAQIYATSIZ | Konsol, boshqaruv paneli, yetakchilar jadvali, nishonlar cheksiz yuklanish spinneri yoki bo'sh ekranni ko'rsatadi, bo'sh holat haqida xabar berilmaydi.
+Xato holatlari | ❌ TOPILMADI | Dizaynda ko'rinadigan xato holati yo'q. 404-sahifa kuzatilmadi. Avtorizatsiyasiz sinab ko'rish mumkin emas.
+Shakllar va ma'lumotlar | ⚠ O'RTA | /threats sahifasida tasdiqlash UX ko'rinmaydigan matn maydoni kiritish maydoni mavjud.
+Tugmalar va CTAlar | ✅ YAXSHI | Asosiy CTAlar o'ziga xosdir. "Bepul boshlang", "Ochiq yordamchi" — aniq va brendli.
+Mobil tajriba | ⚠ O'RTA | viewport meta to'g'ri o'rnatilgan. Renderlashsiz mobil qurilmalarga xos sinovlarni amalga oshirish mumkin emas.
+Logotip aktivlarining nomuvofiqligi | ❌ MUVAFFAQIYATSIZ | Ikki xil logotip aktivlaridan foydalanilmoqda: brand-logo-BgXj89Up.png (qo'nish sahifalari) va brand-logo-C-Dva60F.png (ilova sahifalari). Vizual brend parchalanishi.
+--- END TABLE ---
+
+
+--- TABLE ---
+SONI | JIDDIYLIK | TAFSILOTLAR
+Logotip aktivlarining nusxasi | YUQORI | brand-logo-BgXj89Up.png va brand-logo-C-Dva60F.png turli sahifalardan olingan — brending uchun yagona haqiqat manbai yo'q.
+Tashqi OG tasviriga bog'liqlik | O'RTA | storage.googleapis.com/gpt-engineer-file-uploads/ 4 sahifada OG tasvir manbai sifatida ishlatilgan. Bu GPT muhandisining artefakt URL manzili — mavjudlik xavfi mavjud va tuzilish asboblar zanjirini ochib beradi.
+Kodni ajratish bo'yicha dalillar yo'q | O'RTA | Har bir marshrutga bitta SPA to'plami yuklangan bo'lishi mumkin. Aktiv URLlarida dinamik import() chunk nomlash naqshlari kuzatilmadi.
+Tasvirni optimallashtirish | O'RTA | neural-topology-BTDDI2HL.jpg metama'lumotlardan ko'rinadigan WebP/AVIF formatidagi muzokaralarsiz JPEG sifatida xizmat qildi.
+Mahsulotda qattiq kodlangan o'zbekcha satr | PAS | "Sandbox yuklanmoqda..." (o'zbekcha: "Sandbox yuklanmoqda...") /console sahifasidagi manbada ko'rinadi — xalqaro auditoriya uchun lokalizatsiya olib tashlanmadi.
+--- END TABLE ---
+
+
+--- TABLE ---
+TUGASH NUQTASI | HOLATI | ESLATMALAR
+/tahdidlar (Generatsiya tugmasi) | ⚠ XAVF | Infratuzilma tavsifini yuborish uchun avtorizatsiya talab qilinmaydi. Agar bu LLM API-ni chaqirsa, u suiiste'mol qilinishi mumkin — har kim autentifikatsiyasiz cheksiz AI tahdid tahlillarini yaratishi mumkin.
+/zkp (Yaratish/Tasdiqlash) | ⚠ XAVF | Dalillarni yaratish yoki tekshirish uchun autentifikatsiya talab qilinmaydi. Orqa tomon tekshiruvisiz ZKP tizimini oddiygina soxtalashtirish mumkin.
+/chat | 🔒 BO'SH | Sahifa umuman kontent ko'rsatmaydi — API xatti-harakatlarini baholay olmaydi.
+/api/* (noma'lum so'nggi nuqtalar) | NOMA'LUM | Tashqi kuzatuvdan API tugash nuqtalarini sanab bo'lmadi. Hech qanday API hujjatlari yoki OpenAPI spetsifikatsiyasi ommaga ochiq emas.
+--- END TABLE ---
+
+
+--- TABLE ---
+ID | JIDDIYLIK | TOPISH | TA'RIF / DALILLAR / TUZATISH
+F-01 | MUHIM | Kirish nazorati buzilgan — Faqat mijoz tomonidagi marshrut qo'riqchilari | Barcha tasdiqlangan marshrutlar server tomonidagi autentifikatsiya tekshiruvisiz yuklanadi. /dashboard login qayta yo'naltirmasdan navigatsiya qiladi. Dalil: to'g'ridan-to'g'ri URL manziliga kirish sahifa qobig'i bilan 200 ni qaytaradi. Tuzatish: Har bir himoyalangan API va marshrutda server tomonidagi JWT/sessiya tekshiruvini amalga oshiring. Kontentni taqdim etishdan oldin Ishchi darajasida autentifikatsiya qilinmagan so'rovlarni rad eting.
+F-02 | MUHIM | Kontent xavfsizligi siyosati yo'q — XSSning to'liq ta'siri | Hech bir sahifada CSP sarlavhasi kuzatilmadi. CSPsiz SPA XSS ekspluatatsiyasiga to'liq zaif. Hujumchi tokenlarni o'g'irlash, foydalanuvchilarni yo'naltirish yoki akkauntni egallab olish uchun skriptlarni kiritishi mumkin. Tuzatish: Nonce asosidagi skriptlarni oq ro'yxatga kiritish bilan qat'iy CSP ni joriy qiling. Content-Security-Policy bilan boshlang: default-src 'self'; script-src 'self' 'nonce-{random}'.
+F-03 | MUHIM | Tasdiqlanmagan AI API kirishi — Narx va suiiste'mol qilish xavfi | /tahdidlar sahifasi har kimga tizimga kirmasdan AI tahdid tahlilini yaratishga imkon beradi. Dalillar: "Tahdidlarni yaratish" shakli ommaga ochiq, autentifikatsiya eshigi ko'rinmaydi. Ta'siri: API narxini pasaytirish hujumi, zararli tahdidlarni yaratish uchun suiiste'mol qilish, obro'ga putur yetkazish xavfi. Tuzatish: AI orqa tomoniga qo'ng'iroq qilishdan oldin autentifikatsiyani talab qilish. Har bir IP va har bir foydalanuvchi uchun tezlikni cheklash qo'shing.
+F-04 | YUQORI | X-Frame-Options / Clickjacking yo'q | X-Frame-Options va CSP frame-ancestors direktivasi yo'q. Platformani hujumchilar tomonidan boshqariladigan saytlardagi iframe ichiga joylashtirib, clickjackingni amalga oshirish mumkin. Tuzatish: Cloudflare Worker javob sarlavhalariga X-Frame-Options: DENY va CSP frame-ancestors: 'none' qo'shing.
+F-05 | YUQORI | workers.dev domeni — Obro' va xavfsizlik xavfi | Platforma workers.dev subdomenida ishlaydi. workers.dev fishing kampaniyalari bilan bog'liq (60 000 dan ortiq zararli URL manzillar hujjatlashtirilgan). Xavfsizlik mutaxassislari va korporativ elektron pochta filtrlari workers.dev URL manzillarini belgilashi yoki bloklashi mumkin. Tuzatish: To'g'ri DNS konfiguratsiyasi bilan maxsus domenga (masalan, app.cyberai.uz) joylashtiring. Ishlab chiqarishda workers.dev marshrutini o'chirib qo'ying.
+F-06 | YUQORI | Maxfiy ma'lumotlarga ta'sir qilish — Tashqi OG tasvir URL manzili | Bir nechta sahifalar OG tasvir manbai sifatida storage.googleapis.com/gpt-engineer-file-uploads/ dan foydalanadi. Dalillar: /dashboard, /chat, /about, /prompts sahifalaridagi og:image meta tegi. Bu platforma GPT Engineer (kodsiz AI quruvchisi) yordamida yaratilganligini ko'rsatadi, bu esa arxitektura tafsilotlarini oshkor qilishi mumkin. Tuzatish: Barcha aktivlarni o'zingizning CDN-ingizda joylashtiring. GPT Engineer artefakt URL manzillarini ishlab chiqarishdan olib tashlang.
+F-07 | YUQORI | ZKP ni amalga oshirish — chalg'ituvchi texnik da'vo | /zkp sahifasida "kriptografik xesh" yaratish va uni nolga teng bilim isboti deb atash tasvirlangan. Haqiqiy ZKP (masalan, zk-SNARKs, Groth16, PLONK) xesh funksiyasi emas, balki prover, verifikator va guvohni talab qiladi. Dalil: "Biz sizning yechimingizni noyob tarzda ifodalovchi kriptografik xesh yaratamiz." Bu xeshlash, ZKP emas. Ta'siri: Normativ va obro'ga putur yetkazish xavfi (xavfsizlik mahsulotida yolg'on reklama). Tuzatish: To'g'ri ZKP kutubxonasini (snarkjs, circom) joriy qiling yoki funksiyani "Yechimning kriptografik isboti" yoki "Majburiyat sxemasi" ga o'zgartiring.
+F-08 | O'RTA | CSRF himoyasi ko'rinmaydi | Hech qanday shaklda (tahdidlar shakli, zkp shakli) CSRF tokenlari kuzatilmadi. CSRF himoyasisiz, zararli uchinchi tomon saytlaridan autentifikatsiya qilingan harakatlar ishga tushirilishi mumkin. Tuzatish: Barcha holatni o'zgartiruvchi so'rovlarda SameSite=Strict cookie atributi va CSRF tokenlarini joriy qiling.
+F-09 | O'RTA | Kuzatiladigan stavka cheklovi yo'q | Hech qanday oxirgi nuqtada tezlikni cheklovchi sarlavhalar (X-RateLimit-*) kuzatilmadi. Tezlikni cheklamaydigan ommaviy AI tomonidan boshqariladigan oxirgi nuqtalar deyarli DoS-ga mos kelmaydi va xarajatlarni suiiste'mol qilish mumkin emas. Tuzatish: /threats, /zkp va barcha API oxirgi nuqtalari uchun Cloudflare tezlikni cheklash qoidalarini joriy qiling. Har bir IP uchun cheklash uchun CF-connecting-IP dan foydalaning.
+F-10 | O'RTA | Yo'qolgan huquqiy sahifalar — Normativ xavf | Hech bir sahifada Maxfiylik siyosati, Xizmat ko'rsatish shartlari, Cookie siyosati yoki GDPR haqida bildirishnoma topilmadi. Dalillar: Barcha bog'langan sahifalarni batafsil ko'rib chiqish natijasida hech qanday huquqiy hujjat topilmadi. Ta'siri: Agar biron bir Yevropa Ittifoqi/MDH foydalanuvchisi platforma bilan o'zaro aloqada bo'lsa, GDPR/KVKKK buzilishi mumkin. Tuzatish: Har qanday ommaviy ishga tushirish yoki foydalanuvchi ma'lumotlarini to'plashdan oldin /privacy, /terms, /cookie sahifalarini qo'shing.
+F-11 | O'RTA | Axborotni oshkor qilish — Qurilish vositalarining ta'siri | GPT muhandisi artefakt URL manzillari OG tasvir meta teglarida ishlab chiqish asboblar zanjirini ochib beradi. Aktivlarning xesh nomlanishi (Vite naqsh) tuzish vositasini ochib beradi. Tuzatish: Barcha ishlab chiqarish meta teglarini dezinfeksiya qiling. Ishga tushirishdan oldin barcha aktivlarni o'z-o'zini joylashtirilgan xotiraga ko'chiring.
+F-12 | PAS | X-Content-Type-Options sarlavhasi yo'q | X-Content-Type-Options: nosniff sarlavhasi yo'q. Eski brauzerlarda XSSga olib kelishi mumkin bo'lgan MIME tipidagi sindirishga ruxsat beradi. Tuzatish: Barcha Worker javoblariga X-Content-Type-Options: nosniff qo'shing. Cloudflare Worker o'rta dasturida bitta qator.
+F-13 | PAS | Yo'naltiruvchi siyosati yo'q | Referrer-Policy sarlavhasi yo'q. Referrer sarlavhalarida to'liq URL uchinchi tomonlarga oqib chiqdi. Tuzatish: Referrer-Policy qo'shish: strict-origin-when--cross-origin.
+F-14 | MA'LUMOT | JWT Xavfsizlik — Tekshirib bo'lmadi | HTTP javoblarida yoki cookie-fayllarda JWT tokenlari ko'rinmayapti (Set-Cookie sarlavhalari kuzatilmadi). Agar JWTlardan foydalanilsa, ichki kirishsiz algoritm, amal qilish muddati yoki maxfiy kuchni baholab bo'lmaydi. Tuzatish: HS256 minimal (RS256 afzal), qisqa amal qilish muddati (15 daqiqalik kirish tokeni), tokenning aylanishini yangilang.
+F-15 | MA'LUMOT | SQL in'ektsiyasi — Baholab bo'lmaydi | Cloudflare Workers muhiti, ehtimol, D1 (SQLite) yoki KV dan foydalanadi. SQL in'ektsiyasi xavfi butunlay so'rovlar tuzilishiga bog'liq. Manba kodisiz baholab bo'lmaydi. Tavsiya: Faqat parametrlangan so'rovlar/tayyorlangan operatorlardan foydalaning.
+F-16 | MA'LUMOT | CORS siyosati — Baholab bo'lmaydi | Sahifa yuklamalaridan CORS sarlavhalarini kuzatish mumkin emas. API tugun nuqtalarida CORSga haddan tashqari ruxsat berilganligini aniqlab bo'lmadi (Access-Control-Allow-Origin: *). Tavsiya: CORSni faqat ishonchli manbalar bilan cheklang.
+--- END TABLE ---
+
+
+--- TABLE ---
+METRIK | TAXMINLANGAN | TAHLIL
+Birinchi baytgacha bo'lgan vaqt (TTFB) | <50ms | Cloudflare Workers ish vaqtidan ustun — TTFB o'z-o'zidan a'lo darajada. Serverda sovuq ishga tushirish yo'q.
+Birinchi mazmunli bo'yoq (FCP) | ~800-1200ms | SPA kontent paydo bo'lishidan oldin JS parse + React gidratatsiyasini talab qiladi. Odatdagi Vite React ilova paketi o'lchamlari asosida taxminiy hisoblanadi.
+Eng katta kontentli bo'yoq (LCP) | ~1500-2500ms | Fon rasmi (neural-topology-BTDDI2HL.jpg) bilan qahramon bo'limi. Agar oldindan yuklanmasa, LCP kechiktiriladi.
+JavaScript to'plami | Noma'lum / Ehtimol, katta | Bir nechta sahifali to'liq React SPA. Kodni ajratish haqida hech qanday dalil yo'q. Optimallashtirmasdan taxminan 200-500KB gzip fayli.
+Tasvirni optimallashtirish | Qisman | Qahramon tasviri uchun JPEG formatidan foydalanildi. WebP/AVIF kelishuvi kuzatilmadi. Agar yoqilgan bo'lsa, Cloudflare Polish buni hal qilishi mumkin.
+Keshlash strategiyasi | Ichki (CF chekkasi) | Xesh nomli statik aktivlar joylashtirilganda kesh-buziladi. Cloudflare chekka keshi yaxshi statik aktivlarni keshlashni ta'minlaydi.
+Dangasa yuklanmoqda | Noma'lum | Meta-tahlildan ko'rinadigan mahalliy dangasa yuklanish (loading="dangasa") yoki Intersection Observer ishlatilishiga oid hech qanday dalil yo'q.
+Siqish | Ehtimol, Brotli | Cloudflare Workers avtomatik ravishda Brotli/gzip siqishni qo'llaydi. Maxsus konfiguratsiya talab qilinmaydi.
+--- END TABLE ---
+
+
+--- TABLE ---
+SEO ELEMENTI | HOLATI | TAFSILOTLAR
+<sarlavha> teglari | ✅ YAXSHI | Har bir sahifa uchun sarlavhalar to'plami: "CyberAI — Kali CTF Console", "CyberAI — Dashboard" va boshqalar. Yaxshi SEO amaliyoti.
+Meta tavsiflar | ✅ YAXSHI | Barcha kuzatilgan sahifalarda noyob, tavsiflovchi meta tavsiflar. Kalit so'zlar zichligi uchun yaxshi optimallashtirilgan.
+Kanonik teglar | ✅ YAXSHI | Barcha sahifalarda kanonik teglar mavjud. Nisbiy yo'llarga to'g'ri o'rnatilgan (/konsol, /boshqaruv paneli va boshqalar).
+OpenGraph teglari | ✅ YAXSHI | og: sarlavha, og: tavsif, og: tasvir, og: turi, og: url hammasi mavjud. Yaxshi ijtimoiy almashish sozlamalari.
+Twitter kartalari | ✅ YAXSHI | twitter:card (summary_large_image), twitter:title, twitter:description, twitter:image – barchasi mavjud.
+OG tasvirining izchilligi | ⚠ QISMAN | Ba'zi sahifalar /logo.png (nisbiy) dan foydalanadi, boshqalari esa storage.googleapis.com URL manzilidan foydalanadi. Noto'g'ri va ulardan biri tashqi bog'liqlikdir.
+Sarlavha ierarxiyasi | ✅ KUZATILGAN | H1, H2, H3 ierarxiyasi bosh sahifa kontentida ko'rinadi. "Sintetik davrni himoya qilish" H1 sifatida, funksiya bo'limlari H2/H3 sifatida ko'rsatiladi.
+sayt xaritasi.xml | ❌ TOPILMADI | sitemap.xml mavjudligini tekshirib bo'lmadi. Cloudflare Workers’dagi SPA uchun sayt xaritasi aniq qo'shilishi kerak.
+robots.txt | ❌ TASDIQLAY OLMAYDI | robots.txt faylini ushbu muhitdan tekshirib bo'lmadi. Qo'lda tekshirish kerak.
+Strukturaviy ma'lumotlar (JSON-LD) | ❌ YO'QOLGAN | Strukturalangan ma'lumotlar sxemasi aniqlanmadi. SaaS platformasi uchun Tashkilot, Veb-sayt va Dasturiy ta'minot sxemalari SERP ko'rinishini yaxshilaydi.
+Ichki bog'lanish | ⚠ ZAIF | Asosiy navigatsiya havolalari mavjud. Kontentdagi kontekstual ichki havolalar kam.
+SPA indekslanishi | ⚠ XAVF | SSR/oldindan ko'rsatishsiz React SPA barcha brauzerlar tomonidan to'g'ri indekslanmasligi mumkin. JavaScript-da ko'rsatilgan kontent Googlebot indekslanishini o'tkazib yuborishi mumkin.
+Maxsus domen | ❌ YO'QOLGAN | workers.dev subdomenining domen vakolati zaif va qora ro'yxat bilan ifloslanish ehtimoli bor. Maxsus domen SEO uchun juda muhim.
+--- END TABLE ---
+
+
+--- TABLE ---
+WCAG MEZONI | HOLATI | TAFSILOTLAR
+Rang kontrasti | ⚠ XAVF | To'q fon (#020408) kiber-yalpiz aksenti bilan. Yalpiz-qora rangda AA dan o'tishi mumkin, ammo kichikroq matn yoki arvoh tugmalari ishlamay qolishi mumkin. Avtomatik kontrast tekshiruvi talab qilinadi.
+Rasmlardagi muqobil matn | ⚠ QISMAN | Logotip tasviri alt="CyberAI" kuzatildi. Neyron topologiyasi tasviridagi "Kod ekrani" alternativ matni — funktsional, ammo umumiy.
+Klaviatura navigatsiyasi | TASDIQLAY OLMAYDI | Brauzer renderlashi va klaviatura sinovisiz tekshirib bo'lmaydi. SPA'larda ko'pincha modal va ochiladigan menyularda fokus tuzog'i bilan bog'liq muammolar mavjud.
+Ekran o'quvchisini qo'llab-quvvatlash | TASDIQLAY OLMAYDI | ARIA rollari va yorliqlarini faqat meta-tahlil orqali tekshirib bo'lmaydi.
+Forma yorliqlari | ⚠ XAVF | /threats textarea maydonida joy egallovchi matn mavjud, ammo ehtimol tegishli <label> elementi yo'q. /zkp kirishlari tekshirishni talab qiladi.
+Navigatsiya havolalarini o'tkazib yuborish | ❌ YO'QOLGAN BO'LISHI MUMKIN | Sahifa tuzilishida asosiy kontentga o'tish havolalari ko'rinmaydi. Klaviatura/ekran o'quvchi foydalanuvchilari uchun talab qilinadi.
+Fokus ko'rsatkichlari | ⚠ XAVF | To'q rangli mavzuli interfeyslar odatda estetik sabablarga ko'ra brauzerning standart fokus konturlarini bostiradi va klaviaturadan foydalanish imkoniyatini buzadi.
+Harakatni qo'llab-quvvatlashning kamayishi | TASDIQLAY OLMAYDI | Platforma animatsiyalardan foydalanadi (tiker aylantirish, terminal miltillashi). prefers-reduced-motion media so'rovini qo'llab-quvvatlashni manbasiz tekshirib bo'lmaydi.
+Semantik HTML | QISMAN YAXSHI | Sahifa sarlavhalari, sarlavhalari va navigatsiya yo'nalishlari kontentda ko'rsatiladi. React SPAlari ko'pincha semantik elementlar kerak bo'lgan joylarda <div> o'ramlaridan foydalanadilar.
+--- END TABLE ---
+
+
+--- TABLE ---
+XUSUSIYAT | KUTILGAN | HAQIQIY | ESLATMALAR
+Bosh sahifa yuklanishi | To'liq tarkib | ✅ O'TKAZIB OLING | Qahramon, xususiyatlar, loyihalar, ko'rsatmalar, hamjamiyat bo'limlari bilan to'liq taqdim etilgan.
+Kirish oqimi | Avtorizatsiya shakli | ⚠ QISMAN | "Kirish" tugmasi ko'rinib turibdi, lekin bosish xatti-harakati/manzilni statik yuklashdan tekshirib bo'lmaydi.
+/konsol | CTF terminali | ❌ MUVAFFAQIYATSIZ | Faqat "Sandbox yuklanmoqda..." (o'zbekcha: Sandbox yuklanmoqda) funksiyasini renderlaydi. Cheksiz yuklanish holati.
+/chat | Sun'iy intellekt chat interfeysi | ❌ MUVAFFAQIYATSIZ | Sahifa asosiy qismi butunlay bo'sh. Hech qanday kontent ko'rsatilmadi.
+/boshqaruv paneli | Foydalanuvchi boshqaruv paneli | ❌ MUVAFFAQIYATSIZ | "Yuklanmoqda..." matni noma'lum muddatga ko'rsatiladi. Boshqaruv paneli foydalanuvchi interfeysi ko'rsatilmaydi.
+/etakchilar jadvali | Reytinglar jadvali | ❌ MUVAFFAQIYATSIZ | Sarlavha va altbilgi ko'rinadi, asosiy kontent maydoni bo'sh. Peshqadamlar jadvali ma'lumotlari yo'q.
+/nishonlar | Bulutli maqsadlar ro'yxati | ❌ MUVAFFAQIYATSIZ | Sarlavha va pastki qism ko'rinadi. Faqat sarlavha matni, haqiqiy maqsadlar/muhitlar ro'yxatda yo'q.
+/tahdidlar - sahifa yuklanishi | Tahdid shakli | ✅ O'TKAZIB OLING | Forma matn maydoni va Generate tugmasi yordamida to'g'ri ko'rsatiladi.
+/tahdidlar - harakatni yaratish | Sun'iy intellektga javob | SINAB KO'RILMAGAN | Statik tahlildan shakllarni yuborib bo'lmaydi. Sun'iy intellektning oxirgi nuqtasining funktsional harakati noma'lum.
+/zkp - yaratish | Isbot yaratish | SINAB KO'RILMAGAN | Forma ko'rinadi, lekin yuborish xatti-harakatlarini tekshirib bo'lmaydi.
+/zkp - tasdiqlash | Isbotni tekshirish | SINAB KO'RILMAGAN | Ikki yorliqli interfeys ko'rinadi (Yaratish/Tasdiqlash). Haqiqiy tasdiqlash mantig'ini sinab ko'rib bo'lmaydi.
+/so'rovlar - filtrlash/qidirish | Filtrlangan natijalar | QISMAN KO'RINISHLI | 30 ta so'rov toifalar bilan ro'yxatlangan (Xavfsizlik auditi x6, Hodisalarga javob x6 va boshqalar). Filtr interfeysi mavjud.
+/loyihalar - kartani bosish | Loyiha tafsilotlari | SINAB KO'RILMAGAN | "O'rganish" tugmalari barcha 5 ta loyiha kartalarida ko'rinadi. Statik tahlildan manzil noma'lum.
+Telegram ijtimoiy tarmog'idagi havola | T.me ni ochadi | ✅ TAQDIM ETISH | https://t.me/Cyber_AI_UZ havolasi pastki qismida to'g'ri joylashtirilgan.
+YouTube ijtimoiy tarmog'idagi havola | YouTube’ni ochadi | ✅ TAQDIM ETISH | https://www.youtube.com/@CyberAI_UZ havolasi to'g'ri joylashtirilgan.
+404-sahifa | Maxsus 404 | TASDIQLAY OLMAYDI | Tashqi kuzatuvdan 404 ishlov berishni sinab ko'rib bo'lmadi.
+--- END TABLE ---
+
+
+--- TABLE ---
+Xato identifikatori | XATO-001
+Jiddiylik | MUHIM
+Ko'paytirish | 1. https://app.cyberaiuz.workers.dev/console sahifasiga o'ting 2. 30+ soniya kuting 3. Kontent yuklanmadi
+Kutilgan | CTF Kali Linux terminal muhiti muammolar ro'yxati bilan yuklanadi
+Haqiqiy | "Sandbox yuklanmoqda..." (o'zbek: Sandbox loading) — infinite spinner, no content
+Tuzatish | Yoki: (1) Haqiqiy CTF sinov muhiti funksiyasini amalga oshiring yoki (2) Cheksiz yuklovchi o'rniga taxminiy ishga tushirish sanasi bilan "Tez orada" holatini ko'rsating.
+--- END TABLE ---
+
+
+--- TABLE ---
+Xato identifikatori | XATO-002
+Jiddiylik | MUHIM
+Ko'paytirish | Tizimga kirmasdan to'g'ridan-to'g'ri /dashboard ga o'ting
+Kutilgan | /login ga yo'naltirish yoki kirish so'rovi bilan tasdiqlanmagan holatni ko'rsatish
+Haqiqiy | Sahifa navigatsiya + altbilgi bilan yuklanadi, "Yuklanmoqda..." degan xabar noma'lum muddatga ko'rsatiladi. Yo'naltirish yo'q, avtorizatsiya eshigi yo'q.
+Tuzatish | Ishchi darajasida server tomonidagi autentifikatsiya tekshiruvini amalga oshiring. Boshqaruv paneli qobig'ini ishga tushirishdan oldin autentifikatsiya qilinmagan foydalanuvchilarni /login ga yo'naltiring.
+--- END TABLE ---
+
+
+--- TABLE ---
+Xato identifikatori | XATO-003
+Jiddiylik | YUQORI
+Ko'paytirish | / (3 ta element: Bosh sahifa, Konsol, Chat) va /prompts (6 ta element: Platforma, Konsol, Chat, Loyihalar, Promptlar, Haqida) sahifalaridagi navigatsiyani taqqoslang.
+Kutilgan | Bir xil elementlar va tuzilishga ega barcha sahifalarda izchil navigatsiya
+Haqiqiy | Ikkita mutlaqo boshqa navigatsiya komponenti. /leaderboard ommaviy 3 elementli navigatsiyadan foydalanadi, /about esa to'liq 6 elementli navigatsiyadan foydalanadi.
+Tuzatish | Yagona navigatsiya komponentiga birlashtiring. To'liq navigatsiyaga yetakchilar jadvali, boshqaruv paneli, nishonlar, ZKP havolalarini qo'shing. Faqat tasdiqlangan elementlarni ko'rsatish/yashirish uchun auth holatidan foydalaning.
+--- END TABLE ---
+
+
+--- TABLE ---
+Xato identifikatori | XATO-004
+Jiddiylik | YUQORI
+Ko'paytirish | Bosh sahifa qahramoni: "50 000 dan ortiq elita tadqiqotchilariga qo'shiling". Hamjamiyat bo'limi: "1 operator, 7 ta mamlakat, kuniga 200 dan ortiq signal"
+Kutilgan | Sahifa bo'ylab izchil va ishonchli statistika
+Haqiqiy | 50 000 foydalanuvchiga ega platforma bir vaqtning o'zida faqat bitta operatorga ega bo'la olmaydi. Qarama-qarshi ma'lumotlar ishonchni yo'q qiladi.
+Tuzatish | "50 000+" soxta statistikani olib tashlang. Hamjamiyat bo'limidan rostgo'y raqamlardan foydalaning yoki haqiqiy ma'lumotlar mavjud bo'lguncha statistikani butunlay olib tashlang.
+--- END TABLE ---
+
+
+--- TABLE ---
+Xato identifikatori | XATO-005
+Jiddiylik | O'RTA
+Ko'paytirish | /dashboard, /chat, /about, /prompts manbasini ko'rish — og:image va twitter:image storage.googleapis.com/gpt-engineer-file-uploads/ ga ishora qiladi.
+Kutilgan | OG tasvirlari o'z domenida yoki Cloudflare R2 da joylashtirilgan
+Haqiqiy | GPT Engineer fayl yuklash chelagiga tashqi bog'liqlik. Agar URL muddati tugasa yoki o'chirilsa, ijtimoiy tarmoqlar oldindan ko'rish funksiyalari jimgina uziladi.
+Tuzatish | Maxsus OG rasmlarini yarating, Cloudflare R2 yoki /public assets papkasiga yuklang. Barcha meta teglarni o'z-o'zidan joylashtirilgan URL manziliga yangilang.
+--- END TABLE ---
+
+
+--- TABLE ---
+Xato identifikatori | XATO-006
+Jiddiylik | YUQORI
+Ko'paytirish | /chatga o'ting
+Kutilgan | AI Assistant chat interfeysi
+Haqiqiy | Sahifa asosiy qismi butunlay bo'sh — sarlavha, pastki qism, yuklanish holati yo'q. Faqat meta teglar mavjud.
+Tuzatish | Chat komponentini amalga oshiring yoki ushbu funksiya ishlab chiqilayotganini ko'rsatuvchi joy egasi interfeysini qo'shing. Mutlaqo bo'sh sahifa hech qanday holatda qabul qilinishi mumkin emas.
+--- END TABLE ---
+
+
+--- TABLE ---
+KUCH | NIMA UCHUN ISHLAYDI
+Brend o'ziga xosligi va estetikasi | "Sovereign Terminal" vizual tili chinakamiga o'ziga xosdir. To'q rang palitrasi, kiber-yalpiz aksenti, orbital/sintetik lug'at — izchil va esda qolarli. Odatdagi talaba yoki mustaqil loyiha estetikasidan ancha yuqori.
+Cloudflare ishchilari arxitekturasi | To'g'ri infratuzilma tanlovi. Chegaraviy joylashtirish global miqyosda 50 ms dan kam TTFB, avtomatik masshtablash, sovuq ishga tushirishlar yo'qligi, o'rnatilgan DDoS himoyasini anglatadi. Xavfsizlik platformasi uchun aqlli qaror.
+Har bir sahifa uchun SEO meta teglari | Kanonik teglar, har bir sahifa uchun sarlavhalar, har bir sahifa uchun meta tavsiflar, OG teglari, Twitter kartalari — barchasi to'g'ri amalga oshirilgan. Ushbu darajadagi SEO sozlamalari hatto yetuk mahsulotlarda ham ko'pincha yo'q.
+Bosh sahifadagi kontent chuqurligi | Bosh sahifada muhim kontent mavjud: qahramon, xususiyatlar jadvali, loyiha kartalari, tezkor kutubxona, AI yordamchisi demosi, hamjamiyat bo'limi, altbilgi. Qo'nish sahifasi uchun yaxshi tuzilma.
+Prompts kutubxonasi (30 ta element) | 6 ta xavfsizlik toifasi bo'yicha jangovar sinovdan o'tgan 30 ta so'rov shablonlari kutubxonasi chindan ham foydali va o'ziga xosdir. Bu haqiqiy kontent aktividir.
+ZKP kontseptsiyasi yo'nalishi | CTF yechimlari uchun kriptografik tasdiqlashdan foydalanish g'oyasi innovatsion va to'g'ri. Hozirgi amalga oshirish chinakam ZKP bo'lmasa ham, konsepsiya to'g'ri va uni to'g'ri amalga oshirishga arziydi.
+Ko'p kanalli ijtimoiy mavjudlik | Telegram + YouTube + Instagram pastki qismda to'g'ri bog'langan. Xavfsizlik bo'yicha o'quv platformasi uchun hamjamiyatga yo'naltirilgan yondashuv to'g'ri.
+Tahdid emulyatsiyasi kontseptsiyasi | /threats sahifasi sun'iy intellekt tomonidan yaratilgan hujum vektorlarini taqdim etadi, bu maqsadli bozor uchun chinakam foydali va yangi xususiyatdir. Asosiy qiymat taklifi ishonchli.
+HTTPS + .dev TLD HSTS | .dev TLD HSTS oldindan yuklangan bo'lib, barcha ulanishlar HSTS ni qo'lda sozlashsiz sukut bo'yicha shifrlanganligini ta'minlaydi. Yaxshi boshlang'ich ko'rsatkich.
+Kinematik kopirayting | "Sintetik davrni himoya qiling", "Avtonom davr uchun suveren razvedka", "Agar bizdan xabar olsangiz, biz muvaffaqiyatsizlikka uchradik" — kopirayting yaxshi tayyorlangan, yuqori sifatli va brendga mos keladi.
+--- END TABLE ---
+
+
+--- TABLE ---
+# | HARAKAT | AMALIYOTGA OLISH
+1 | Xavfsizlik sarlavhalarini qo'shish | Cloudflare Worker ilovasida: o'rta dastur orqali har bir javobga CSP, X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy qo'shing.
+2 | Himoyalangan marshrutlarda server tomonidagi avtorizatsiya | /dashboard, /console, /leaderboard, /targets manzillarini taqdim etishdan oldin Worker ilovasida JWT/session cookie-faylini tekshiring. Agar noto'g'ri bo'lsa, 302 yo'naltirishni /login manziliga qaytaring.
+3 | Sun'iy intellektning so'nggi nuqtalarida avtorizatsiya eshigi | /api/threats, /api/zkp, /api/chat da autentifikatsiya talab qilinadi. Tezlikni cheklashni qo'shish (Cloudflare tezlikni cheklash qoidalari).
+4 | Bo'sh sahifani tuzatish/chat | Komponentni amalga oshiring yoki tegishli joy egasini ko'rsating. Bo'sh sahifa jiddiy xato hisoblanadi.
+5 | Soxta statistikani olib tashlang | "50 000+ elita tadqiqotchilari" ni olib tashlang. O'rniga "Erta kirish hamjamiyati" yoki "Beta dasturi" kabi halol nusxalarni qo'ying.
+--- END TABLE ---
+
+
+--- TABLE ---
+HUKM | ISHLAB CHIQARISHGA TAYYOR EMAS
+Professional daraja | ~28% — Kuchli dizayn tasavvuri (70%+) muhim xavfsizlik kamchiliklari (28%), bo'sh funksiyalar (bir nechta buzilgan sahifalar) va ishonchlilikni yo'q qiladigan yolg'on statistika tufayli sustlashdi.
+Beta-tayyorlik | Borderline. Muhim xavfsizlik sarlavhalarini tuzatish va soxta statistikani olib tashlash bilan, taxminan 2-3 haftalik diqqat bilan ishlash natijasida qonuniy yopiq beta-versiya sifatida qabul qilinishi mumkin.
+Bozor pozitsiyasi | To'g'ri. CTF + AI + ZKP hisob ma'lumotlari to'plami kiberxavfsizlik bo'yicha o'qitish bozorida chinakam farqlangan burchakdir.
+--- END TABLE ---
+
+
+--- TABLE ---
+# | SONI | JIDDIYLIK | TA'SIR
+1 | Xavfsizlik sarlavhalari yo'q (CSP, X-Frame va boshqalar) | MUHIM | To'liq XSS ekspluatatsiya yuzasi, kliklash, MIME hujumlari
+2 | Himoyalangan marshrutlarda faqat mijoz tomonidan avtorizatsiya | MUHIM | Har kim tizimga kirmasdan /dashboardga o'tishi mumkin
+3 | Tasdiqlanmagan AI so'nggi nuqtasi (/tahdidlar) | MUHIM | API xarajatlarining tugashi, zararli aktyorlar tomonidan suiiste'mol qilish
+4 | /chat sahifasi butunlay bo'sh | YUQORI | Asosiy xususiyat funktsional emas
+5 | 11 sahifadan 5 tasi buzilgan/bo'sh | YUQORI | Mahsulot tugallanmagan ko'rinadi, yangi foydalanuvchilarning e'tiborini tortadi
+6 | Soxta "50 000+ foydalanuvchi" statistikasi | YUQORI | Yolg'onni aniqlashga o'rgatilgan xavfsizlik auditoriyasi bilan ishonchni yo'q qiladi
+7 | ZKP aslida shunchaki xeshlashyapti | YUQORI | Tartibga solingan bozorlarda potentsial yolg'on reklama da'vosi
+8 | workers.dev domeni ishlatilmoqda | YUQORI | Obro' xavfi, SEO kamchiliklari, фишинг assotsiatsiyasi
+9 | Ikkita navigatsiya tizimlari | YUQORI | Foydalanuvchi interfeysining jiddiy nomuvofiqligi, rejalashtirilmagan xususiyatlarning o'sishini ko'rsatadi
+10 | Huquqiy sahifalar yo'q (Maxfiylik/Qoidalarga rioya qilish shartlari) | O'RTA | Har qanday Yevropa Ittifoqi/xalqaro foydalanuvchilar uchun GDPR/tartibga solish qoidalarini buzish xavfi
+--- END TABLE ---
+
+
+--- TABLE ---
+# | KUCH | NIMA UCHUN BU MUHIM
+1 | Brend va vizual identifikatsiya | Chinakamiga o'ziga xos. Shablon emas. Haqiqiy dizayn niyatini ko'rsatadi.
+2 | Cloudflare ishchilarini joylashtirish | To'g'ri infratuzilma tanlovi — chekka, kengaytiriladigan, global miqyosda tezkor.
+3 | Har bir sahifa uchun SEO amalga oshirish | Canonical, OG, Twitter kartalari to'g'ri sozlangan. Dastlabki bosqichdagi mahsulot uchun o'rtacha ko'rsatkichdan yuqori.
+4 | 30 ta so'rovli kontent kutubxonasi | Haqiqiy, foydalanishga yaroqli kontent aktivi. Bo'sh raqobatchilardan ajralib turadi.
+5 | CTF + AI + ZKP kontseptsiyasi to'plami | Kiberxavfsizlik bo'yicha o'qitish bozorida chinakam yangi pozitsiya.
+6 | HTTPS / TLS majburiy | .dev HSTS oldindan yuklanishi konfiguratsiyasiz asosiy shifrlashni ta'minlaydi.
+7 | Kinematik, premium kopirayting | Brend ovozi izchil, intiluvchan va maqsadli auditoriyaga mos keladi.
+8 | Tahdid emulyatsiyasi kontseptsiyasi | Sun'iy intellektga asoslangan raqib simulyatsiyasi, agar to'g'ri qo'llanilsa, yuqori qiymatli farqlovchi vositadir.
+9 | Ko'p kanalli ijtimoiy mavjudlik | Telegram + YouTube + Instagram hamjamiyat o'sishi uchun to'g'ri sozlangan.
+10 | 5 ta loyiha portfeli namoyishi | Orbital Sentinel, Cyber-Pilot, Policy Mesh, Neyron Topologiyasi, Intsident Playbooks — texnik ko'lam va ambitsiyalarni namoyish etadi.
+--- END TABLE ---

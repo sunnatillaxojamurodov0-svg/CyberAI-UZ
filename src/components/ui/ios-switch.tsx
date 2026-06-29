@@ -30,9 +30,7 @@ export function IOSSwitch({ checked, onChange, className, label }: IOSSwitchProp
           )}
         />
       </div>
-      {label && (
-        <span className="text-sm font-medium text-muted-foreground">{label}</span>
-      )}
+      {label && <span className="text-sm font-medium text-muted-foreground">{label}</span>}
     </label>
   );
 }

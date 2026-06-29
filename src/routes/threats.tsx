@@ -18,10 +18,10 @@ export const Route = createFileRoute("/threats")({
       { property: "og:title", content: "CyberAI — Threat Emulation" },
       { property: "og:description", content: "Automated threat generation and analysis." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/threats" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/threats" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/threats" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/threats" }],
   }),
   component: ThreatsRoute,
 });

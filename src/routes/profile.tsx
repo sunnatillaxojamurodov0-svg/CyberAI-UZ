@@ -11,9 +11,9 @@ export const Route = createFileRoute("/profile")({
       { title: "CyberAI — Profile" },
       { name: "description", content: "User profile and settings." },
       { property: "og:title", content: "CyberAI — Profile" },
-      { property: "og:url", content: "/profile" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/profile" },
     ],
-    links: [{ rel: "canonical", href: "/profile" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/profile" }],
   }),
   component: ProfileRoute,
 });

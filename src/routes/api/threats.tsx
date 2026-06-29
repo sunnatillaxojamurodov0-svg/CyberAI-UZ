@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type {} from "@tanstack/react-start";
+import type { } from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
@@ -138,10 +138,11 @@ Return ONLY valid JSON array of threat vectors. No markdown, no explanation.`;
             },
           );
         } catch (err) {
+          console.error("Threats POST error:", err);
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to generate threats",
+              error: "Failed to generate threats",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

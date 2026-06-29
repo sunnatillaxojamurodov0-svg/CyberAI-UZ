@@ -243,6 +243,7 @@ export function ZKPPage() {
                     <button
                       type="button"
                       onClick={() => copyToClipboard(proof.id)}
+                      aria-label="Copy proof ID"
                       className="rounded-lg border border-border bg-surface p-2 text-muted-foreground hover:text-foreground"
                     >
                       <Copy size={12} />
@@ -261,6 +262,7 @@ export function ZKPPage() {
                     <button
                       type="button"
                       onClick={() => copyToClipboard(proof.proof_hash)}
+                      aria-label="Copy proof hash"
                       className="rounded-lg border border-border bg-surface p-2 text-muted-foreground hover:text-foreground"
                     >
                       <Copy size={12} />

@@ -296,7 +296,11 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
 
         {/* Hidden model badge — always VAEL, no selector shown */}
         <div className="hidden shrink-0">
-          {selectedModel.id === "groq-gpt" ? <Zap size={13} className="text-accent" /> : <Bot size={13} className="text-accent" />}
+          {selectedModel.id === "groq-gpt" ? (
+            <Zap size={13} className="text-accent" />
+          ) : (
+            <Bot size={13} className="text-accent" />
+          )}
         </div>
 
         <textarea

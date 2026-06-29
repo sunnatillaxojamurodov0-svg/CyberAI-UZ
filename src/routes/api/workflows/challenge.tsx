@@ -44,11 +44,11 @@ export const Route = createFileRoute("/api/workflows/challenge")({
             status: 202,
             headers: { "Content-Type": "application/json" },
           });
-        } catch (err) {
+        } catch {
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Workflow failed",
+              error: "Workflow failed",
             }),
             {
               status: 500,

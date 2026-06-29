@@ -1,12 +1,29 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 
 export const Route = createFileRoute("/api/workflows/analysis")({
   server: {
     handlers: {
       POST: async ({ request }) => {
         try {
+          const token = getSessionToken(request);
+          if (!token) {
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const session = await verifySession(token);
+          if (!session.ok || !session.user) {
+            return new Response(JSON.stringify({ ok: false, error: "Invalid session" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const env = getEnv();
           const workflow = env.CONSOLE_ANALYSIS as
             | { create: (opts: { id?: string; params: unknown }) => Promise<{ id: string }> }
@@ -17,20 +34,19 @@ export const Route = createFileRoute("/api/workflows/analysis")({
 
           const body = (await request.json()) as {
             sessionId?: string;
-            userId?: string;
             commandHistory?: string[];
             challengeId?: string;
           };
 
-          if (!body.sessionId || !body.userId) {
-            return new Response("sessionId and userId are required.", { status: 400 });
+          if (!body.sessionId) {
+            return new Response("sessionId is required.", { status: 400 });
           }
 
           const instance = await workflow.create({
             id: `analysis-${body.sessionId}`,
             params: {
               sessionId: body.sessionId,
-              userId: body.userId,
+              userId: session.user.id,
               commandHistory: body.commandHistory ?? [],
               challengeId: body.challengeId ?? "unknown",
             },
@@ -40,11 +56,11 @@ export const Route = createFileRoute("/api/workflows/analysis")({
             status: 202,
             headers: { "Content-Type": "application/json" },
           });
-        } catch (err) {
+        } catch {
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Workflow failed",
+              error: "Workflow failed",
             }),
             {
               status: 500,

@@ -37,7 +37,11 @@ export function ModelSelector({ selected, onChange }: ModelSelectorProps) {
         )}
       >
         <div className="grid size-7 shrink-0 place-items-center rounded-lg bg-accent/10">
-          {selected.id === "groq-gpt" ? <Zap size={14} className="text-accent" /> : <Bot size={14} className="text-accent" />}
+          {selected.id === "groq-gpt" ? (
+            <Zap size={14} className="text-accent" />
+          ) : (
+            <Bot size={14} className="text-accent" />
+          )}
         </div>
         <div className="min-w-0 text-left">
           <div className="truncate text-xs font-semibold text-foreground leading-tight">
@@ -84,7 +88,11 @@ export function ModelSelector({ selected, onChange }: ModelSelectorProps) {
                     )}
                   >
                     <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-accent/10">
-                      {model.id === "groq-gpt" ? <Zap size={15} className="text-accent" /> : <Bot size={15} className="text-accent" />}
+                      {model.id === "groq-gpt" ? (
+                        <Zap size={15} className="text-accent" />
+                      ) : (
+                        <Bot size={15} className="text-accent" />
+                      )}
                     </div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">

@@ -18,10 +18,10 @@ export const Route = createFileRoute("/zkp")({
       { property: "og:title", content: "CyberAI — Zero-Knowledge Proofs" },
       { property: "og:description", content: "Cryptographic proof of CTF solutions." },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/zkp" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/zkp" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/zkp" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/zkp" }],
   }),
   component: ZKPRoute,
 });

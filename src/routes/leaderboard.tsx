@@ -22,10 +22,10 @@ export const Route = createFileRoute("/leaderboard")({
         content: "Global CTF leaderboard. Compete and climb the ranks.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "/leaderboard" },
+      { property: "og:url", content: "https://app.cyberaiuz.workers.dev/leaderboard" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "canonical", href: "/leaderboard" }],
+    links: [{ rel: "canonical", href: "https://app.cyberaiuz.workers.dev/leaderboard" }],
   }),
   component: LeaderboardRoute,
 });

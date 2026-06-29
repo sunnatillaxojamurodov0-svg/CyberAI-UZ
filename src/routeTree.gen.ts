@@ -38,8 +38,14 @@ import { Route as ApiWorkflowsOnboardingRouteImport } from './routes/api/workflo
 import { Route as ApiWorkflowsChallengeRouteImport } from './routes/api/workflows/challenge'
 import { Route as ApiWorkflowsAnalysisRouteImport } from './routes/api/workflows/analysis'
 import { Route as ApiWebhooksStripeRouteImport } from './routes/api/webhooks/stripe'
+import { Route as ApiUserSettingsRouteImport } from './routes/api/user/settings'
+import { Route as ApiUserProfileRouteImport } from './routes/api/user/profile'
+import { Route as ApiUserAvatarRouteImport } from './routes/api/user/avatar'
 import { Route as ApiDashboardStatsRouteImport } from './routes/api/dashboard/stats'
+import { Route as ApiConsoleRatingsRouteImport } from './routes/api/console/ratings'
+import { Route as ApiConsoleProgressRouteImport } from './routes/api/console/progress'
 import { Route as ApiConsoleHintRouteImport } from './routes/api/console/hint'
+import { Route as ApiConsoleAnalyticsRouteImport } from './routes/api/console/analytics'
 import { Route as ApiChallengesVerifyRouteImport } from './routes/api/challenges/verify'
 import { Route as ApiChallengesSubmitRouteImport } from './routes/api/challenges/submit'
 import { Route as ApiAuthVerifyRouteImport } from './routes/api/auth/verify'
@@ -50,10 +56,14 @@ import { Route as ApiAuthLogoutRouteImport } from './routes/api/auth/logout'
 import { Route as ApiAuthLoginRouteImport } from './routes/api/auth/login'
 import { Route as ApiAuthGoogleRouteImport } from './routes/api/auth/google'
 import { Route as ApiAuthGithubRouteImport } from './routes/api/auth/github'
+import { Route as ApiAuthChangePasswordRouteImport } from './routes/api/auth/change-password'
 import { Route as ApiAuth2faRouteImport } from './routes/api/auth/2fa'
+import { Route as ApiAdminPinRouteImport } from './routes/api/admin/pin'
 import { Route as ApiAdminChallengesRouteImport } from './routes/api/admin/challenges'
+import { Route as ApiConsoleAnalyticsDifficultyRouteImport } from './routes/api/console/analytics/difficulty'
 import { Route as ApiAuthGoogleCallbackRouteImport } from './routes/api/auth/google/callback'
 import { Route as ApiAuthGithubCallbackRouteImport } from './routes/api/auth/github/callback'
+import { Route as ApiAdminPinVerifyRouteImport } from './routes/api/admin/pin/verify'
 
 const ZkpRoute = ZkpRouteImport.update({
   id: '/zkp',
@@ -200,14 +210,44 @@ const ApiWebhooksStripeRoute = ApiWebhooksStripeRouteImport.update({
   path: '/api/webhooks/stripe',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiUserSettingsRoute = ApiUserSettingsRouteImport.update({
+  id: '/api/user/settings',
+  path: '/api/user/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUserProfileRoute = ApiUserProfileRouteImport.update({
+  id: '/api/user/profile',
+  path: '/api/user/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiUserAvatarRoute = ApiUserAvatarRouteImport.update({
+  id: '/api/user/avatar',
+  path: '/api/user/avatar',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDashboardStatsRoute = ApiDashboardStatsRouteImport.update({
   id: '/api/dashboard/stats',
   path: '/api/dashboard/stats',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConsoleRatingsRoute = ApiConsoleRatingsRouteImport.update({
+  id: '/api/console/ratings',
+  path: '/api/console/ratings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiConsoleProgressRoute = ApiConsoleProgressRouteImport.update({
+  id: '/api/console/progress',
+  path: '/api/console/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiConsoleHintRoute = ApiConsoleHintRouteImport.update({
   id: '/api/console/hint',
   path: '/api/console/hint',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiConsoleAnalyticsRoute = ApiConsoleAnalyticsRouteImport.update({
+  id: '/api/console/analytics',
+  path: '/api/console/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChallengesVerifyRoute = ApiChallengesVerifyRouteImport.update({
@@ -260,9 +300,19 @@ const ApiAuthGithubRoute = ApiAuthGithubRouteImport.update({
   path: '/api/auth/github',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuthChangePasswordRoute = ApiAuthChangePasswordRouteImport.update({
+  id: '/api/auth/change-password',
+  path: '/api/auth/change-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuth2faRoute = ApiAuth2faRouteImport.update({
   id: '/api/auth/2fa',
   path: '/api/auth/2fa',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminPinRoute = ApiAdminPinRouteImport.update({
+  id: '/api/admin/pin',
+  path: '/api/admin/pin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAdminChallengesRoute = ApiAdminChallengesRouteImport.update({
@@ -270,6 +320,12 @@ const ApiAdminChallengesRoute = ApiAdminChallengesRouteImport.update({
   path: '/api/admin/challenges',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiConsoleAnalyticsDifficultyRoute =
+  ApiConsoleAnalyticsDifficultyRouteImport.update({
+    id: '/difficulty',
+    path: '/difficulty',
+    getParentRoute: () => ApiConsoleAnalyticsRoute,
+  } as any)
 const ApiAuthGoogleCallbackRoute = ApiAuthGoogleCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
@@ -279,6 +335,11 @@ const ApiAuthGithubCallbackRoute = ApiAuthGithubCallbackRouteImport.update({
   id: '/callback',
   path: '/callback',
   getParentRoute: () => ApiAuthGithubRoute,
+} as any)
+const ApiAdminPinVerifyRoute = ApiAdminPinVerifyRouteImport.update({
+  id: '/verify',
+  path: '/verify',
+  getParentRoute: () => ApiAdminPinRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -308,7 +369,9 @@ export interface FileRoutesByFullPath {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/api/admin/challenges': typeof ApiAdminChallengesRoute
+  '/api/admin/pin': typeof ApiAdminPinRouteWithChildren
   '/api/auth/2fa': typeof ApiAuth2faRoute
+  '/api/auth/change-password': typeof ApiAuthChangePasswordRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -319,14 +382,22 @@ export interface FileRoutesByFullPath {
   '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/challenges/submit': typeof ApiChallengesSubmitRoute
   '/api/challenges/verify': typeof ApiChallengesVerifyRoute
+  '/api/console/analytics': typeof ApiConsoleAnalyticsRouteWithChildren
   '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/console/progress': typeof ApiConsoleProgressRoute
+  '/api/console/ratings': typeof ApiConsoleRatingsRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/user/avatar': typeof ApiUserAvatarRoute
+  '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/user/settings': typeof ApiUserSettingsRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/workflows/analysis': typeof ApiWorkflowsAnalysisRoute
   '/api/workflows/challenge': typeof ApiWorkflowsChallengeRoute
   '/api/workflows/onboarding': typeof ApiWorkflowsOnboardingRoute
+  '/api/admin/pin/verify': typeof ApiAdminPinVerifyRoute
   '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
   '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
+  '/api/console/analytics/difficulty': typeof ApiConsoleAnalyticsDifficultyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -355,7 +426,9 @@ export interface FileRoutesByTo {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/api/admin/challenges': typeof ApiAdminChallengesRoute
+  '/api/admin/pin': typeof ApiAdminPinRouteWithChildren
   '/api/auth/2fa': typeof ApiAuth2faRoute
+  '/api/auth/change-password': typeof ApiAuthChangePasswordRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -366,14 +439,22 @@ export interface FileRoutesByTo {
   '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/challenges/submit': typeof ApiChallengesSubmitRoute
   '/api/challenges/verify': typeof ApiChallengesVerifyRoute
+  '/api/console/analytics': typeof ApiConsoleAnalyticsRouteWithChildren
   '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/console/progress': typeof ApiConsoleProgressRoute
+  '/api/console/ratings': typeof ApiConsoleRatingsRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/user/avatar': typeof ApiUserAvatarRoute
+  '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/user/settings': typeof ApiUserSettingsRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/workflows/analysis': typeof ApiWorkflowsAnalysisRoute
   '/api/workflows/challenge': typeof ApiWorkflowsChallengeRoute
   '/api/workflows/onboarding': typeof ApiWorkflowsOnboardingRoute
+  '/api/admin/pin/verify': typeof ApiAdminPinVerifyRoute
   '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
   '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
+  '/api/console/analytics/difficulty': typeof ApiConsoleAnalyticsDifficultyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -403,7 +484,9 @@ export interface FileRoutesById {
   '/auth/reset-password': typeof AuthResetPasswordRoute
   '/auth/verify': typeof AuthVerifyRoute
   '/api/admin/challenges': typeof ApiAdminChallengesRoute
+  '/api/admin/pin': typeof ApiAdminPinRouteWithChildren
   '/api/auth/2fa': typeof ApiAuth2faRoute
+  '/api/auth/change-password': typeof ApiAuthChangePasswordRoute
   '/api/auth/github': typeof ApiAuthGithubRouteWithChildren
   '/api/auth/google': typeof ApiAuthGoogleRouteWithChildren
   '/api/auth/login': typeof ApiAuthLoginRoute
@@ -414,14 +497,22 @@ export interface FileRoutesById {
   '/api/auth/verify': typeof ApiAuthVerifyRoute
   '/api/challenges/submit': typeof ApiChallengesSubmitRoute
   '/api/challenges/verify': typeof ApiChallengesVerifyRoute
+  '/api/console/analytics': typeof ApiConsoleAnalyticsRouteWithChildren
   '/api/console/hint': typeof ApiConsoleHintRoute
+  '/api/console/progress': typeof ApiConsoleProgressRoute
+  '/api/console/ratings': typeof ApiConsoleRatingsRoute
   '/api/dashboard/stats': typeof ApiDashboardStatsRoute
+  '/api/user/avatar': typeof ApiUserAvatarRoute
+  '/api/user/profile': typeof ApiUserProfileRoute
+  '/api/user/settings': typeof ApiUserSettingsRoute
   '/api/webhooks/stripe': typeof ApiWebhooksStripeRoute
   '/api/workflows/analysis': typeof ApiWorkflowsAnalysisRoute
   '/api/workflows/challenge': typeof ApiWorkflowsChallengeRoute
   '/api/workflows/onboarding': typeof ApiWorkflowsOnboardingRoute
+  '/api/admin/pin/verify': typeof ApiAdminPinVerifyRoute
   '/api/auth/github/callback': typeof ApiAuthGithubCallbackRoute
   '/api/auth/google/callback': typeof ApiAuthGoogleCallbackRoute
+  '/api/console/analytics/difficulty': typeof ApiConsoleAnalyticsDifficultyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -452,7 +543,9 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify'
     | '/api/admin/challenges'
+    | '/api/admin/pin'
     | '/api/auth/2fa'
+    | '/api/auth/change-password'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
@@ -463,14 +556,22 @@ export interface FileRouteTypes {
     | '/api/auth/verify'
     | '/api/challenges/submit'
     | '/api/challenges/verify'
+    | '/api/console/analytics'
     | '/api/console/hint'
+    | '/api/console/progress'
+    | '/api/console/ratings'
     | '/api/dashboard/stats'
+    | '/api/user/avatar'
+    | '/api/user/profile'
+    | '/api/user/settings'
     | '/api/webhooks/stripe'
     | '/api/workflows/analysis'
     | '/api/workflows/challenge'
     | '/api/workflows/onboarding'
+    | '/api/admin/pin/verify'
     | '/api/auth/github/callback'
     | '/api/auth/google/callback'
+    | '/api/console/analytics/difficulty'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -499,7 +600,9 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify'
     | '/api/admin/challenges'
+    | '/api/admin/pin'
     | '/api/auth/2fa'
+    | '/api/auth/change-password'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
@@ -510,14 +613,22 @@ export interface FileRouteTypes {
     | '/api/auth/verify'
     | '/api/challenges/submit'
     | '/api/challenges/verify'
+    | '/api/console/analytics'
     | '/api/console/hint'
+    | '/api/console/progress'
+    | '/api/console/ratings'
     | '/api/dashboard/stats'
+    | '/api/user/avatar'
+    | '/api/user/profile'
+    | '/api/user/settings'
     | '/api/webhooks/stripe'
     | '/api/workflows/analysis'
     | '/api/workflows/challenge'
     | '/api/workflows/onboarding'
+    | '/api/admin/pin/verify'
     | '/api/auth/github/callback'
     | '/api/auth/google/callback'
+    | '/api/console/analytics/difficulty'
   id:
     | '__root__'
     | '/'
@@ -546,7 +657,9 @@ export interface FileRouteTypes {
     | '/auth/reset-password'
     | '/auth/verify'
     | '/api/admin/challenges'
+    | '/api/admin/pin'
     | '/api/auth/2fa'
+    | '/api/auth/change-password'
     | '/api/auth/github'
     | '/api/auth/google'
     | '/api/auth/login'
@@ -557,14 +670,22 @@ export interface FileRouteTypes {
     | '/api/auth/verify'
     | '/api/challenges/submit'
     | '/api/challenges/verify'
+    | '/api/console/analytics'
     | '/api/console/hint'
+    | '/api/console/progress'
+    | '/api/console/ratings'
     | '/api/dashboard/stats'
+    | '/api/user/avatar'
+    | '/api/user/profile'
+    | '/api/user/settings'
     | '/api/webhooks/stripe'
     | '/api/workflows/analysis'
     | '/api/workflows/challenge'
     | '/api/workflows/onboarding'
+    | '/api/admin/pin/verify'
     | '/api/auth/github/callback'
     | '/api/auth/google/callback'
+    | '/api/console/analytics/difficulty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -594,7 +715,9 @@ export interface RootRouteChildren {
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
   AuthVerifyRoute: typeof AuthVerifyRoute
   ApiAdminChallengesRoute: typeof ApiAdminChallengesRoute
+  ApiAdminPinRoute: typeof ApiAdminPinRouteWithChildren
   ApiAuth2faRoute: typeof ApiAuth2faRoute
+  ApiAuthChangePasswordRoute: typeof ApiAuthChangePasswordRoute
   ApiAuthGithubRoute: typeof ApiAuthGithubRouteWithChildren
   ApiAuthGoogleRoute: typeof ApiAuthGoogleRouteWithChildren
   ApiAuthLoginRoute: typeof ApiAuthLoginRoute
@@ -605,8 +728,14 @@ export interface RootRouteChildren {
   ApiAuthVerifyRoute: typeof ApiAuthVerifyRoute
   ApiChallengesSubmitRoute: typeof ApiChallengesSubmitRoute
   ApiChallengesVerifyRoute: typeof ApiChallengesVerifyRoute
+  ApiConsoleAnalyticsRoute: typeof ApiConsoleAnalyticsRouteWithChildren
   ApiConsoleHintRoute: typeof ApiConsoleHintRoute
+  ApiConsoleProgressRoute: typeof ApiConsoleProgressRoute
+  ApiConsoleRatingsRoute: typeof ApiConsoleRatingsRoute
   ApiDashboardStatsRoute: typeof ApiDashboardStatsRoute
+  ApiUserAvatarRoute: typeof ApiUserAvatarRoute
+  ApiUserProfileRoute: typeof ApiUserProfileRoute
+  ApiUserSettingsRoute: typeof ApiUserSettingsRoute
   ApiWebhooksStripeRoute: typeof ApiWebhooksStripeRoute
 }
 
@@ -815,6 +944,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiWebhooksStripeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/user/settings': {
+      id: '/api/user/settings'
+      path: '/api/user/settings'
+      fullPath: '/api/user/settings'
+      preLoaderRoute: typeof ApiUserSettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/user/profile': {
+      id: '/api/user/profile'
+      path: '/api/user/profile'
+      fullPath: '/api/user/profile'
+      preLoaderRoute: typeof ApiUserProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/user/avatar': {
+      id: '/api/user/avatar'
+      path: '/api/user/avatar'
+      fullPath: '/api/user/avatar'
+      preLoaderRoute: typeof ApiUserAvatarRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/dashboard/stats': {
       id: '/api/dashboard/stats'
       path: '/api/dashboard/stats'
@@ -822,11 +972,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiDashboardStatsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/console/ratings': {
+      id: '/api/console/ratings'
+      path: '/api/console/ratings'
+      fullPath: '/api/console/ratings'
+      preLoaderRoute: typeof ApiConsoleRatingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/console/progress': {
+      id: '/api/console/progress'
+      path: '/api/console/progress'
+      fullPath: '/api/console/progress'
+      preLoaderRoute: typeof ApiConsoleProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/console/hint': {
       id: '/api/console/hint'
       path: '/api/console/hint'
       fullPath: '/api/console/hint'
       preLoaderRoute: typeof ApiConsoleHintRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/console/analytics': {
+      id: '/api/console/analytics'
+      path: '/api/console/analytics'
+      fullPath: '/api/console/analytics'
+      preLoaderRoute: typeof ApiConsoleAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/challenges/verify': {
@@ -899,11 +1070,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthGithubRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/auth/change-password': {
+      id: '/api/auth/change-password'
+      path: '/api/auth/change-password'
+      fullPath: '/api/auth/change-password'
+      preLoaderRoute: typeof ApiAuthChangePasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/2fa': {
       id: '/api/auth/2fa'
       path: '/api/auth/2fa'
       fullPath: '/api/auth/2fa'
       preLoaderRoute: typeof ApiAuth2faRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/pin': {
+      id: '/api/admin/pin'
+      path: '/api/admin/pin'
+      fullPath: '/api/admin/pin'
+      preLoaderRoute: typeof ApiAdminPinRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/admin/challenges': {
@@ -912,6 +1097,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/admin/challenges'
       preLoaderRoute: typeof ApiAdminChallengesRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/api/console/analytics/difficulty': {
+      id: '/api/console/analytics/difficulty'
+      path: '/difficulty'
+      fullPath: '/api/console/analytics/difficulty'
+      preLoaderRoute: typeof ApiConsoleAnalyticsDifficultyRouteImport
+      parentRoute: typeof ApiConsoleAnalyticsRoute
     }
     '/api/auth/google/callback': {
       id: '/api/auth/google/callback'
@@ -926,6 +1118,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/auth/github/callback'
       preLoaderRoute: typeof ApiAuthGithubCallbackRouteImport
       parentRoute: typeof ApiAuthGithubRoute
+    }
+    '/api/admin/pin/verify': {
+      id: '/api/admin/pin/verify'
+      path: '/verify'
+      fullPath: '/api/admin/pin/verify'
+      preLoaderRoute: typeof ApiAdminPinVerifyRouteImport
+      parentRoute: typeof ApiAdminPinRoute
     }
   }
 }
@@ -944,6 +1143,18 @@ const ApiWorkflowsRouteChildren: ApiWorkflowsRouteChildren = {
 
 const ApiWorkflowsRouteWithChildren = ApiWorkflowsRoute._addFileChildren(
   ApiWorkflowsRouteChildren,
+)
+
+interface ApiAdminPinRouteChildren {
+  ApiAdminPinVerifyRoute: typeof ApiAdminPinVerifyRoute
+}
+
+const ApiAdminPinRouteChildren: ApiAdminPinRouteChildren = {
+  ApiAdminPinVerifyRoute: ApiAdminPinVerifyRoute,
+}
+
+const ApiAdminPinRouteWithChildren = ApiAdminPinRoute._addFileChildren(
+  ApiAdminPinRouteChildren,
 )
 
 interface ApiAuthGithubRouteChildren {
@@ -969,6 +1180,17 @@ const ApiAuthGoogleRouteChildren: ApiAuthGoogleRouteChildren = {
 const ApiAuthGoogleRouteWithChildren = ApiAuthGoogleRoute._addFileChildren(
   ApiAuthGoogleRouteChildren,
 )
+
+interface ApiConsoleAnalyticsRouteChildren {
+  ApiConsoleAnalyticsDifficultyRoute: typeof ApiConsoleAnalyticsDifficultyRoute
+}
+
+const ApiConsoleAnalyticsRouteChildren: ApiConsoleAnalyticsRouteChildren = {
+  ApiConsoleAnalyticsDifficultyRoute: ApiConsoleAnalyticsDifficultyRoute,
+}
+
+const ApiConsoleAnalyticsRouteWithChildren =
+  ApiConsoleAnalyticsRoute._addFileChildren(ApiConsoleAnalyticsRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
@@ -997,7 +1219,9 @@ const rootRouteChildren: RootRouteChildren = {
   AuthResetPasswordRoute: AuthResetPasswordRoute,
   AuthVerifyRoute: AuthVerifyRoute,
   ApiAdminChallengesRoute: ApiAdminChallengesRoute,
+  ApiAdminPinRoute: ApiAdminPinRouteWithChildren,
   ApiAuth2faRoute: ApiAuth2faRoute,
+  ApiAuthChangePasswordRoute: ApiAuthChangePasswordRoute,
   ApiAuthGithubRoute: ApiAuthGithubRouteWithChildren,
   ApiAuthGoogleRoute: ApiAuthGoogleRouteWithChildren,
   ApiAuthLoginRoute: ApiAuthLoginRoute,
@@ -1008,8 +1232,14 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAuthVerifyRoute: ApiAuthVerifyRoute,
   ApiChallengesSubmitRoute: ApiChallengesSubmitRoute,
   ApiChallengesVerifyRoute: ApiChallengesVerifyRoute,
+  ApiConsoleAnalyticsRoute: ApiConsoleAnalyticsRouteWithChildren,
   ApiConsoleHintRoute: ApiConsoleHintRoute,
+  ApiConsoleProgressRoute: ApiConsoleProgressRoute,
+  ApiConsoleRatingsRoute: ApiConsoleRatingsRoute,
   ApiDashboardStatsRoute: ApiDashboardStatsRoute,
+  ApiUserAvatarRoute: ApiUserAvatarRoute,
+  ApiUserProfileRoute: ApiUserProfileRoute,
+  ApiUserSettingsRoute: ApiUserSettingsRoute,
   ApiWebhooksStripeRoute: ApiWebhooksStripeRoute,
 }
 export const routeTree = rootRouteImport

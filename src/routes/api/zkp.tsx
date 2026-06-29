@@ -116,11 +116,11 @@ export const Route = createFileRoute("/api/zkp")({
               headers: { "Content-Type": "application/json" },
             },
           );
-        } catch (err) {
+        } catch {
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to generate proof",
+              error: "Failed to generate proof",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
@@ -129,6 +129,22 @@ export const Route = createFileRoute("/api/zkp")({
 
       GET: async ({ request }) => {
         try {
+          const token = getSessionToken(request);
+          if (!token) {
+            return new Response(JSON.stringify({ ok: false, error: "Authentication required" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
+          const session = await verifySession(token);
+          if (!session.ok || !session.user) {
+            return new Response(JSON.stringify({ ok: false, error: "Invalid session" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+
           const url = new URL(request.url);
           const proofId = url.searchParams.get("id");
           const challengeId = url.searchParams.get("challenge_id");
@@ -144,13 +160,13 @@ export const Route = createFileRoute("/api/zkp")({
           let proof;
 
           if (proofId) {
-            const session = await db
-              .prepare("SELECT command_history FROM console_sessions WHERE id = ?")
+            const proofSession = await db
+              .prepare("SELECT user_id, command_history FROM console_sessions WHERE id = ?")
               .bind(proofId)
-              .first<{ command_history: string }>();
+              .first<{ user_id: string; command_history: string }>();
 
-            if (session) {
-              const data = JSON.parse(session.command_history);
+            if (proofSession && proofSession.user_id === session.user.id) {
+              const data = JSON.parse(proofSession.command_history);
               if (data.type === "zkp_proof") {
                 proof = { id: proofId, ...data };
               }
@@ -160,9 +176,9 @@ export const Route = createFileRoute("/api/zkp")({
           if (!proof && challengeId) {
             const sessions = await db
               .prepare(
-                "SELECT id, command_history FROM console_sessions WHERE challenge_id = ? AND command_history LIKE '%zkp_proof%'",
+                "SELECT id, command_history FROM console_sessions WHERE user_id = ? AND challenge_id = ? AND command_history LIKE '%zkp_proof%'",
               )
-              .bind(challengeId)
+              .bind(session.user.id, challengeId)
               .all<{ id: string; command_history: string }>();
 
             if (sessions.results && sessions.results.length > 0) {
@@ -189,11 +205,11 @@ export const Route = createFileRoute("/api/zkp")({
               headers: { "Content-Type": "application/json" },
             },
           );
-        } catch (err) {
+        } catch {
           return new Response(
             JSON.stringify({
               ok: false,
-              error: err instanceof Error ? err.message : "Failed to verify proof",
+              error: "Failed to verify proof",
             }),
             { status: 500, headers: { "Content-Type": "application/json" } },
           );

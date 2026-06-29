@@ -332,6 +332,7 @@ export function ThreatsPage() {
                     <button
                       type="button"
                       onClick={() => copyToClipboard(JSON.stringify(threat, null, 2))}
+                      aria-label="Copy threat as JSON"
                       className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-3 py-1.5 font-mono text-[11px] text-muted-foreground transition-colors hover:border-accent/30 hover:text-accent"
                     >
                       <Copy size={12} />
