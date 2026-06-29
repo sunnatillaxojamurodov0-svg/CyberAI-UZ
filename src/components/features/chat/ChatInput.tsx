@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, type FormEvent } from "react";
-import { Send, X, Plus, Image, Paperclip } from "lucide-react";
+import { Send, X, Plus, Image, Paperclip, Bot, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SKILLS, type Skill } from "@/lib/skills";
@@ -296,7 +296,7 @@ export function ChatInput({ onSend, disabled, selectedModel }: ChatInputProps) {
 
         {/* Hidden model badge — always VAEL, no selector shown */}
         <div className="hidden shrink-0">
-          <selectedModel.icon size={13} className="text-accent" />
+          {selectedModel.id === "groq-gpt" ? <Zap size={13} className="text-accent" /> : <Bot size={13} className="text-accent" />}
         </div>
 
         <textarea

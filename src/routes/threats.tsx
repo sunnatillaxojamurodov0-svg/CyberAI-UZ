@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { CursorSpotlight } from "@/components/shared/CursorSpotlight";
+import { ProgressiveBlur } from "@/components/shared/ProgressiveBlur";
 import { AnimatedGrid } from "@/components/shared/AnimatedGrid";
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ThreatsPage } from "@/components/features/threats/ThreatsPage";
@@ -29,6 +30,8 @@ function ThreatsRoute() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <CursorSpotlight />
+      <ProgressiveBlur position="top" />
+      <ProgressiveBlur position="bottom" />
       <Navbar />
       <main className="relative z-10">
         <section className="relative overflow-hidden px-6 pt-32 pb-10">

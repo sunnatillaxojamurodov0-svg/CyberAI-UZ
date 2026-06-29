@@ -111,91 +111,133 @@ export function Hero() {
 }
 
 function TerminalVisual() {
-  const [lines, setLines] = useState<string[]>([]);
-  const fullLines = [
-    "> Initializing security protocol...",
-    "> Vulnerability detected in sector 7G",
-    "> Deploying counter-measures...",
-  ];
+  const [lines, setLines] = useState<{ text: string; color?: string; prompt?: string }[]>([]);
   const [showAi, setShowAi] = useState(false);
+  const [cursorVisible, setCursorVisible] = useState(true);
+
+  const fullLines: { text: string; color?: string; prompt?: string; delay?: number }[] = [
+    { text: "sudo su", prompt: "┌──(kali㉿cyberai)-[~]", delay: 1200 },
+    { text: "[sudo] password for operator: ••••••••", color: "text-white/50", delay: 800 },
+    { text: "", delay: 400 },
+    { text: "root@cyberai:~# nmap -sV -sC 192.168.1.0/24", prompt: "root@cyberai:~#", color: "text-white", delay: 1500 },
+    { text: "Starting Nmap 7.94 ( https://nmap.org )", color: "text-white/60", delay: 600 },
+    { text: "Nmap scan report for 192.168.1.1", color: "text-white/80", delay: 400 },
+    { text: "PORT     STATE SERVICE  VERSION", color: "text-white/60", delay: 300 },
+    { text: "22/tcp   open  ssh      OpenSSH 9.2", color: "text-primary", delay: 300 },
+    { text: "80/tcp   open  http     nginx 1.24", color: "text-primary", delay: 300 },
+    { text: "443/tcp  open  https    nginx 1.24", color: "text-primary", delay: 300 },
+    { text: "3306/tcp open  mysql    MySQL 8.0.35", color: "text-destructive", delay: 400 },
+    { text: "", delay: 300 },
+    { text: "root@cyberai:~# whoami && id", prompt: "root@cyberai:~#", color: "text-white", delay: 1200 },
+    { text: "root", color: "text-primary", delay: 200 },
+    { text: "uid=0(root) gid=0(root) groups=0(root)", color: "text-white/80", delay: 300 },
+    { text: "", delay: 200 },
+    { text: "root@cyberai:~# msfconsole -q", prompt: "root@cyberai:~#", color: "text-white", delay: 1800 },
+    { text: "=[ metasploit v6.4.19-dev ]", color: "text-destructive", delay: 500 },
+    { text: "+ -- --=[ 2414 exploits - 1242 auxiliary ]", color: "text-white/60", delay: 300 },
+    { text: "+ -- --=[ 429 payloads - 47 encoders ]", color: "text-white/60", delay: 300 },
+    { text: "", delay: 400 },
+    { text: "msf6 > sessions -l", color: "text-white", delay: 1000 },
+    { text: "Active sessions", color: "text-primary", delay: 300 },
+    { text: "  Id  Name  Type  Information", color: "text-white/60", delay: 200 },
+    { text: "  --  ----  ----  -----------", color: "text-white/30", delay: 200 },
+    { text: "  1   shell  x64  Linux victim 5.15.0", color: "text-primary", delay: 300 },
+    { text: "", delay: 400 },
+    { text: "msf6 > exploit -j", color: "text-white", delay: 1200 },
+    { text: "[*] Exploit running as background job 1.", color: "text-destructive", delay: 400 },
+    { text: "[*] Started reverse TCP handler on 0.0.0.0:4444", color: "text-white/60", delay: 300 },
+    { text: "[*] Sending stage (3045380 bytes) to 192.168.1.50", color: "text-white/60", delay: 400 },
+    { text: "[+] Meterpreter session 2 opened", color: "text-primary", delay: 500 },
+  ];
 
   useEffect(() => {
     let i = 0;
     let t: ReturnType<typeof setTimeout>;
     let cancelled = false;
+
+    const blink = setInterval(() => {
+      setCursorVisible((v) => !v);
+    }, 530);
+
     const addLine = () => {
       if (cancelled) return;
       if (i < fullLines.length) {
-        setLines((prev) => [...prev, fullLines[i]]);
+        const line = fullLines[i];
+        setLines((prev) => [...prev, { text: line.text, color: line.color, prompt: line.prompt }]);
         i++;
-        t = setTimeout(addLine, 800);
+        t = setTimeout(addLine, line.delay || 500);
       } else {
         t = setTimeout(() => setShowAi(true), 600);
       }
     };
-    t = setTimeout(addLine, 1000);
+    t = setTimeout(addLine, 800);
     return () => {
       cancelled = true;
       clearTimeout(t);
+      clearInterval(blink);
     };
   }, []);
 
   return (
-    <div className="relative h-[600px] rounded-2xl bg-surface border border-border/30 overflow-hidden shadow-2xl group transition-all duration-500 hover:border-primary/20 hover:shadow-[0_0_40px_-10px] shadow-primary/20">
-      <div className="absolute inset-4 rounded-xl border border-white/5 bg-surface/60 backdrop-blur-md p-6 flex flex-col font-mono text-sm">
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-          <div className="flex items-center gap-2 text-foreground/80">
-            <span className="size-2 rounded-full bg-primary animate-pulse" />
-            <span className="font-bold tracking-wider text-primary">cyber-ai_agent_v2</span>
+    <div className="relative h-[600px] rounded-2xl bg-[#0a0f0d] border border-[#1a2e24]/50 overflow-hidden shadow-2xl transition-all duration-500 hover:border-primary/20 hover:shadow-[0_0_40px_-10px] shadow-primary/10">
+      {/* Kali Linux title bar */}
+      <div className="flex items-center justify-between bg-[#0a0f0d] border-b border-[#1a2e24] px-4 py-2.5">
+        <div className="flex items-center gap-3">
+          <div className="flex gap-1.5">
+            <span className="size-2.5 rounded-full bg-[#FF5F56]" />
+            <span className="size-2.5 rounded-full bg-[#FFBD2E]" />
+            <span className="size-2.5 rounded-full bg-[#27C93F]" />
           </div>
-          <div className="flex gap-2">
-            {["bg-red-400", "bg-accent", "bg-primary"].map((c, i) => (
-              <span
-                key={i}
-                className={`size-3 rounded-full ${c}`}
-                style={{ animation: `pulse-soft 2s ${i * 0.3}s infinite` }}
-              />
-            ))}
+          <div className="flex items-center gap-2 ml-2">
+            <svg viewBox="0 0 24 24" className="size-4 text-primary" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+            </svg>
+            <span className="font-mono text-xs text-primary font-bold tracking-wider">kali㉿cyberai</span>
           </div>
         </div>
-        <div className="flex-grow text-muted-foreground space-y-3">
-          {lines.map((l, i) => (
-            <p key={i} className={l?.includes("detected") ? "text-primary" : ""}>
-              {l}
-            </p>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-muted-foreground">root@cyberai</span>
+          <span className="size-1.5 rounded-full bg-primary animate-pulse" />
+        </div>
+      </div>
+
+      {/* Terminal content */}
+      <div className="absolute inset-4 top-12 rounded-xl bg-[#0a0f0d] backdrop-blur-sm p-4 flex flex-col font-mono text-[11px] md:text-xs overflow-hidden">
+        <div className="flex-grow space-y-1 overflow-y-auto scrollbar-thin">
+          <div className="text-white/50 text-[10px] mb-3">── Kali Linux Terminal ──</div>
+
+          {lines.map((line, i) => (
+            <div key={i} className="leading-relaxed">
+              {line.prompt && (
+                <span className="text-primary font-bold">{line.prompt} </span>
+              )}
+              <span className={line.color || "text-slate-300"}>
+                {line.text || "\u00A0"}
+              </span>
+            </div>
           ))}
           {lines.length > 0 && lines.length <= fullLines.length && (
-            <span className="animate-blink">|</span>
+            <span className={`text-primary ${cursorVisible ? "opacity-100" : "opacity-0"}`}>█</span>
           )}
+
           {showAi && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="mt-4 p-4 bg-surface-2/80 backdrop-blur-sm rounded-lg border border-primary/30 flex items-start gap-4"
+              className="mt-3 p-3 bg-surface rounded-lg border border-primary/30 flex items-start gap-3"
             >
-              <span className="text-primary mt-1">
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  className="animate-spin"
-                  style={{ animationDuration: "3s" }}
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
+              <span className="text-primary mt-0.5">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-pulse">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
               </span>
               <div>
-                <p className="text-primary font-bold tracking-wide text-xs uppercase">
-                  AI Assistant
+                <p className="text-primary font-bold tracking-wide text-[10px] uppercase">
+                  VAEL AI · Root Access Confirmed
                 </p>
-                <p className="text-xs mt-1 text-muted-foreground">
-                  I've identified the zero-day exploit payload. Recommending immediate sandbox
-                  isolation.
+                <p className="text-[10px] mt-1 text-white/60">
+                  Meterpreter session established. Target: 192.168.1.50. Ready for post-exploitation.
                 </p>
               </div>
             </motion.div>

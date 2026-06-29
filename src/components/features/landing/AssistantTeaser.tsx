@@ -61,7 +61,7 @@ export function AssistantTeaser() {
             className="col-span-12 lg:col-span-7"
           >
             <GlassPanel className="p-2">
-              <div className="rounded-2xl bg-black/60 p-5 font-mono">
+              <div className="rounded-2xl bg-surface-2/80 p-5 font-mono">
                 <div className="flex items-center justify-between border-b border-border pb-4">
                   <div className="flex items-center gap-2">
                     <span className="size-2 rounded-full bg-primary animate-pulse" />
@@ -100,7 +100,7 @@ export function AssistantTeaser() {
                     </motion.div>
                   ))}
                 </div>
-                <div className="mt-5 flex items-center gap-3 rounded-lg border border-border bg-black/40 px-4 py-3">
+                <div className="mt-5 flex items-center gap-3 rounded-lg border border-border bg-surface-2/80 px-4 py-3">
                   <span className="size-2 rounded-full bg-primary animate-pulse" />
                   <span className="text-xs text-muted-foreground">Awaiting command_</span>
                   <span className="ml-auto rounded border border-border px-1.5 py-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">

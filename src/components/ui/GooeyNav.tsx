@@ -35,6 +35,10 @@ const GooeyNav = ({
   const [activeIndex, setActiveIndex] = useState(initialActiveIndex);
   const [isAnimating, setIsAnimating] = useState(false);
 
+  useEffect(() => {
+    setActiveIndex(initialActiveIndex);
+  }, [initialActiveIndex]);
+
   const noise = (n = 1) => n / 2 - Math.random() * n;
 
   const getXY = (distance: number, pointIndex: number, totalPoints: number) => {

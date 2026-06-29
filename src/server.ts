@@ -29,12 +29,12 @@ function buildCSP(nonce: string): string {
     "form-action 'self'",
     "base-uri 'self'",
     "frame-ancestors 'none'",
-    "connect-src 'self' https://*.googleapis.com",
+    "connect-src 'self' https://*.googleapis.com https://github.com https://api.github.com",
   ].join("; ");
 }
 
-function buildSecurityHeaders(nonce: string): Record<string, string> {
-  return {
+function buildSecurityHeaders(nonce: string, isApiRoute: boolean): Record<string, string> {
+  const headers: Record<string, string> = {
     "X-Content-Type-Options": "nosniff",
     "X-Frame-Options": "DENY",
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
@@ -43,14 +43,21 @@ function buildSecurityHeaders(nonce: string): Record<string, string> {
     "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=()",
     "X-XSS-Protection": "1; mode=block",
     "X-Permitted-Cross-Domain-Policies": "none",
-    "Cross-Origin-Embedder-Policy": "require-corp",
-    "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Embedder-Policy": "credentialless",
     "Cross-Origin-Resource-Policy": "same-origin",
   };
+
+  if (isApiRoute) {
+    headers["Cross-Origin-Opener-Policy"] = "unsafe-none";
+  } else {
+    headers["Cross-Origin-Opener-Policy"] = "same-origin";
+  }
+
+  return headers;
 }
 
-function addSecurityHeaders(response: Response, nonce: string): Response {
-  for (const [key, value] of Object.entries(buildSecurityHeaders(nonce))) {
+function addSecurityHeaders(response: Response, nonce: string, isApiRoute: boolean = false): Response {
+  for (const [key, value] of Object.entries(buildSecurityHeaders(nonce, isApiRoute))) {
     response.headers.set(key, value);
   }
   return response;
@@ -110,6 +117,7 @@ function isCatastrophicSsrErrorBody(body: string, responseStatus: number): boole
 async function normalizeCatastrophicSsrResponse(
   response: Response,
   nonce: string,
+  isApiRoute: boolean = false,
 ): Promise<Response> {
   const contentType = response.headers.get("content-type") ?? "";
 
@@ -117,18 +125,18 @@ async function normalizeCatastrophicSsrResponse(
     const body = await response.clone().text();
     const newBody = injectNonceIntoHtml(body, nonce);
     const newResponse = new Response(newBody, response);
-    return addSecurityHeaders(newResponse, nonce);
+    return addSecurityHeaders(newResponse, nonce, isApiRoute);
   }
 
-  if (response.status < 500) return addSecurityHeaders(response, nonce);
+  if (response.status < 500) return addSecurityHeaders(response, nonce, isApiRoute);
 
   if (!contentType.includes("application/json")) {
-    return addSecurityHeaders(response, nonce);
+    return addSecurityHeaders(response, nonce, isApiRoute);
   }
 
   const body = await response.clone().text();
   if (!isCatastrophicSsrErrorBody(body, response.status)) {
-    return addSecurityHeaders(response, nonce);
+    return addSecurityHeaders(response, nonce, isApiRoute);
   }
 
   console.error(consumeLastCapturedError() ?? new Error(`SSR error: ${body}`));
@@ -182,11 +190,12 @@ export default {
         }
       }
 
+      const isApiRoute = url.pathname.startsWith("/api/");
       const handler = await getServerEntry();
       const response = await handler.fetch(request, env, ctx);
       const duration = Date.now() - startTime;
       monitoring.trackRequest(url.pathname, request.method, response.status, duration);
-      return await normalizeCatastrophicSsrResponse(response, nonce);
+      return await normalizeCatastrophicSsrResponse(response, nonce, isApiRoute);
     } catch (error) {
       monitoring.trackError(error instanceof Error ? error : new Error(String(error)));
       console.error(error);

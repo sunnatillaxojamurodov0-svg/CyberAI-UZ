@@ -13,7 +13,8 @@ interface __BaseEnv_Env {
   AI: Ai;
   ASSETS: Fetcher;
   ENVIRONMENT: "production";
-  OPENROUTER_API_KEY: string;
+  OPENCODE_ZEN_API_KEY: string;
+  GROQ_API_KEY: string;
   GITHUB_CLIENT_ID: string;
   GITHUB_CLIENT_SECRET: string;
   CHAT_SESSION_DO: DurableObjectNamespace<import("./.output/server/index").ChatSessionDO>;
@@ -43,7 +44,7 @@ declare namespace NodeJS {
   interface ProcessEnv extends StringifyValues<
     Pick<
       Cloudflare.Env,
-      "ENVIRONMENT" | "OPENROUTER_API_KEY" | "GITHUB_CLIENT_ID" | "GITHUB_CLIENT_SECRET"
+      "ENVIRONMENT" | "OPENCODE_ZEN_API_KEY" | "GITHUB_CLIENT_ID" | "GITHUB_CLIENT_SECRET"
     >
   > {}
 }

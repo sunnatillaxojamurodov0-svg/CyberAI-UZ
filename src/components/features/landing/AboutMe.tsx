@@ -131,19 +131,47 @@ export function AboutMe() {
                 href="https://youtube.com/@CyberAI_UZ"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-red-500/30 hover:bg-red-500/5 hover:text-red-400"
+                className="group flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-red-500/30 hover:bg-red-500/5 hover:text-red-400"
               >
                 <Video size={13} /> YouTube
-                <ExternalLink size={10} className="opacity-50" />
+                <svg
+                  className="size-[0.6em] -translate-x-0.5 rotate-45 opacity-50 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                  fill="none"
+                  viewBox="0 0 10 10"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </a>
               <a
                 href="https://t.me/Cyber_AI_UZ"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-sky-500/30 hover:bg-sky-500/5 hover:text-sky-400"
+                className="group flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-sky-500/30 hover:bg-sky-500/5 hover:text-sky-400"
               >
                 <MessageCircle size={13} /> Telegram Community
-                <ExternalLink size={10} className="opacity-50" />
+                <svg
+                  className="size-[0.6em] -translate-x-0.5 rotate-45 opacity-50 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                  fill="none"
+                  viewBox="0 0 10 10"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M1.004 9.166 9.337.833m0 0v8.333m0-8.333H1.004"
+                    stroke="currentColor"
+                    strokeWidth="1.25"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </a>
             </div>
           </div>

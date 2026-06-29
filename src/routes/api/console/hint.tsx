@@ -121,10 +121,11 @@ export const Route = createFileRoute("/api/console/hint")({
   server: {
     handlers: {
       POST: async ({ request }) => {
+        const startTime = Date.now();
         try {
           const env = getEnv();
-          const apiKey = env.OPENROUTER_API_KEY as string;
-          if (!apiKey) {
+          const ai = env.AI as Ai | undefined;
+          if (!ai) {
             return new Response("AI Mentor is not available.", {
               status: 503,
               headers: { "Content-Type": "text/plain" },
@@ -132,7 +133,6 @@ export const Route = createFileRoute("/api/console/hint")({
           }
 
           const ip = request.headers.get("cf-connecting-ip") || "unknown";
-          const startTime = Date.now();
           const rl = await checkRateLimit(rateLimitKey(ip, "console-hint"), "chat");
           if (!rl.allowed) {
             writeAnalytics("hint", "denied", null, "/api/console/hint", Date.now() - startTime);
@@ -214,41 +214,23 @@ export const Route = createFileRoute("/api/console/hint")({
             );
           }
 
-          const orResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${apiKey}`,
-              "Content-Type": "application/json",
-              "HTTP-Referer": "https://cyberaiuz.com",
-              "X-OpenRouter-Title": "CyberAI",
-            },
-            body: JSON.stringify({
-              model: "nvidia/nemotron-3-super-120b-a12b:free",
-              messages: [
-                { role: "system", content: createSecureSystemPrompt(SYSTEM_PROMPT) },
-                { role: "user", content: "Here is my current challenge context and question:" },
-                {
-                  role: "assistant",
-                  content: "Understood. Send me the context and I'll guide you.",
-                },
-                { role: "user", content: context },
-              ],
-              stream: true,
-            }),
+          const aiResponse = await ai.run("@cf/meta/llama-3.2-3b-instruct", {
+            messages: [
+              { role: "system", content: createSecureSystemPrompt(SYSTEM_PROMPT) },
+              { role: "user", content: "Here is my current challenge context and question:" },
+              {
+                role: "assistant",
+                content: "Understood. Send me the context and I'll guide you.",
+              },
+              { role: "user", content: context },
+            ],
+            stream: true,
           });
-
-          if (!orResponse.ok) {
-            writeAnalytics("hint", "error", userId, "/api/console/hint", Date.now() - startTime);
-            return new Response("AI Mentor error.", {
-              status: 500,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
 
           const stream = new ReadableStream({
             async start(controller) {
               try {
-                const reader = orResponse.body!.getReader();
+                const reader = aiResponse.getReader();
                 const decoder = new TextDecoder();
                 let buffer = "";
 
@@ -266,7 +248,7 @@ export const Route = createFileRoute("/api/console/hint")({
                       if (data === "[DONE]") continue;
                       try {
                         const parsed = JSON.parse(data);
-                        const content = parsed.choices?.[0]?.delta?.content;
+                        const content = parsed.response;
                         if (content) {
                           controller.enqueue(new TextEncoder().encode(content));
                         }
@@ -287,7 +269,7 @@ export const Route = createFileRoute("/api/console/hint")({
           });
 
           writeAnalytics("hint", "success", userId, "/api/console/hint", Date.now() - startTime, {
-            model: "nvidia/nemotron-3-ultra-550b-a55b:free",
+            model: "@cf/meta/llama-3.2-3b-instruct",
           });
           return new Response(stream, {
             headers: { "Content-Type": "text/plain" },
