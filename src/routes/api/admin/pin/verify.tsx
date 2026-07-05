@@ -17,10 +17,10 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
 
           const body = (await request.json()) as { pin?: string };
           if (!body.pin) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "PIN is required" }),
-              { status: 400, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "PIN is required" }), {
+              status: 400,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           const db = requireDb();
@@ -32,7 +32,11 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
           // If no PIN is set, allow access (first-time setup)
           if (!record) {
             return new Response(
-              JSON.stringify({ ok: true, requiresSetup: true, message: "No admin PIN set. Please set one." }),
+              JSON.stringify({
+                ok: true,
+                requiresSetup: true,
+                message: "No admin PIN set. Please set one.",
+              }),
               { status: 200, headers: { "Content-Type": "application/json" } },
             );
           }
@@ -47,10 +51,10 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
 
           // Constant-time comparison
           if (pinHash.length !== record.pin_hash.length) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Invalid PIN" }),
-              { status: 401, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Invalid PIN" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           let result = 0;
@@ -59,10 +63,10 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
           }
 
           if (result !== 0) {
-            return new Response(
-              JSON.stringify({ ok: false, error: "Invalid PIN" }),
-              { status: 401, headers: { "Content-Type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ ok: false, error: "Invalid PIN" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
           }
 
           return new Response(JSON.stringify({ ok: true, message: "PIN verified" }), {
@@ -70,10 +74,10 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
             headers: { "Content-Type": "application/json" },
           });
         } catch {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Failed to verify PIN" }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ ok: false, error: "Failed to verify PIN" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },

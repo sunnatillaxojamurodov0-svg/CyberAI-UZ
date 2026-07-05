@@ -45,18 +45,30 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages]);
 
+  /* Clear chat when challenge changes */
+  const prevChallengeId = useRef<string | null>(null);
+  useEffect(() => {
+    const currentId = challenge?.id ?? null;
+    if (prevChallengeId.current !== currentId) {
+      prevChallengeId.current = currentId;
+      if (messages.length > 0) {
+        setMessages([]);
+      }
+    }
+  }, [challenge?.id]);
+
   const buildContextPrompt = useCallback(
     (userText: string): string => {
       if (!challenge) return userText;
       return [
         "The operator is currently working on the following CTF challenge. Do NOT give them the SOLUTION directly — guide them toward thinking, choosing the right tool and technique. Never reveal the flag.",
         "",
-        `CTF: ${challenge.title} (Daraja ${challenge.level}, ${challenge.category})`,
-        `Stsenariy: ${challenge.scenario}`,
-        `Maqsadlar: ${challenge.objectives.join("; ")}`,
+        `CTF: ${challenge.title} (Level ${challenge.level}, ${challenge.category})`,
+        `Scenario: ${challenge.scenario}`,
+        `Objectives: ${challenge.objectives.join("; ")}`,
         `Target: ${challenge.targetIp}`,
         "",
-        `Operator savoli: ${userText}`,
+        `Operator question: ${userText}`,
       ].join("\n");
     },
     [challenge],
@@ -111,7 +123,7 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
                   ...m,
                   content: msg.includes("API")
                     ? "VAEL API key is not configured on the server."
-                    : `Xato: ${msg}`,
+                    : `Error: ${msg}`,
                 }
               : m,
           ),
@@ -147,7 +159,7 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
             whileTap={{ scale: 0.94 }}
             onClick={() => setOpen(true)}
             style={{ bottom: 28, right: 28, position: "absolute" }}
-            className="pointer-events-auto grid size-15 cursor-grab touch-none place-items-center rounded-full active:cursor-grabbing"
+            className="pointer-events-auto grid size-15 cursor-grab touch-none place-items-center rounded-full active:cursor-grabbing max-md:bottom-20 max-md:right-4 max-md:size-12"
           >
             <span className="absolute inset-0 rounded-full bg-accent/30 blur-xl" />
             <span className="absolute inset-0 rounded-full bg-gradient-to-br from-accent to-primary opacity-90" />
@@ -177,7 +189,7 @@ export function VaelFloating({ challenge, onUserMessage }: VaelFloatingProps) {
             exit={{ scale: 0.85, opacity: 0, y: 20 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
             style={{ bottom: 28, right: 28, position: "absolute" }}
-            className="pointer-events-auto flex h-[min(78vh,640px)] w-[min(92vw,400px)] flex-col overflow-hidden rounded-2xl border border-accent/25 bg-surface/95 shadow-2xl shadow-accent/10 backdrop-blur-xl"
+            className="pointer-events-auto flex h-[min(78vh,640px)] w-[min(92vw,400px)] flex-col overflow-hidden rounded-2xl border border-accent/25 bg-surface/95 shadow-2xl shadow-accent/10 backdrop-blur-xl max-md:bottom-20 max-md:right-4 max-md:h-[50vh] max-md:w-[85vw]"
           >
             {/* Header — drag handle */}
             <div

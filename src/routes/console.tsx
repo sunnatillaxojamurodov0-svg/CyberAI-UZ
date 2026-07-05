@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Navbar } from "@/components/layout/Navbar";
 import { CursorSpotlight } from "@/components/shared/CursorSpotlight";
-import { ProgressiveBlur } from "@/components/shared/ProgressiveBlur";
 import { ConsolePage } from "@/components/features/console/ConsolePage";
 import { ProtectedRoute } from "@/components/features/auth/ProtectedRoute";
 
@@ -33,8 +32,6 @@ function ConsoleRoute() {
   return (
     <div className="relative min-h-screen bg-background text-foreground">
       <CursorSpotlight />
-      <ProgressiveBlur position="top" />
-      <ProgressiveBlur position="bottom" />
       <Navbar />
       <main className="relative z-10 pt-16">
         <ProtectedRoute

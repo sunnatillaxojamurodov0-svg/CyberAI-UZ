@@ -67,17 +67,16 @@ interface TerminalProps {
 }
 
 const BANNER = (c: CTFChallenge) =>
-  `┌─────────────────────────────────────────────────────────────┐
-│  CyberAI Kali Sandbox  ·  fully isolated environment       │
-│  No external network — only CTF targets available.            │
-└─────────────────────────────────────────────────────────────┘
-
-[*] Challenge : ${c.title}  (Level ${c.level})
-[*] Target    : ${c.targetIp}
-[*] Format    : ${c.flagFormat}
-
-Type 'help' for tools, 'ask-ai <question>' for guidance.
-`;
+  "+-----------------------------------------------------------+\n" +
+  "|  CyberAI Kali Sandbox - fully isolated environment        |\n" +
+  "|  No external network - only CTF targets available.        |\n" +
+  "+-----------------------------------------------------------+\n" +
+  "\n" +
+  `[*] Challenge : ${c.title}  (Level ${c.level})\n` +
+  `[*] Target    : ${c.targetIp}\n` +
+  `[*] Format    : ${c.flagFormat}\n` +
+  "\n" +
+  "Type 'help' for tools, 'ask-ai <question>' for guidance.\n";
 
 export const Terminal = forwardRef<TerminalHandle, TerminalProps>(function Terminal(
   { challenge, theme = "dark" },

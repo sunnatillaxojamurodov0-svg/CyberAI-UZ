@@ -285,7 +285,13 @@ export async function verifySession(token: string): Promise<AuthResult> {
          WHERE s.id = ? AND s.expires_at > ?`,
       )
       .bind(tokenHash, now)
-      .first<{ id: string; email: string; name: string | null; avatar_url: string | null; is_admin: number }>();
+      .first<{
+        id: string;
+        email: string;
+        name: string | null;
+        avatar_url: string | null;
+        is_admin: number;
+      }>();
     if (!row) {
       return { ok: false, error: "Invalid or expired session." };
     }
