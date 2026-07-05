@@ -20,7 +20,7 @@ export function Footer() {
             </p>
             <div className="mt-6 flex gap-3">
               <a
-                href="https://t.me/Cyber_AI_UZ"
+                href="https://t.me/CyberAI_Club"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="grid size-9 place-items-center rounded-lg border border-border text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"

@@ -48,7 +48,7 @@ export function CommunitySection() {
                   {t("community.mission.description")}
                 </p>
                 <a
-                  href="https://t.me/Cyber_AI_UZ"
+                  href="https://t.me/CyberAI_Club"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-primary"
