@@ -117,7 +117,7 @@ export function AdminPinGate({ onVerified }: AdminPinGateProps) {
             <div className="grid size-16 place-items-center rounded-2xl bg-amber-500/10">
               <Shield size={32} className="text-amber-400" />
             </div>
-            
+
             <div className="text-center">
               <h2 className="font-display text-xl font-bold">Set Admin PIN</h2>
               <p className="mt-2 text-sm text-muted-foreground">
@@ -133,6 +133,7 @@ export function AdminPinGate({ onVerified }: AdminPinGateProps) {
                   value={setupPin}
                   onChange={(e) => setSetupPin(e.target.value.slice(0, 32))}
                   placeholder="Enter 6-32 character PIN"
+                  autoComplete="new-password"
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 font-mono text-sm focus:border-accent/40 outline-none"
                   maxLength={32}
                 />
@@ -142,12 +143,15 @@ export function AdminPinGate({ onVerified }: AdminPinGateProps) {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-foreground mb-2">Confirm PIN</label>
+                <label className="block text-sm font-medium text-foreground mb-2">
+                  Confirm PIN
+                </label>
                 <input
                   type={showPin ? "text" : "password"}
                   value={setupConfirm}
                   onChange={(e) => setSetupConfirm(e.target.value.slice(0, 32))}
                   placeholder="Confirm PIN"
+                  autoComplete="new-password"
                   className="w-full rounded-lg border border-border bg-background px-4 py-3 font-mono text-sm focus:border-accent/40 outline-none"
                   maxLength={32}
                 />
@@ -202,7 +206,7 @@ export function AdminPinGate({ onVerified }: AdminPinGateProps) {
           <div className="grid size-16 place-items-center rounded-2xl bg-accent/10">
             <Lock size={32} className="text-accent" />
           </div>
-          
+
           <div className="text-center">
             <h2 className="font-display text-xl font-bold">Admin Verification</h2>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -219,6 +223,7 @@ export function AdminPinGate({ onVerified }: AdminPinGateProps) {
                 onChange={(e) => setPin(e.target.value.slice(0, 32))}
                 onKeyDown={(e) => e.key === "Enter" && handleVerify()}
                 placeholder="Enter your PIN"
+                autoComplete="current-password"
                 className="w-full rounded-lg border border-border bg-background px-4 py-3 font-mono text-sm focus:border-accent/40 outline-none"
                 maxLength={32}
                 autoFocus

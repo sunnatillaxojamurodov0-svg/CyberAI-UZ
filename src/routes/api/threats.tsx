@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type { } from "@tanstack/react-start";
+import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";

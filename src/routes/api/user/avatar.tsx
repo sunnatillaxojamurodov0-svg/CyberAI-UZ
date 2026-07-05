@@ -88,7 +88,7 @@ export const Route = createFileRoute("/api/user/avatar")({
           const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
           if (!allowedTypes.includes(file.type)) {
             return new Response(
-              JSON.stringify({ ok: false, error: "Faqat JPG, PNG, WebP ruxsat etiladi" }),
+              JSON.stringify({ ok: false, error: "Only JPG, PNG, WebP images are allowed" }),
               { status: 400, headers: { "Content-Type": "application/json" } },
             );
           }
@@ -96,7 +96,28 @@ export const Route = createFileRoute("/api/user/avatar")({
           const maxSize = 2 * 1024 * 1024;
           if (file.size > maxSize) {
             return new Response(
-              JSON.stringify({ ok: false, error: "Rasm 2MB dan kichik bo'lishi kerak" }),
+              JSON.stringify({ ok: false, error: "Image must be smaller than 2MB" }),
+              { status: 400, headers: { "Content-Type": "application/json" } },
+            );
+          }
+
+          const bytes = new Uint8Array(await file.slice(0, 12).arrayBuffer());
+          const isJpeg = bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
+          const isPng =
+            bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4e && bytes[3] === 0x47;
+          const isWebp =
+            bytes[0] === 0x52 &&
+            bytes[1] === 0x49 &&
+            bytes[2] === 0x46 &&
+            bytes[3] === 0x46 &&
+            bytes[8] === 0x57 &&
+            bytes[9] === 0x45 &&
+            bytes[10] === 0x42 &&
+            bytes[11] === 0x50;
+
+          if (!isJpeg && !isPng && !isWebp) {
+            return new Response(
+              JSON.stringify({ ok: false, error: "File content does not match image type" }),
               { status: 400, headers: { "Content-Type": "application/json" } },
             );
           }

@@ -21,19 +21,19 @@ export function buildCSP(nonce: string): string {
 /** Add CSP nonce to inline script and style tags in SSR HTML. */
 export function injectNonceIntoHtml(html: string, nonce: string): string {
   const safeNonce = nonce.replace(/"/g, "");
-  
+
   // Inject nonce into script tags
   let result = html.replace(/<script\b([^>]*)>/gi, (full, attrs: string) => {
     if (/\bnonce\s*=/.test(attrs)) return full;
     return `<script nonce="${safeNonce}"${attrs}>`;
   });
-  
+
   // Inject nonce into style tags
   result = result.replace(/<style\b([^>]*)>/gi, (full, attrs: string) => {
     if (/\bnonce\s*=/.test(attrs)) return full;
     return `<style nonce="${safeNonce}"${attrs}>`;
   });
-  
+
   return result;
 }
 
@@ -44,7 +44,8 @@ export function buildSecurityHeaders(nonce: string, isApiRoute: boolean): Record
     "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
     "Content-Security-Policy": buildCSP(nonce),
     "Referrer-Policy": "strict-origin-when-cross-origin",
-    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), browsing-topics=(), join-ad-interest-group=(), run-ad-auction=(), interest-cohort=()",
+    "Permissions-Policy":
+      "camera=(), microphone=(), geolocation=(), payment=(), browsing-topics=(), join-ad-interest-group=(), run-ad-auction=(), interest-cohort=()",
     "X-Permitted-Cross-Domain-Policies": "none",
     "Cross-Origin-Embedder-Policy": "credentialless",
     "Cross-Origin-Resource-Policy": "same-origin",
@@ -52,7 +53,7 @@ export function buildSecurityHeaders(nonce: string, isApiRoute: boolean): Record
     "X-Download-Options": "noopen",
     "X-XSS-Protection": "1; mode=block",
     "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-    "Pragma": "no-cache",
+    Pragma: "no-cache",
     "Surrogate-Control": "no-store",
   };
 

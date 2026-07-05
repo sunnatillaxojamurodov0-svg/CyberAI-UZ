@@ -1,7 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb } from "@/lib/db";
-import { verifySession, getSessionToken, hashPassword, verifyPassword } from "@/lib/auth/auth-server";
+import {
+  verifySession,
+  getSessionToken,
+  hashPassword,
+  verifyPassword,
+} from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 
 export const Route = createFileRoute("/api/auth/change-password")({

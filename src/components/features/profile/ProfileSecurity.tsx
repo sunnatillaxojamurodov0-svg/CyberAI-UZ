@@ -1,6 +1,18 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Shield, ShieldCheck, ShieldOff, Loader2, Check, X, Copy, Eye, EyeOff, Lock, KeyRound } from "lucide-react";
+import {
+  Shield,
+  ShieldCheck,
+  ShieldOff,
+  Loader2,
+  Check,
+  X,
+  Copy,
+  Eye,
+  EyeOff,
+  Lock,
+  KeyRound,
+} from "lucide-react";
 import QRCode from "qrcode";
 import { GlassPanel } from "@/components/shared/GlassPanel";
 import { useAuth } from "@/lib/auth-context";
@@ -30,7 +42,9 @@ export function ProfileSecurity() {
   const [showCurrentPw, setShowCurrentPw] = useState(false);
   const [showNewPw, setShowNewPw] = useState(false);
   const [pwLoading, setPwLoading] = useState(false);
-  const [pwMessage, setPwMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [pwMessage, setPwMessage] = useState<{ type: "success" | "error"; text: string } | null>(
+    null,
+  );
 
   useEffect(() => {
     fetch2FAStatus();
@@ -40,7 +54,7 @@ export function ProfileSecurity() {
     if (qrCodeUrl) {
       QRCode.toDataURL(qrCodeUrl, { width: 120, margin: 1 })
         .then(setQrDataUrl)
-        .catch(() => { });
+        .catch(() => {});
     }
   }, [qrCodeUrl]);
 
@@ -294,6 +308,7 @@ export function ProfileSecurity() {
                   onChange={(e) => setVerifyToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
                   placeholder="000000"
                   maxLength={6}
+                  autoComplete="one-time-code"
                   className="flex-1 rounded-xl border border-border bg-surface py-3 px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground/30 transition-all focus:border-accent/40 font-mono text-center tracking-[0.3em]"
                 />
                 <button
@@ -341,6 +356,7 @@ export function ProfileSecurity() {
                 onChange={(e) => setDisableToken(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 placeholder="000000"
                 maxLength={6}
+                autoComplete="one-time-code"
                 className="flex-1 rounded-xl border border-border bg-surface py-3 px-4 text-sm text-foreground outline-none placeholder:text-muted-foreground/30 transition-all focus:border-accent/40 font-mono text-center tracking-[0.3em]"
               />
               <button
@@ -427,12 +443,16 @@ export function ProfileSecurity() {
               Current Password
             </label>
             <div className="relative">
-              <Lock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+              <Lock
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50"
+              />
               <input
                 type={showCurrentPw ? "text" : "password"}
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="Enter current password"
+                autoComplete="current-password"
                 className="w-full rounded-xl border border-border bg-surface py-3 pl-9 pr-10 text-sm text-foreground outline-none placeholder:text-muted-foreground/30 transition-all focus:border-accent/40"
               />
               <button
@@ -451,12 +471,16 @@ export function ProfileSecurity() {
               New Password
             </label>
             <div className="relative">
-              <KeyRound size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+              <KeyRound
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50"
+              />
               <input
                 type={showNewPw ? "text" : "password"}
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
+                autoComplete="new-password"
                 className="w-full rounded-xl border border-border bg-surface py-3 pl-9 pr-10 text-sm text-foreground outline-none placeholder:text-muted-foreground/30 transition-all focus:border-accent/40"
               />
               <button
@@ -494,12 +518,16 @@ export function ProfileSecurity() {
               Confirm New Password
             </label>
             <div className="relative">
-              <ShieldCheck size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+              <ShieldCheck
+                size={14}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50"
+              />
               <input
                 type={showNewPw ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
+                autoComplete="new-password"
                 className={cn(
                   "w-full rounded-xl border bg-surface py-3 pl-9 pr-4 text-sm text-foreground outline-none placeholder:text-muted-foreground/30 transition-all focus:border-accent/40",
                   confirmPassword && confirmPassword !== newPassword
@@ -523,11 +551,7 @@ export function ProfileSecurity() {
             disabled={pwLoading || !currentPassword || !newPassword || !confirmPassword}
             className="flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-accent-foreground hover:bg-accent/90 transition-all disabled:opacity-40"
           >
-            {pwLoading ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <Lock size={15} />
-            )}
+            {pwLoading ? <Loader2 size={15} className="animate-spin" /> : <Lock size={15} />}
             {pwLoading ? "Changing..." : "Change Password"}
           </button>
         </div>

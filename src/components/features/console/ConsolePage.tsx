@@ -35,22 +35,27 @@ export function ConsolePage() {
   const [isEntering, setIsEntering] = useState(false);
   const [mobileTab, setMobileTab] = useState<"terminal" | "briefing">("terminal");
   const [terminalTheme, setTerminalTheme] = useState<"dark" | "light">("dark");
+  const [timerKey, setTimerKey] = useState(0);
   const terminalRef = useRef<TerminalHandle>(null);
   const { progress, recordSolve, isSolved, totalPoints, solvedCount, base60Solved } =
     useConsoleProgress();
 
-  // Timer effect
+  // Timer effect — persists across re-mounts per challenge
   useEffect(() => {
     if (!active) {
       setElapsed(0);
       return;
     }
-    const startTime = Date.now();
+    const storageKey = `cyberai_timer_${active.id}`;
+    const stored = localStorage.getItem(storageKey);
+    const startTime = stored ? Number(stored) : Date.now();
+    if (!stored) localStorage.setItem(storageKey, String(startTime));
+
     const interval = setInterval(() => {
       setElapsed(Math.floor((Date.now() - startTime) / 1000));
     }, 1000);
     return () => clearInterval(interval);
-  }, [active?.id]);
+  }, [active?.id, timerKey]);
 
   // Handle challenge selection with loading state
   const handleSelectChallenge = useCallback((challenge: CTFChallenge) => {
@@ -62,6 +67,16 @@ export function ConsolePage() {
   }, []);
 
   const bestScore = useCallback((id: string) => progress[id]?.bestScore, [progress]);
+
+  /* Reset terminal + timer */
+  const handleReset = useCallback(() => {
+    if (active) {
+      localStorage.removeItem(`cyberai_timer_${active.id}`);
+    }
+    setElapsed(0);
+    setTimerKey((k) => k + 1);
+    terminalRef.current?.reset();
+  }, [active]);
 
   /* Hint reveals -> telemetry */
   const handleHint = useCallback((index: number) => {
@@ -85,6 +100,9 @@ export function ConsolePage() {
 
       const correct = checkFlag(state, flag);
       if (!correct) return { correct: false };
+
+      // Clean up timer from localStorage
+      localStorage.removeItem(`cyberai_timer_${active.id}`);
 
       const score = scoreSolve(active, state.telemetry);
       const points = pointsEarned(active, score);
@@ -208,7 +226,7 @@ export function ConsolePage() {
             </span>
             <button
               type="button"
-              onClick={() => terminalRef.current?.reset()}
+              onClick={handleReset}
               className="flex items-center gap-2 rounded-lg border border-border bg-surface/50 px-2.5 py-2 text-sm text-muted-foreground transition-colors hover:border-accent/30 hover:text-foreground md:px-3"
               title="Restart Terminal"
             >
@@ -281,7 +299,7 @@ export function ConsolePage() {
 
         {/* Split layout: briefing (left) + terminal/flag (right) */}
         {/* Desktop: side by side */}
-        <div className="hidden md:grid md:grid-cols-[minmax(0,380px)_minmax(0,1fr)] md:gap-5">
+        <div className="hidden md:grid md:grid-cols-[minmax(280px,380px)_minmax(0,1fr)] md:gap-5">
           {/* Left: briefing */}
           <div className="order-1">
             <ChallengeBriefing key={active.id} challenge={active} onHintRevealed={handleHint} />

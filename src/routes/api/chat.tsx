@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import type { } from "@tanstack/react-start";
+import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
 import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
@@ -246,10 +246,10 @@ export const Route = createFileRoute("/api/chat")({
                   promptTokens: estimatedPromptTokens,
                   completionTokens: estimatedCompletionTokens,
                   totalTokens: estimatedPromptTokens + estimatedCompletionTokens,
-                }).catch(() => { });
+                }).catch(() => {});
 
                 if (totalContent && !body.imageBase64) {
-                  setCachedResponse(messages, totalContent, cacheKey).catch(() => { });
+                  setCachedResponse(messages, totalContent, cacheKey).catch(() => {});
                 }
               } catch (err) {
                 console.error("Groq stream error:", err);

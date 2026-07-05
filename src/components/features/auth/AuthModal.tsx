@@ -245,6 +245,7 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
+          autoComplete="current-password"
           className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
         />
       </div>
@@ -268,6 +269,7 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
             value={totpToken}
             onChange={(e) => setTotpToken(e.target.value)}
             placeholder="000000"
+            autoComplete="one-time-code"
             autoFocus
             className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
           />
@@ -368,6 +370,7 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="operator"
+          autoComplete="username"
           className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
         />
       </div>
@@ -384,6 +387,7 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="operator@cyberai.dev"
+          autoComplete="email"
           className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
         />
       </div>
@@ -400,6 +404,7 @@ function SignupForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="••••••••"
+          autoComplete="new-password"
           className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
         />
       </div>
@@ -489,6 +494,7 @@ function ResetForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="operator@cyberai.dev"
+          autoComplete="email"
           autoFocus
           className="rounded-xl border-border bg-surface py-3 pl-4 pr-4 text-sm font-mono"
         />

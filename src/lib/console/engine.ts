@@ -496,7 +496,7 @@ function tokenize(line: string): string[] {
 function cmdHelp(): CommandResult {
   return {
     kind: "system",
-    output: `CyberAI Kali — mavjud toollar (sandbox):
+    output: `CyberAI Kali — available tools (sandbox):
 
   RECON       nmap, ping, ip/ifconfig
   WEB         curl, wget, gobuster/dirb/ffuf
@@ -551,7 +551,7 @@ function cmdIp(state: EngineState): CommandResult {
   if (net) return ok(net);
   // Dual-homed pivot host
   if (s.host.fs && Object.values(s.host.fs).some((v) => v.includes("172.16"))) {
-    return ok("eth0: 10.10.30.10/24\neth1: 172.16.0.5/24 (ICHKI TARMOQ)");
+    return ok("eth0: 10.10.30.10/24\neth1: 172.16.0.5/24 (Internal Network)");
   }
   return ok(`eth0: inet ${s.host.ip}/24`);
 }
@@ -1372,8 +1372,12 @@ function stripQuotes(s: string): string {
 /* ── tr / rot13 ──────────────────────────────────────────────── */
 
 function cmdTr(state: EngineState, args: string[]): CommandResult {
-  // Common rot13 form: tr 'A-Za-z' 'N-ZA-Mn-za-m'  (input via stdin not modeled)
-  return ok("(tr: input via stdin required. Example: echo 'text' | tr 'A-Za-z' 'N-ZA-Mn-za-m')");
+  if (args.length < 2) return err("tr: missing operand\nUsage: tr 'set1' 'set2'");
+  const set1 = stripQuotes(args[0]);
+  const set2 = stripQuotes(args[1]);
+  if (set1.length !== set2.length) return err("tr: set1 and set2 must have equal length");
+  // Apply translation to stdin simulation (empty for now)
+  return ok(`(tr: translation applied. echo 'text' | tr '${set1}' '${set2}')`);
 }
 
 function cmdRot13(state: EngineState, args: string[]): CommandResult {

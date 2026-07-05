@@ -28,19 +28,20 @@ export const Route = createFileRoute("/api/admin/pin")({
           // Validate PIN has at least one letter, one number, and one special character
           const hasLetter = /[a-zA-Z]/.test(body.pin);
           const hasNumber = /[0-9]/.test(body.pin);
-          const hasSpecial = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(body.pin);
+          const hasSpecial = /[^a-zA-Z0-9_-]/.test(body.pin);
           if (!hasLetter || !hasNumber || !hasSpecial) {
             return new Response(
-              JSON.stringify({ 
-                ok: false, 
-                error: "PIN must contain at least one letter, one number, and one special character (!@#$%^&*)" 
+              JSON.stringify({
+                ok: false,
+                error:
+                  "PIN must contain at least one letter, one number, and one special character (!@#$%^&*)",
               }),
               { status: 400, headers: { "Content-Type": "application/json" } },
             );
           }
 
           const db = requireDb();
-          
+
           // Hash the PIN using SHA-256
           const encoder = new TextEncoder();
           const pinData = encoder.encode(body.pin);
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/api/admin/pin")({
                VALUES (?, ?, unixepoch(), unixepoch())
                ON CONFLICT(user_id) DO UPDATE SET
                  pin_hash = excluded.pin_hash,
-                 updated_at = excluded.updated_at`
+                 updated_at = excluded.updated_at`,
             )
             .bind(auth.user.id, pinHash)
             .run();
@@ -66,10 +67,10 @@ export const Route = createFileRoute("/api/admin/pin")({
             headers: { "Content-Type": "application/json" },
           });
         } catch {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Failed to set admin PIN" }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ ok: false, error: "Failed to set admin PIN" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
 
@@ -85,20 +86,17 @@ export const Route = createFileRoute("/api/admin/pin")({
           }
 
           const db = requireDb();
-          await db
-            .prepare("DELETE FROM admin_pins WHERE user_id = ?")
-            .bind(auth.user.id)
-            .run();
+          await db.prepare("DELETE FROM admin_pins WHERE user_id = ?").bind(auth.user.id).run();
 
           return new Response(JSON.stringify({ ok: true, message: "Admin PIN removed" }), {
             status: 200,
             headers: { "Content-Type": "application/json" },
           });
         } catch {
-          return new Response(
-            JSON.stringify({ ok: false, error: "Failed to remove admin PIN" }),
-            { status: 500, headers: { "Content-Type": "application/json" } },
-          );
+          return new Response(JSON.stringify({ ok: false, error: "Failed to remove admin PIN" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          });
         }
       },
     },

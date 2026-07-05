@@ -63,15 +63,23 @@ export function AnalyticsDashboard() {
           fetch("/api/console/analytics", { credentials: "include" }),
           fetch("/api/console/analytics/difficulty", { credentials: "include" }),
         ]);
-        const analyticsJson = await analyticsRes.json();
-        const difficultyJson = await difficultyRes.json();
-        if (analyticsJson.ok) {
-          setData(analyticsJson.data);
+
+        if (analyticsRes.ok) {
+          const analyticsJson = await analyticsRes.json();
+          if (analyticsJson.ok) {
+            setData(analyticsJson.data);
+          } else {
+            setError(analyticsJson.error);
+          }
         } else {
-          setError(analyticsJson.error);
+          setError(`Analytics API error: ${analyticsRes.status}`);
         }
-        if (difficultyJson.ok) {
-          setDifficultyData(difficultyJson.data);
+
+        if (difficultyRes.ok) {
+          const difficultyJson = await difficultyRes.json();
+          if (difficultyJson.ok) {
+            setDifficultyData(difficultyJson.data);
+          }
         }
       } catch {
         setError("Failed to load analytics");
