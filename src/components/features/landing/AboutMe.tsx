@@ -153,7 +153,7 @@ export function AboutMe() {
                 </svg>
               </a>
               <a
-                href="https://t.me/Cyber_AI_UZ"
+                href="https://t.me/CyberAI_Club"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group flex items-center gap-1.5 rounded-lg border border-border bg-surface/50 px-3 py-1.5 text-[11px] font-medium text-muted-foreground transition-colors hover:border-sky-500/30 hover:bg-sky-500/5 hover:text-sky-400"

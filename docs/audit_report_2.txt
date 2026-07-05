@@ -317,7 +317,7 @@ Kirish oqimi | Avtorizatsiya shakli | ⚠ QISMAN | "Kirish" tugmasi ko'rinib tur
 /zkp - tasdiqlash | Isbotni tekshirish | SINAB KO'RILMAGAN | Ikki yorliqli interfeys ko'rinadi (Yaratish/Tasdiqlash). Haqiqiy tasdiqlash mantig'ini sinab ko'rib bo'lmaydi.
 /so'rovlar - filtrlash/qidirish | Filtrlangan natijalar | QISMAN KO'RINISHLI | 30 ta so'rov toifalar bilan ro'yxatlangan (Xavfsizlik auditi x6, Hodisalarga javob x6 va boshqalar). Filtr interfeysi mavjud.
 /loyihalar - kartani bosish | Loyiha tafsilotlari | SINAB KO'RILMAGAN | "O'rganish" tugmalari barcha 5 ta loyiha kartalarida ko'rinadi. Statik tahlildan manzil noma'lum.
-Telegram ijtimoiy tarmog'idagi havola | T.me ni ochadi | ✅ TAQDIM ETISH | https://t.me/Cyber_AI_UZ havolasi pastki qismida to'g'ri joylashtirilgan.
+Telegram ijtimoiy tarmog'idagi havola | T.me ni ochadi | ✅ TAQDIM ETISH | https://t.me/CyberAI_Club havolasi pastki qismida to'g'ri joylashtirilgan.
 YouTube ijtimoiy tarmog'idagi havola | YouTube’ni ochadi | ✅ TAQDIM ETISH | https://www.youtube.com/@CyberAI_UZ havolasi to'g'ri joylashtirilgan.
 404-sahifa | Maxsus 404 | TASDIQLAY OLMAYDI | Tashqi kuzatuvdan 404 ishlov berishni sinab ko'rib bo'lmadi.
 --- END TABLE ---
