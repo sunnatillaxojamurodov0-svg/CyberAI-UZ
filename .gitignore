@@ -21,6 +21,12 @@ dist-ssr
 .env.*
 .dev.vars
 
+# Per-subdirectory env files (gitignore only matches root-level .env.*)
+docker-proxy/.env*
+backend/.env*
+sandbox-service/.env*
+infra/.env*
+
 # Backups
 backups/
 
