@@ -1,19 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { requireDb } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth/auth-admin";
+import { withAdmin } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/admin/pin/verify")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) {
-            return new Response(JSON.stringify({ ok: false, error: auth.error }), {
-              status: auth.status,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
 
           const body = (await request.json()) as { pin?: string };
           if (!body.pin) {
@@ -79,7 +72,7 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

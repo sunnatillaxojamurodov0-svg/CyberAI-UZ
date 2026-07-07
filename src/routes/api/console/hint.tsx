@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { withAuth } from "@/lib/auth/middleware";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { checkAiQuota } from "@/lib/auth/ai-quota";
 import { writeAnalytics } from "@/lib/analytics";
@@ -120,7 +120,7 @@ Keep responses compact and actionable.
 export const Route = createFileRoute("/api/console/hint")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         const startTime = Date.now();
         try {
           const env = getEnv();
@@ -142,23 +142,7 @@ export const Route = createFileRoute("/api/console/hint")({
             });
           }
 
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response("Authentication required.", {
-              status: 401,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response("Invalid session.", {
-              status: 401,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
-
-          const userId = session.user.id;
+          const userId = user.id;
 
           const quota = await checkAiQuota(userId);
           if (!quota.allowed) {
@@ -210,7 +194,7 @@ export const Route = createFileRoute("/api/console/hint")({
             `User question: ${sanitizeInput(body.userMessage)}`,
           ].join("\n");
 
-          const injectionCheck = checkPromptInjection(body.userMessage);
+          const injectionCheck = await checkPromptInjection(body.userMessage, ai);
           if (!injectionCheck.safe) {
             writeAnalytics(
               "hint",
@@ -295,7 +279,7 @@ export const Route = createFileRoute("/api/console/hint")({
             headers: { "Content-Type": "text/plain" },
           });
         }
-      },
+      }),
     },
   },
 });

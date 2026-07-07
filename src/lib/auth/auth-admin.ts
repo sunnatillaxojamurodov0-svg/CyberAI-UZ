@@ -1,22 +1,12 @@
-import { requireDb } from "../db";
+import { requireDb, type D1Database } from "../db";
 import { getSessionToken, verifySession, type AuthUser } from "./auth-server";
 
-interface D1PreparedStatement {
-  bind(...args: unknown[]): D1PreparedStatement;
-  first<T = unknown>(): Promise<T | null>;
-}
-
-interface D1Database {
-  prepare(sql: string): D1PreparedStatement;
-}
-
 export type AdminAuthResult =
-  | { ok: true; user: AuthUser }
-  | { ok: false; status: 401 | 403; error: string };
+  { ok: true; user: AuthUser } | { ok: false; status: 401 | 403; error: string };
 
 export async function isUserAdmin(userId: string): Promise<boolean> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const row = await db
       .prepare("SELECT is_admin FROM users WHERE id = ?")
       .bind(userId)

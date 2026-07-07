@@ -29,8 +29,7 @@ async function getCacheEntry(key: string): Promise<CacheEntry | null> {
   try {
     const env = getEnv();
     const kv = env.CYBERAI_KV as
-      | { get: (key: string, type?: string) => Promise<string | null> }
-      | undefined;
+      { get: (key: string, type?: string) => Promise<string | null> } | undefined;
     if (!kv) return null;
 
     const cached = await kv.get(key, "json");

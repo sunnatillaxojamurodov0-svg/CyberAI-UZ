@@ -1,14 +1,4 @@
-import { requireDb } from "./db";
-
-interface D1PreparedStatement {
-  bind(...args: unknown[]): D1PreparedStatement;
-  first<T = unknown>(): Promise<T | null>;
-  run(): Promise<unknown>;
-}
-
-interface D1Database {
-  prepare(sql: string): D1PreparedStatement;
-}
+import { requireDb, type D1Database } from "./db";
 
 async function generateUserFlag(challengeId: string, userId: string): Promise<string> {
   const data = `${challengeId}:${userId}:${Date.now()}`;
@@ -24,7 +14,7 @@ export async function getDynamicFlag(
   userId: string,
 ): Promise<{ flag: string; isDynamic: boolean }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
 
     const challenge = await db
       .prepare("SELECT flag, dynamic_flags FROM challenges WHERE id = ?")
@@ -70,7 +60,7 @@ export async function verifyFlag(
   submittedFlag: string,
 ): Promise<{ valid: boolean; error?: string }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
 
     const challenge = await db
       .prepare("SELECT flag FROM challenges WHERE id = ?")
@@ -115,7 +105,7 @@ export async function enableDynamicFlags(
   challengeId: string,
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     await db
       .prepare("UPDATE challenges SET dynamic_flags = 1 WHERE id = ?")
       .bind(challengeId)
@@ -133,7 +123,7 @@ export async function disableDynamicFlags(
   challengeId: string,
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     await db
       .prepare("UPDATE challenges SET dynamic_flags = 0 WHERE id = ?")
       .bind(challengeId)

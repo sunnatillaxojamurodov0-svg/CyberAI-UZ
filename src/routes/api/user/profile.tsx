@@ -1,35 +1,19 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { withAuth } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/user/profile")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user?.id) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const db = requireDb();
           const row = await db
             .prepare(
               "SELECT id, email, name, avatar_url, bio, created_at, updated_at FROM users WHERE id = ?",
             )
-            .bind(session.user.id)
+            .bind(user.id)
             .first();
 
           if (!row) {
@@ -61,29 +45,13 @@ export const Route = createFileRoute("/api/user/profile")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      PUT: async ({ request }) => {
+      PUT: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user?.id) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const body = (await request.json()) as { name?: string; bio?: string };
           const now = Math.floor(Date.now() / 1000);
-          const userId = session.user.id;
+          const userId = user.id;
 
           const name = body.name !== undefined ? body.name.trim().slice(0, 100) : undefined;
           const bio = body.bio !== undefined ? body.bio.trim().slice(0, 500) : undefined;
@@ -124,7 +92,7 @@ export const Route = createFileRoute("/api/user/profile")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

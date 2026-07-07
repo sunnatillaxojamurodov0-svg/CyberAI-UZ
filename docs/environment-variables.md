@@ -60,11 +60,22 @@ cp .env.example .dev.vars
 
 ## Rate Limiting
 
-| Variable            | Description         | Default |
-| ------------------- | ------------------- | ------- |
-| `RATE_LIMIT_GLOBAL` | Global requests/min | `100`   |
-| `RATE_LIMIT_AUTH`   | Auth attempts/min   | `5`     |
-| `RATE_LIMIT_CHAT`   | Chat requests/min   | `20`    |
+Rate limiting is configured via **Cloudflare Rate Limiting bindings** in `wrangler.jsonc`, not environment variables.
+
+| Binding                 | Scope  | Description                |
+| ----------------------- | ------ | -------------------------- |
+| `MY_RATE_LIMITER_GLOBAL` | Global | Global requests threshold |
+| `MY_RATE_LIMITER_AUTH`   | Auth   | Auth attempts threshold    |
+| `MY_RATE_LIMITER_CHAT`   | Chat   | Chat requests threshold    |
+
+Configure thresholds in the Cloudflare Dashboard under **Security > Rate Limiting**.
+
+## Account Lockout
+
+| Variable                   | Description                    | Default |
+| -------------------------- | ------------------------------ | ------- |
+| `MAX_LOGIN_ATTEMPTS`       | Failed attempts before lockout | `5`     |
+| `LOCKOUT_DURATION_MINUTES` | Lockout duration in minutes    | `15`    |
 
 ## Security Notes
 

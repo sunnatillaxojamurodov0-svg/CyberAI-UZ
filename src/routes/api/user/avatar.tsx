@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb, getEnv } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { withAuth } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/user/avatar")({
   server: {
@@ -50,24 +50,8 @@ export const Route = createFileRoute("/api/user/avatar")({
         }
       },
 
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user?.id) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const contentType = request.headers.get("content-type") || "";
           if (!contentType.includes("multipart/form-data")) {
             return new Response(JSON.stringify({ ok: false, error: "Expected multipart form" }), {
@@ -132,7 +116,7 @@ export const Route = createFileRoute("/api/user/avatar")({
           }
 
           const ext = file.type.split("/")[1] || "jpg";
-          const key = `avatars/${session.user.id}.${ext}`;
+          const key = `avatars/${user.id}.${ext}`;
 
           await bucket.put(key, file.stream(), {
             httpMetadata: { contentType: file.type },
@@ -141,11 +125,11 @@ export const Route = createFileRoute("/api/user/avatar")({
           const db = requireDb();
           await db
             .prepare("UPDATE users SET avatar_url = ?, updated_at = ? WHERE id = ?")
-            .bind(key, Math.floor(Date.now() / 1000), session.user.id)
+            .bind(key, Math.floor(Date.now() / 1000), user.id)
             .run();
 
           return new Response(
-            JSON.stringify({ ok: true, url: `/api/user/avatar?user=${session.user.id}` }),
+            JSON.stringify({ ok: true, url: `/api/user/avatar?user=${user.id}` }),
             {
               headers: { "Content-Type": "application/json" },
             },
@@ -156,30 +140,14 @@ export const Route = createFileRoute("/api/user/avatar")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      DELETE: async ({ request }) => {
+      DELETE: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user?.id) {
-            return new Response(JSON.stringify({ ok: false, error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const db = requireDb();
           const row = await db
             .prepare("SELECT avatar_url FROM users WHERE id = ?")
-            .bind(session.user.id)
+            .bind(user.id)
             .first<{ avatar_url: string | null }>();
 
           if (row?.avatar_url && !row.avatar_url.startsWith("http")) {
@@ -192,7 +160,7 @@ export const Route = createFileRoute("/api/user/avatar")({
 
           await db
             .prepare("UPDATE users SET avatar_url = NULL, updated_at = ? WHERE id = ?")
-            .bind(Math.floor(Date.now() / 1000), session.user.id)
+            .bind(Math.floor(Date.now() / 1000), user.id)
             .run();
 
           return new Response(JSON.stringify({ ok: true }), {
@@ -204,7 +172,7 @@ export const Route = createFileRoute("/api/user/avatar")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

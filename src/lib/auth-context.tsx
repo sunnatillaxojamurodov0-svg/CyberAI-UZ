@@ -13,7 +13,12 @@ interface AuthContextValue {
   user: AuthUser | null;
   session: null;
   loading: boolean;
-  signIn: (email: string, password: string, totpToken?: string) => Promise<string | null>;
+  signIn: (
+    email: string,
+    password: string,
+    totpToken?: string,
+    rememberMe?: boolean,
+  ) => Promise<string | null>;
   signUp: (email: string, password: string, username?: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   signInWithGithub: () => void;
@@ -62,12 +67,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = useCallback(
-    async (email: string, password: string, totpToken?: string): Promise<string | null> => {
+    async (
+      email: string,
+      password: string,
+      totpToken?: string,
+      rememberMe?: boolean,
+    ): Promise<string | null> => {
       setAuthError(null);
       try {
         const res = await apiFetch("/api/auth/login", {
           method: "POST",
-          body: JSON.stringify({ email, password, totpToken }),
+          body: JSON.stringify({ email, password, totpToken, rememberMe }),
         });
         const data = await res.json();
         if (!data.ok) {

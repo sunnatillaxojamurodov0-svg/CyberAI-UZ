@@ -1,15 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { adminAuthResponse, requireAdmin } from "@/lib/auth/auth-admin";
+import { withAdmin } from "@/lib/auth/middleware";
 import { getEnv } from "@/lib/db";
 
 export const Route = createFileRoute("/api/admin/challenges")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) return adminAuthResponse(auth);
 
           const env = getEnv();
           const db = env.cyberai_db as {
@@ -33,12 +31,10 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      POST: async ({ request }) => {
+      POST: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) return adminAuthResponse(auth);
 
           const body = (await request.json()) as {
             name?: string;
@@ -87,12 +83,10 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      PUT: async ({ request }) => {
+      PUT: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) return adminAuthResponse(auth);
 
           const url = new URL(request.url);
           const id = url.searchParams.get("id");
@@ -166,12 +160,10 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      DELETE: async ({ request }) => {
+      DELETE: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) return adminAuthResponse(auth);
 
           const url = new URL(request.url);
           const id = url.searchParams.get("id");
@@ -197,7 +189,7 @@ export const Route = createFileRoute("/api/admin/challenges")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

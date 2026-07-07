@@ -1,19 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { requireDb } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth/auth-admin";
+import { withAdmin } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/console/analytics/difficulty")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) {
-            return new Response(JSON.stringify({ ok: false, error: auth.error }), {
-              status: auth.status,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
 
           const db = requireDb();
 
@@ -123,7 +116,7 @@ export const Route = createFileRoute("/api/console/analytics/difficulty")({
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
-      },
+      }),
     },
   },
 });

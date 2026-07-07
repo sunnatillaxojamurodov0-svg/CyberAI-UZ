@@ -367,6 +367,8 @@ export default {
   // ══════════════════════════════════════════════════════════════
   // AUTH PAGES
   // ══════════════════════════════════════════════════════════════
+  "auth.login.remember_me": "Remember me",
+  "auth.login.remember_me_desc": "Stay signed in for 30 days",
   "auth.reset.title": "Reset Password",
   "auth.reset.description": "Enter your new password below.",
   "auth.reset.new_password": "New Password",

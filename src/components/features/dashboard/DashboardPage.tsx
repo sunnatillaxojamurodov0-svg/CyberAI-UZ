@@ -162,7 +162,7 @@ export function DashboardPage() {
         </h2>
         <GlassPanel className="overflow-hidden p-0">
           <div className="divide-y divide-border/50">
-            {(data?.recentUsers.length ?? 0) === 0 ? (
+            {(data?.recentUsers?.length ?? 0) === 0 ? (
               <div className="px-5 py-8 text-center font-mono text-xs text-muted-foreground">
                 No users yet
               </div>

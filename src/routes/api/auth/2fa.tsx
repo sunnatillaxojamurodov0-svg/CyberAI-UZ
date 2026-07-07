@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
+import { withAuth } from "@/lib/auth/middleware";
 import {
-  getSessionToken,
-  verifySession,
   setup2FA,
   enable2FA,
   disable2FA,
@@ -19,25 +18,9 @@ import {
 export const Route = createFileRoute("/api/auth/2fa")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const enabled = await check2FA(session.user.id);
+          const enabled = await check2FA(user.id);
           return new Response(JSON.stringify({ ok: true, enabled }), {
             headers: { "Content-Type": "application/json" },
           });
@@ -47,28 +30,12 @@ export const Route = createFileRoute("/api/auth/2fa")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const body = (await request.json()) as { action?: string; token?: string };
-          const userId = session.user.id;
+          const userId = user.id;
 
           if (body.action === "setup") {
             const result = await setupTOTP(userId);
@@ -106,7 +73,7 @@ export const Route = createFileRoute("/api/auth/2fa")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

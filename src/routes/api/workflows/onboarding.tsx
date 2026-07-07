@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { withAuth } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/workflows/onboarding")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
           const env = getEnv();
           const workflow = env.USER_ONBOARDING as
@@ -16,21 +17,22 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
           }
 
           const body = (await request.json()) as {
-            userId?: string;
             email?: string;
             name?: string;
           };
 
-          if (!body.userId || !body.email) {
-            return new Response("userId and email are required.", { status: 400 });
+          if (!body.email) {
+            return new Response("email is required.", { status: 400 });
           }
 
+          const userId = user.id;
+
           const instance = await workflow.create({
-            id: `onboard-${body.userId}`,
+            id: `onboard-${userId}`,
             params: {
-              userId: body.userId,
+              userId,
               email: body.email,
-              name: body.name ?? "User",
+              name: body.name ?? auth.user.name ?? "User",
             },
           });
 
@@ -50,7 +52,7 @@ export const Route = createFileRoute("/api/workflows/onboarding")({
             },
           );
         }
-      },
+      }),
     },
   },
 });

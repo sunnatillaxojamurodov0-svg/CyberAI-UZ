@@ -370,6 +370,8 @@ export default {
   // ══════════════════════════════════════════════════════════════
   // AUTH PAGES
   // ══════════════════════════════════════════════════════════════
+  "auth.login.remember_me": "Beni hatırla",
+  "auth.login.remember_me_desc": "30 gün boyunca giriş yapılmış kalsın",
   "auth.reset.title": "Şifreyi Sıfırla",
   "auth.reset.description": "Yeni şifrenizi aşağıya girin.",
   "auth.reset.new_password": "Yeni Şifre",

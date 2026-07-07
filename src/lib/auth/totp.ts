@@ -1,14 +1,4 @@
-import { requireDb } from "../db";
-
-interface D1PreparedStatement {
-  bind(...args: unknown[]): D1PreparedStatement;
-  first<T = unknown>(): Promise<T | null>;
-  run(): Promise<unknown>;
-}
-
-interface D1Database {
-  prepare(sql: string): D1PreparedStatement;
-}
+import { requireDb, type D1Database } from "../db";
 
 /* ── TOTP Implementation (RFC 6238) ────────────────────────── */
 
@@ -109,7 +99,7 @@ async function verifyTOTP(secret: string, token: string, window: number = 1): Pr
 /* ── 2FA Database Operations ───────────────────────────────── */
 
 export async function setup2FA(userId: string): Promise<{ secret: string; qrCodeUrl: string }> {
-  const db = requireDb<D1Database>();
+  const db = requireDb();
   const secret = await generateSecret();
   const now = Math.floor(Date.now() / 1000);
 
@@ -133,7 +123,7 @@ export async function enable2FA(
   userId: string,
   token: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const db = requireDb<D1Database>();
+  const db = requireDb();
 
   const row = await db
     .prepare("SELECT secret FROM user_2fa WHERE user_id = ? AND enabled = 0")
@@ -158,7 +148,7 @@ export async function disable2FA(
   userId: string,
   token: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const db = requireDb<D1Database>();
+  const db = requireDb();
 
   const row = await db
     .prepare("SELECT secret FROM user_2fa WHERE user_id = ? AND enabled = 1")
@@ -183,7 +173,7 @@ export async function verify2FA(
   userId: string,
   token: string,
 ): Promise<{ ok: boolean; error?: string }> {
-  const db = requireDb<D1Database>();
+  const db = requireDb();
 
   const row = await db
     .prepare("SELECT secret FROM user_2fa WHERE user_id = ? AND enabled = 1")
@@ -204,7 +194,7 @@ export async function verify2FA(
 
 export async function is2FAEnabled(userId: string): Promise<boolean> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const row = await db
       .prepare("SELECT enabled FROM user_2fa WHERE user_id = ? AND enabled = 1")
       .bind(userId)
@@ -217,7 +207,7 @@ export async function is2FAEnabled(userId: string): Promise<boolean> {
 
 export async function get2FASecret(userId: string): Promise<string | null> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const row = await db
       .prepare("SELECT secret FROM user_2fa WHERE user_id = ?")
       .bind(userId)

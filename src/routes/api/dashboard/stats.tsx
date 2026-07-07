@@ -2,20 +2,13 @@ import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb, getEnv } from "@/lib/db";
 import { writeAnalytics } from "@/lib/analytics";
-import { requireAdmin } from "@/lib/auth/auth-admin";
+import { withAdmin } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/dashboard/stats")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) {
-            return new Response(JSON.stringify({ ok: false, error: auth.error }), {
-              status: auth.status ?? 403,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
 
           const startTime = Date.now();
           const db = requireDb();
@@ -67,6 +60,12 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             },
           ];
 
+          const recentUsers = await db
+            .prepare(
+              "SELECT id, email, name, created_at FROM users ORDER BY created_at DESC LIMIT 5",
+            )
+            .all<{ id: string; email: string; name: string | null; created_at: number }>();
+
           writeAnalytics(
             "dashboard",
             "success",
@@ -90,6 +89,7 @@ export const Route = createFileRoute("/api/dashboard/stats")({
                   completed: completedChallenges?.count ?? 0,
                 },
                 workflows: workflowBindings,
+                recentUsers: recentUsers.results,
               },
             }),
             {
@@ -106,7 +106,7 @@ export const Route = createFileRoute("/api/dashboard/stats")({
             { status: 500, headers: { "Content-Type": "application/json" } },
           );
         }
-      },
+      }),
     },
   },
 });

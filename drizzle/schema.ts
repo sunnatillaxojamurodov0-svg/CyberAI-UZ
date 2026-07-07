@@ -25,7 +25,9 @@ export const sessions = sqliteTable("sessions", {
 
 export const chatSessions = sqliteTable("chat_sessions", {
   id: text("id").primaryKey(),
-  userId: text("user_id"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   title: text("title").notNull().default("New Chat"),
   createdAt: integer("created_at").notNull(),
   updatedAt: integer("updated_at").notNull(),
@@ -67,7 +69,9 @@ export const userChallenges = sqliteTable("user_challenges", {
 
 export const notifications = sqliteTable("notifications", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   type: text("type").notNull().default("info"),
   title: text("title").notNull(),
   body: text("body").notNull(),
@@ -77,7 +81,9 @@ export const notifications = sqliteTable("notifications", {
 
 export const consoleSessions = sqliteTable("console_sessions", {
   id: text("id").primaryKey(),
-  userId: text("user_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   challengeId: text("challenge_id"),
   commandHistory: text("command_history").notNull().default("[]"),
   analysis: text("analysis"),
@@ -102,7 +108,9 @@ export const leaderboard = sqliteTable("leaderboard", {
 
 export const feedback = sqliteTable("feedback", {
   id: text("id").primaryKey(),
-  userId: text("user_id"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   message: text("message").notNull(),
   page: text("page"),
   createdAt: integer("created_at").notNull(),
@@ -115,14 +123,18 @@ export const rateLimits = sqliteTable("rate_limits", {
 });
 
 export const aiUsage = sqliteTable("ai_usage", {
-  userId: text("user_id").notNull().default(""),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   date: text("date").notNull(),
   count: integer("count").notNull().default(0),
 });
 
 export const aiTokenUsage = sqliteTable("ai_token_usage", {
   id: integer("id").primaryKey({ autoIncrement: true }),
-  userId: text("user_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   date: text("date").notNull(),
   promptTokens: integer("prompt_tokens").notNull().default(0),
   completionTokens: integer("completion_tokens").notNull().default(0),
@@ -176,7 +188,9 @@ export const userFlags = sqliteTable("user_flags", {
   challengeId: text("challenge_id")
     .notNull()
     .references(() => challenges.id, { onDelete: "cascade" }),
-  userId: text("user_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   dynamicFlag: text("dynamic_flag").notNull(),
   createdAt: integer("created_at").notNull(),
 });
@@ -191,10 +205,12 @@ export const challengeSubmissions = sqliteTable("challenge_submissions", {
   flag: text("flag").notNull(),
   hints: text("hints").default(""),
   writeup: text("writeup").default(""),
-  submittedBy: text("submitted_by").notNull(),
+  submittedBy: text("submitted_by")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   status: text("status").notNull().default("pending"),
   reviewNotes: text("review_notes").default(""),
-  reviewedBy: text("reviewed_by"),
+  reviewedBy: text("reviewed_by").references(() => users.id, { onDelete: "set null" }),
   reviewedAt: integer("reviewed_at"),
   createdAt: integer("created_at").notNull(),
 });

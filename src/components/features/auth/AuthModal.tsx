@@ -22,6 +22,7 @@ import { TextureButton } from "@/components/ui/texture-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth-context";
+import { useTranslation } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 type AuthMode = "login" | "signup" | "reset" | "reset-sent";
@@ -182,9 +183,11 @@ function PasswordStrengthMeter({ password }: { password: string }) {
 
 function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void }) {
   const { signIn, authError, clearError, requires2FA } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [totpToken, setTotpToken] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = useCallback(
@@ -192,10 +195,10 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       e.preventDefault();
       clearError();
       setSubmitting(true);
-      await signIn(email, password, requires2FA ? totpToken : undefined);
+      await signIn(email, password, requires2FA ? totpToken : undefined, rememberMe);
       setSubmitting(false);
     },
-    [email, password, totpToken, requires2FA, signIn, clearError],
+    [email, password, totpToken, requires2FA, rememberMe, signIn, clearError],
   );
 
   return (
@@ -277,6 +280,18 @@ function LoginForm({ onModeChange }: { onModeChange: (mode: AuthMode) => void })
       )}
 
       <div className="flex items-center justify-between">
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            id="login-remember"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            className="h-3.5 w-3.5 rounded border-border bg-surface text-accent focus:ring-1 focus:ring-accent"
+          />
+          <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-muted-foreground">
+            {t("auth.login.remember_me", "Remember me")}
+          </span>
+        </label>
         <button
           type="button"
           onClick={() => onModeChange("reset")}
@@ -650,7 +665,7 @@ export function AuthModal() {
                   : "Already have an account? "}
                 <button
                   type="button"
-                  onClick={() => onModeChange(mode === "signup" ? "login" : "signup")}
+                  onClick={() => handleModeChange(mode === "signup" ? "login" : "signup")}
                   className="text-primary font-semibold hover:underline"
                 >
                   {mode === "signup" ? "Sign in" : "Sign up"}

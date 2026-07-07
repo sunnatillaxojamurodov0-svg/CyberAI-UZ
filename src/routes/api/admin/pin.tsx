@@ -1,21 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { requireDb } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
-import { requireAdmin } from "@/lib/auth/auth-admin";
+import { withAdmin } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/admin/pin")({
   server: {
     handlers: {
       // POST: Set or update admin PIN
-      POST: async ({ request }) => {
+      POST: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) {
-            return new Response(JSON.stringify({ ok: false, error: auth.error }), {
-              status: auth.status,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
 
           const body = (await request.json()) as { pin?: string };
           if (!body.pin || body.pin.length < 6 || body.pin.length > 32) {
@@ -59,7 +51,7 @@ export const Route = createFileRoute("/api/admin/pin")({
                  pin_hash = excluded.pin_hash,
                  updated_at = excluded.updated_at`,
             )
-            .bind(auth.user.id, pinHash)
+            .bind(user.id, pinHash)
             .run();
 
           return new Response(JSON.stringify({ ok: true, message: "Admin PIN set successfully" }), {
@@ -72,21 +64,13 @@ export const Route = createFileRoute("/api/admin/pin")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
       // DELETE: Remove admin PIN
-      DELETE: async ({ request }) => {
+      DELETE: withAdmin(async ({ request, user }) => {
         try {
-          const auth = await requireAdmin(request);
-          if (!auth.ok) {
-            return new Response(JSON.stringify({ ok: false, error: auth.error }), {
-              status: auth.status,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const db = requireDb();
-          await db.prepare("DELETE FROM admin_pins WHERE user_id = ?").bind(auth.user.id).run();
+          await db.prepare("DELETE FROM admin_pins WHERE user_id = ?").bind(user.id).run();
 
           return new Response(JSON.stringify({ ok: true, message: "Admin PIN removed" }), {
             status: 200,
@@ -98,7 +82,7 @@ export const Route = createFileRoute("/api/admin/pin")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

@@ -24,14 +24,10 @@ hljs.registerLanguage("css", css);
 hljs.registerLanguage("xml", xml);
 hljs.registerLanguage("html", xml);
 
+import DOMPurify from "dompurify";
+
 function sanitizeHighlighted(html: string): string {
-  return html.replace(/<(\/?)(\w+)([^>]*)>/g, (_, slash, tag, attrs) => {
-    const allowed = ["span", "br"];
-    if (!allowed.includes(tag.toLowerCase())) return "";
-    if (tag.toLowerCase() === "br") return `<${slash}br>`;
-    const sanitized = attrs.replace(/[^a-zA-Z0-9\-_= "'"]/g, "");
-    return `<${slash}span${sanitized}>`;
-  });
+  return DOMPurify.sanitize(html, { ALLOWED_TAGS: ["span", "br"], ALLOWED_ATTR: ["class"] });
 }
 
 interface CodeBlockProps {

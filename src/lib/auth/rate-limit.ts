@@ -1,14 +1,4 @@
-import { getEnv, requireDb } from "../db";
-
-interface D1PreparedStatement {
-  bind(...args: unknown[]): D1PreparedStatement;
-  first<T = unknown>(): Promise<T | null>;
-  run(): Promise<unknown>;
-}
-
-interface D1Database {
-  prepare(sql: string): D1PreparedStatement;
-}
+import { getEnv, requireDb, type D1Database } from "../db";
 
 interface RateLimiterBinding {
   limit(opts: { key: string }): Promise<{ success: boolean }>;
@@ -62,11 +52,23 @@ export async function checkRateLimit(
   }
 
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const config = DEFAULTS[category];
     const now = Math.floor(Date.now() / 1000);
     const windowStart = Math.floor(now / config.windowSeconds) * config.windowSeconds;
     const windowEnd = windowStart + config.windowSeconds;
+
+    await db
+      .prepare("INSERT OR IGNORE INTO rate_limits (key, window_start, count) VALUES (?, ?, 0)")
+      .bind(key, windowStart)
+      .run();
+
+    await db
+      .prepare(
+        "UPDATE rate_limits SET count = count + 1 WHERE key = ? AND window_start = ? AND count < ?",
+      )
+      .bind(key, windowStart, config.maxRequests)
+      .run();
 
     const row = await db
       .prepare("SELECT count FROM rate_limits WHERE key = ? AND window_start = ?")
@@ -75,23 +77,11 @@ export async function checkRateLimit(
 
     const currentCount = row?.count ?? 0;
 
-    if (currentCount >= config.maxRequests) {
+    if (currentCount > config.maxRequests) {
       return { allowed: false, remaining: 0, resetAt: windowEnd };
     }
 
-    if (row) {
-      await db
-        .prepare("UPDATE rate_limits SET count = count + 1 WHERE key = ? AND window_start = ?")
-        .bind(key, windowStart)
-        .run();
-    } else {
-      await db
-        .prepare("INSERT INTO rate_limits (key, window_start, count) VALUES (?, ?, 1)")
-        .bind(key, windowStart)
-        .run();
-    }
-
-    return { allowed: true, remaining: config.maxRequests - currentCount - 1, resetAt: windowEnd };
+    return { allowed: true, remaining: config.maxRequests - currentCount, resetAt: windowEnd };
   } catch {
     // Fail closed for auth and chat (expensive/sensitive routes), open for others
     const failClosed = category === "auth" || category === "chat";

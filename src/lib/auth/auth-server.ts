@@ -1,4 +1,4 @@
-import { requireDb, getEnv } from "../db";
+import { requireDb, getEnv, type D1Database } from "../db";
 
 interface D1Result<T = unknown> {
   results: T[];
@@ -11,10 +11,6 @@ interface D1PreparedStatement {
   bind(...args: unknown[]): D1PreparedStatement;
   first<T = unknown>(): Promise<T | null>;
   run(): Promise<D1Result>;
-}
-
-interface D1Database {
-  prepare(sql: string): D1PreparedStatement;
 }
 
 /* ── Types ───────────────────────────────────────────────────── */
@@ -32,6 +28,7 @@ export interface AuthResult {
   error?: string;
   user?: AuthUser;
   token?: string;
+  expiresAt?: number;
 }
 
 /* ── Password hashing (PBKDF2 via Web Crypto API) ───────────── */
@@ -92,9 +89,20 @@ async function sha256(data: string): Promise<string> {
 /* ── Auth operations ────────────────────────────────────────── */
 
 const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
-const MIN_PASSWORD_LENGTH = 8;
-const MAX_LOGIN_ATTEMPTS = 5;
-const LOCKOUT_DURATION = 15 * 60; // 15 minutes
+const REMEMBER_ME_TTL = 30 * 24 * 60 * 60; // 30 days in seconds
+const MIN_PASSWORD_LENGTH = 12;
+
+const envVal = (key: string, def: number): number => {
+  const v = getEnv()[key];
+  if (v !== undefined && v !== null) {
+    const n = Number(v);
+    if (!Number.isNaN(n) && n > 0) return n;
+  }
+  return def;
+};
+
+const MAX_LOGIN_ATTEMPTS = () => envVal("MAX_LOGIN_ATTEMPTS", 5);
+const LOCKOUT_DURATION = () => envVal("LOCKOUT_DURATION_MINUTES", 15) * 60;
 
 /* ── Login attempt tracking ─────────────────────────────────── */
 
@@ -104,7 +112,7 @@ export async function recordLoginAttempt(
   success: boolean,
 ): Promise<{ locked: boolean; attemptsRemaining: number; lockoutExpires?: number }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const now = Math.floor(Date.now() / 1000);
 
     await db
@@ -119,10 +127,10 @@ export async function recordLoginAttempt(
         .prepare("DELETE FROM login_attempts WHERE email = ? AND success = 0")
         .bind(email)
         .run();
-      return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS };
+      return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS() };
     }
 
-    const cutoff = now - LOCKOUT_DURATION;
+    const cutoff = now - LOCKOUT_DURATION();
     const recentFailed = await db
       .prepare(
         "SELECT COUNT(*) as count FROM login_attempts WHERE email = ? AND success = 0 AND created_at > ?",
@@ -132,17 +140,17 @@ export async function recordLoginAttempt(
 
     const failedCount = recentFailed?.count ?? 0;
 
-    if (failedCount >= MAX_LOGIN_ATTEMPTS) {
-      const lockoutExpires = now + LOCKOUT_DURATION;
+    if (failedCount >= MAX_LOGIN_ATTEMPTS()) {
+      const lockoutExpires = now + LOCKOUT_DURATION();
       return { locked: true, attemptsRemaining: 0, lockoutExpires };
     }
 
     return {
       locked: false,
-      attemptsRemaining: MAX_LOGIN_ATTEMPTS - failedCount,
+      attemptsRemaining: MAX_LOGIN_ATTEMPTS() - failedCount,
     };
   } catch {
-    return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS };
+    return { locked: false, attemptsRemaining: MAX_LOGIN_ATTEMPTS() };
   }
 }
 
@@ -150,9 +158,9 @@ export async function isAccountLocked(
   email: string,
 ): Promise<{ locked: boolean; lockoutExpires?: number }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const now = Math.floor(Date.now() / 1000);
-    const cutoff = now - LOCKOUT_DURATION;
+    const cutoff = now - LOCKOUT_DURATION();
 
     const recentFailed = await db
       .prepare(
@@ -163,8 +171,8 @@ export async function isAccountLocked(
 
     const failedCount = recentFailed?.count ?? 0;
 
-    if (failedCount >= MAX_LOGIN_ATTEMPTS) {
-      const lockoutExpires = now + LOCKOUT_DURATION;
+    if (failedCount >= MAX_LOGIN_ATTEMPTS()) {
+      const lockoutExpires = now + LOCKOUT_DURATION();
       return { locked: true, lockoutExpires };
     }
 
@@ -176,7 +184,7 @@ export async function isAccountLocked(
 
 export async function clearLoginAttempts(email: string): Promise<void> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     await db.prepare("DELETE FROM login_attempts WHERE email = ?").bind(email).run();
   } catch {
     // non-fatal
@@ -191,7 +199,7 @@ export async function registerUser(
   name?: string,
 ): Promise<AuthResult> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
 
     const existing = await db.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
     if (existing) {
@@ -223,9 +231,13 @@ export async function registerUser(
   }
 }
 
-export async function loginUser(email: string, password: string): Promise<AuthResult> {
+export async function loginUser(
+  email: string,
+  password: string,
+  rememberMe: boolean = false,
+): Promise<AuthResult> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
 
     const row = await db
       .prepare("SELECT id, email, password_hash, name, avatar_url FROM users WHERE email = ?")
@@ -255,7 +267,8 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
 
     const token = generateToken();
     const tokenHash = await sha256(token);
-    const expiresAt = now + SESSION_TTL;
+    const ttl = rememberMe ? REMEMBER_ME_TTL : SESSION_TTL;
+    const expiresAt = now + ttl;
 
     await db
       .prepare("INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)")
@@ -266,6 +279,7 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
       ok: true,
       user: { id: row.id, email: row.email, name: row.name, avatar_url: row.avatar_url },
       token,
+      expiresAt,
     };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Login failed." };
@@ -274,7 +288,7 @@ export async function loginUser(email: string, password: string): Promise<AuthRe
 
 export async function verifySession(token: string): Promise<AuthResult> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const tokenHash = await sha256(token);
     const now = Math.floor(Date.now() / 1000);
 
@@ -307,7 +321,7 @@ export async function verifySession(token: string): Promise<AuthResult> {
 
 export async function logoutUser(token: string): Promise<{ ok: boolean }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const tokenHash = await sha256(token);
     await db.prepare("DELETE FROM sessions WHERE id = ?").bind(tokenHash).run();
     return { ok: true };
@@ -323,12 +337,75 @@ export function getSessionToken(request: Request): string | null {
   return match ? match[1] : null;
 }
 
-export function setSessionCookie(token: string): string {
-  return `cyberai_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${SESSION_TTL}`;
+export function setSessionCookie(token: string, ttl: number = SESSION_TTL): string {
+  return `cyberai_session=${token}; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=${ttl}`;
 }
 
 export function clearSessionCookie(): string {
   return `cyberai_session=; Path=/; HttpOnly; Secure; SameSite=Strict; Max-Age=0`;
+}
+
+/* ── Centralized auth wrappers (reduces per-route duplication) ── */
+
+export interface AuthedRequest {
+  request: Request;
+  user: AuthUser;
+  token: string;
+}
+
+/**
+ * Requires a valid session. Returns { ok: false, response } if unauthorized,
+ * or { ok: true, user, token, request } if authenticated.
+ */
+export async function requireAuth(
+  request: Request,
+): Promise<
+  { ok: true; user: AuthUser; token: string; request: Request } | { ok: false; response: Response }
+> {
+  const token = getSessionToken(request);
+  if (!token) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }),
+    };
+  }
+  const session = await verifySession(token);
+  if (!session.ok || !session.user) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" },
+      }),
+    };
+  }
+  return { ok: true, user: session.user, token, request };
+}
+
+/**
+ * Requires an admin session. Returns { ok: false, response } if not admin,
+ * or { ok: true, user, token, request } if authorized.
+ */
+export async function requireAdminAuth(
+  request: Request,
+): Promise<
+  { ok: true; user: AuthUser; token: string; request: Request } | { ok: false; response: Response }
+> {
+  const auth = await requireAuth(request);
+  if (!auth.ok) return auth;
+  if (!auth.user.is_admin) {
+    return {
+      ok: false,
+      response: new Response(JSON.stringify({ error: "Forbidden" }), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      }),
+    };
+  }
+  return auth;
 }
 
 /* ── Email verification ────────────────────────────────────── */
@@ -336,7 +413,7 @@ export function clearSessionCookie(): string {
 const VERIFICATION_TTL = 24 * 60 * 60; // 24 hours
 
 export async function createVerificationToken(userId: string): Promise<string> {
-  const db = requireDb<D1Database>();
+  const db = requireDb();
   const token = generateToken();
   const tokenHash = await sha256(token);
   const now = Math.floor(Date.now() / 1000);
@@ -356,7 +433,7 @@ export async function createVerificationToken(userId: string): Promise<string> {
 
 export async function verifyEmail(token: string): Promise<{ ok: boolean; error?: string }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const tokenHash = await sha256(token);
     const now = Math.floor(Date.now() / 1000);
 
@@ -386,7 +463,7 @@ export async function verifyEmail(token: string): Promise<{ ok: boolean; error?:
 
 export async function isEmailVerified(userId: string): Promise<boolean> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const row = await db
       .prepare("SELECT email_verified FROM users WHERE id = ?")
       .bind(userId)
@@ -444,7 +521,7 @@ export async function createPasswordResetToken(
   email: string,
 ): Promise<{ ok: boolean; token?: string; error?: string }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
 
     const user = await db
       .prepare("SELECT id FROM users WHERE email = ?")
@@ -483,7 +560,7 @@ export async function resetPassword(
   newPassword: string,
 ): Promise<{ ok: boolean; error?: string }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const tokenHash = await sha256(token);
     const now = Math.floor(Date.now() / 1000);
 
@@ -602,7 +679,7 @@ async function fetchGoogleUser(accessToken: string): Promise<GoogleUser> {
 
 export async function signInWithGoogle(code: string, redirectUri?: string): Promise<AuthResult> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const accessToken = await exchangeGoogleCode(code, redirectUri);
     const googleUser = await fetchGoogleUser(accessToken);
     const googleId = googleUser.id;
@@ -646,7 +723,7 @@ export async function signInWithGoogle(code: string, redirectUri?: string): Prom
       .bind(tokenHash, user.id, now, expiresAt)
       .run();
 
-    return { ok: true, user, token };
+    return { ok: true, user, token, expiresAt };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "Google sign-in failed." };
   }
@@ -699,7 +776,7 @@ async function fetchGithubUser(accessToken: string): Promise<GitHubUser> {
 
 export async function signInWithGithub(code: string): Promise<AuthResult> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const accessToken = await exchangeGithubCode(code);
     const githubUser = await fetchGithubUser(accessToken);
     const githubId = String(githubUser.id);
@@ -756,7 +833,7 @@ export async function signInWithGithub(code: string): Promise<AuthResult> {
       .bind(tokenHash, user.id, now, expiresAt)
       .run();
 
-    return { ok: true, user, token };
+    return { ok: true, user, token, expiresAt };
   } catch (err) {
     return { ok: false, error: err instanceof Error ? err.message : "GitHub sign-in failed." };
   }

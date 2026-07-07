@@ -55,7 +55,28 @@ export const Route = createFileRoute("/api/console/ratings")({
             }),
             { status: 200, headers: { "Content-Type": "application/json" } },
           );
-        } catch {
+        } catch (err) {
+          const isMissingTable =
+            err instanceof Error && err.message.includes("no such table");
+          if (isMissingTable) {
+            return new Response(
+              JSON.stringify({
+                ok: true,
+                data: {
+                  challenge_id: challengeId,
+                  total_ratings: 0,
+                  avg_rating: 0,
+                  avg_difficulty: 0,
+                  five_star: 0,
+                  four_star: 0,
+                  three_star: 0,
+                  two_star: 0,
+                  one_star: 0,
+                },
+              }),
+              { status: 200, headers: { "Content-Type": "application/json" } },
+            );
+          }
           return new Response(
             JSON.stringify({
               ok: false,
@@ -122,7 +143,15 @@ export const Route = createFileRoute("/api/console/ratings")({
             status: 200,
             headers: { "Content-Type": "application/json" },
           });
-        } catch {
+        } catch (err) {
+          const isMissingTable =
+            err instanceof Error && err.message.includes("no such table");
+          if (isMissingTable) {
+            return new Response(
+              JSON.stringify({ ok: false, error: "Ratings are not available" }),
+              { status: 503, headers: { "Content-Type": "application/json" } },
+            );
+          }
           return new Response(
             JSON.stringify({
               ok: false,

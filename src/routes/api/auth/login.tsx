@@ -42,6 +42,7 @@ export const Route = createFileRoute("/api/auth/login")({
             email?: string;
             password?: string;
             totpToken?: string;
+            rememberMe?: boolean;
           };
           if (!body.email || !body.password) {
             return new Response(
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/api/auth/login")({
             );
           }
 
-          const result = await loginUser(email, body.password);
+          const result = await loginUser(email, body.password, body.rememberMe ?? false);
           if (!result.ok || !result.token || !result.user) {
             const attempt = await recordLoginAttempt(email, ip, false);
             writeAnalytics("login", "denied", null, "/api/auth/login", Date.now() - startTime);
@@ -150,11 +151,14 @@ export const Route = createFileRoute("/api/auth/login")({
             "/api/auth/login",
             Date.now() - startTime,
           );
+          const ttl = result.expiresAt
+            ? result.expiresAt - Math.floor(Date.now() / 1000)
+            : 7 * 24 * 60 * 60;
           return new Response(JSON.stringify({ ok: true, user: result.user }), {
             status: 200,
             headers: {
               "Content-Type": "application/json",
-              "Set-Cookie": setSessionCookie(result.token),
+              "Set-Cookie": setSessionCookie(result.token, ttl),
             },
           });
         } catch (err) {

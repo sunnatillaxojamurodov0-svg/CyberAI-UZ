@@ -1,28 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { withAuth } from "@/lib/auth/middleware";
 import { getEnv } from "@/lib/db";
 
 export const Route = createFileRoute("/api/challenges/submit")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
+      GET: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const env = getEnv();
           const db = env.cyberai_db as {
             prepare: (sql: string) => {
@@ -37,7 +22,7 @@ export const Route = createFileRoute("/api/challenges/submit")({
             .prepare(
               "SELECT * FROM challenge_submissions WHERE submitted_by = ? ORDER BY created_at DESC",
             )
-            .bind(session.user.id)
+            .bind(user.id)
             .all();
 
           return new Response(JSON.stringify({ ok: true, submissions: result.results }), {
@@ -49,25 +34,10 @@ export const Route = createFileRoute("/api/challenges/submit")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
 
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const body = (await request.json()) as {
             name?: string;
             category?: string;
@@ -107,7 +77,7 @@ export const Route = createFileRoute("/api/challenges/submit")({
               body.flag,
               body.hints || "",
               body.writeup || "",
-              session.user.id,
+              user.id,
               "pending",
               now,
             )
@@ -122,7 +92,7 @@ export const Route = createFileRoute("/api/challenges/submit")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

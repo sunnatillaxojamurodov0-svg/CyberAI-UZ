@@ -1,16 +1,6 @@
-import { requireDb } from "../db";
+import { requireDb, type D1Database } from "../db";
 import { getUserSubscription, getPlanLimits } from "../stripe";
 import type { Plan } from "../stripe";
-
-interface D1PreparedStatement {
-  bind(...args: unknown[]): D1PreparedStatement;
-  first<T = unknown>(): Promise<T | null>;
-  run(): Promise<unknown>;
-}
-
-interface D1Database {
-  prepare(sql: string): D1PreparedStatement;
-}
 
 const ANONYMOUS_KEY = "__anonymous__";
 
@@ -38,7 +28,7 @@ export interface AiQuotaResult {
 
 export async function checkAiQuota(userId: string | null): Promise<AiQuotaResult> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const date = today();
     const key = quotaKey(userId);
 
@@ -88,7 +78,7 @@ export async function checkAiQuota(userId: string | null): Promise<AiQuotaResult
 
 export async function incrementAiUsage(userId: string | null): Promise<void> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const date = today();
     const key = quotaKey(userId);
 
@@ -119,7 +109,7 @@ export async function trackTokenUsage(
   usage: TokenUsage,
 ): Promise<void> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const date = today();
     const key = quotaKey(userId);
 
@@ -146,7 +136,7 @@ export async function getTokenUsage(
   userId: string | null,
 ): Promise<{ totalTokens: number; promptTokens: number; completionTokens: number }> {
   try {
-    const db = requireDb<D1Database>();
+    const db = requireDb();
     const date = today();
     const key = quotaKey(userId);
 

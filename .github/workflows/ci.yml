@@ -21,10 +21,26 @@ jobs:
       - run: npm ci
 
       - name: Run ESLint
-        run: npm run lint || true
+        run: npm run lint -- --max-warnings 11
 
       - name: Run Prettier check
-        run: npx prettier --check . || true
+        run: npx prettier --check .
+
+  audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run npm audit (fail on high/critical)
+        run: npm audit --audit-level=high
 
   test:
     name: Unit Tests
@@ -52,7 +68,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    needs: [lint, test]
+    needs: [lint, audit, test]
     steps:
       - uses: actions/checkout@v4
 

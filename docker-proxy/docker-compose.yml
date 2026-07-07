@@ -17,13 +17,12 @@ services:
     environment:
       - DOCKER_API_KEY=${DOCKER_API_KEY}
       - DOCKER_PROXY_PORT=2377
-      - DOCKER_HOST=tcp://host.docker.internal:2375
       - MAX_CONTAINERS=${MAX_CONTAINERS:-10}
       - CONTAINER_TTL_MS=${CONTAINER_TTL_MS:-14400000}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://app.cyberaiuz.workers.dev}
       - NODE_ENV=production
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - cyberai-internal
     healthcheck:

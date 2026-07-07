@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
+import { withAuth } from "@/lib/auth/middleware";
 
 export const Route = createFileRoute("/api/workflows/challenge")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
           const env = getEnv();
           const workflow = env.CHALLENGE_GENERATOR as
@@ -32,6 +33,7 @@ export const Route = createFileRoute("/api/workflows/challenge")({
           const instance = await workflow.create({
             id: crypto.randomUUID(),
             params: {
+              userId: user.id,
               challengeName: body.challengeName,
               difficulty: body.difficulty ?? 1,
               category: body.category,
@@ -56,7 +58,7 @@ export const Route = createFileRoute("/api/workflows/challenge")({
             },
           );
         }
-      },
+      }),
     },
   },
 });

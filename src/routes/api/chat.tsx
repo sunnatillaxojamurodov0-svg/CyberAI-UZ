@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { getEnv } from "@/lib/db";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { withAuth } from "@/lib/auth/middleware";
 import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 import { checkAiQuota, trackTokenUsage } from "@/lib/auth/ai-quota";
 import { writeAnalytics, trackAiUsage, trackInjectionAttempt } from "@/lib/analytics";
@@ -12,7 +12,7 @@ import { getCachedResponse, setCachedResponse } from "@/lib/prompt-cache";
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         const startTime = Date.now();
         try {
           const env = getEnv();
@@ -34,23 +34,7 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response("Authentication required.", {
-              status: 401,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response("Invalid session.", {
-              status: 401,
-              headers: { "Content-Type": "text/plain" },
-            });
-          }
-
-          const userId = session.user.id;
+          const userId = user.id;
 
           const quota = await checkAiQuota(userId);
           if (!quota.allowed) {
@@ -84,7 +68,16 @@ export const Route = createFileRoute("/api/chat")({
             });
           }
 
-          const injectionCheck = checkPromptInjection(body.message);
+          const envRecord = env as Record<string, unknown>;
+          const ai = envRecord.AI as
+            | {
+                run: (
+                  model: string,
+                  opts: { messages: Array<{ role: string; content: string }> },
+                ) => Promise<{ response: string }>;
+              }
+            | undefined;
+          const injectionCheck = await checkPromptInjection(body.message, ai);
           if (!injectionCheck.safe) {
             trackInjectionAttempt(userId, injectionCheck.score, injectionCheck.threats);
             return new Response(
@@ -123,8 +116,7 @@ export const Route = createFileRoute("/api/chat")({
           }));
 
           let userContent:
-            | string
-            | Array<{ type: string; text?: string; image_url?: { url: string } }> =
+            string | Array<{ type: string; text?: string; image_url?: { url: string } }> =
             sanitizedMessage;
 
           if (body.imageBase64 && body.imageMimeType) {
@@ -283,7 +275,7 @@ export const Route = createFileRoute("/api/chat")({
             headers: { "Content-Type": "text/plain" },
           });
         }
-      },
+      }),
     },
   },
 });

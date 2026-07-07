@@ -4,7 +4,7 @@ export function buildCSP(nonce: string): string {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'`,
-    `style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com`,
+    `style-src 'self' 'unsafe-inline' 'nonce-${nonce}' https://fonts.googleapis.com`,
     `img-src 'self' data: blob: https://avatars.githubusercontent.com https://lh3.googleusercontent.com https://*.googleusercontent.com`,
     `font-src 'self' https://fonts.gstatic.com`,
     `form-action 'self'`,
@@ -14,7 +14,6 @@ export function buildCSP(nonce: string): string {
     `connect-src 'self' https://api.github.com`,
     `worker-src 'self' blob:`,
     `manifest-src 'self'`,
-    `prefetch-src 'self'`,
   ].join("; ");
 }
 

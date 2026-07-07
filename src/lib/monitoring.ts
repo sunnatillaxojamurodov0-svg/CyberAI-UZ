@@ -24,8 +24,7 @@ class Monitoring {
   private getAnalytics() {
     if (!this.env) return null;
     return this.env.ANALYTICS as
-      | { writeDataPoint: (data: { blobs: string[]; doubles: number[] }) => void }
-      | undefined;
+      { writeDataPoint: (data: { blobs: string[]; doubles: number[] }) => void } | undefined;
   }
 
   trackMetric(metric: Metric) {

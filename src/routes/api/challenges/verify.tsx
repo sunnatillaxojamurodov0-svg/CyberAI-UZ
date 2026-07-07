@@ -1,28 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
-import { getSessionToken, verifySession } from "@/lib/auth/auth-server";
+import { withAuth } from "@/lib/auth/middleware";
 import { verifyFlag } from "@/lib/dynamic-flags";
 
 export const Route = createFileRoute("/api/challenges/verify")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ error: "Unauthorized" }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const body = (await request.json()) as { challengeId?: string; flag?: string };
           if (!body.challengeId || !body.flag) {
             return new Response(JSON.stringify({ error: "challengeId and flag are required" }), {
@@ -42,7 +27,7 @@ export const Route = createFileRoute("/api/challenges/verify")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

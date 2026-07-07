@@ -373,6 +373,8 @@ export default {
   // ══════════════════════════════════════════════════════════════
   // AUTENTIFIKATSIYA SAHIFALARI
   // ══════════════════════════════════════════════════════════════
+  "auth.login.remember_me": "Meni eslab qol",
+  "auth.login.remember_me_desc": "30 kun davomida tizimda qoling",
   "auth.reset.title": "Parolni tiklash",
   "auth.reset.description": "Yangi parolni kiriting.",
   "auth.reset.new_password": "Yangi parol",

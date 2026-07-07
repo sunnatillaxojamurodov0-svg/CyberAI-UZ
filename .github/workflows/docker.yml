@@ -61,7 +61,7 @@ jobs:
           docker run -d --name test-proxy \
             -p 2377:2377 \
             -e DOCKER_API_KEY=test \
-            -e DOCKER_HOST=tcp://host.docker.internal:2375 \
+            -v /var/run/docker.sock:/var/run/docker.sock:ro \
             cyberai-proxy-test
 
       - name: Wait for startup

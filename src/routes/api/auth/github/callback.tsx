@@ -50,7 +50,12 @@ export const Route = createFileRoute("/api/auth/github/callback")({
             status: 200,
             headers: {
               "Content-Type": "application/json",
-              "Set-Cookie": setSessionCookie(result.token),
+              "Set-Cookie": setSessionCookie(
+                result.token,
+                result.expiresAt
+                  ? result.expiresAt - Math.floor(Date.now() / 1000)
+                  : 7 * 24 * 60 * 60,
+              ),
             },
           });
         } catch {

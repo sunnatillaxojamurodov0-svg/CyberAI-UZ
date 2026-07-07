@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import type {} from "@tanstack/react-start";
 import { requireDb } from "@/lib/db";
+import { withAuth } from "@/lib/auth/middleware";
 import {
-  verifySession,
-  getSessionToken,
   hashPassword,
   verifyPassword,
 } from "@/lib/auth/auth-server";
@@ -12,24 +11,8 @@ import { checkRateLimit, rateLimitKey } from "@/lib/auth/rate-limit";
 export const Route = createFileRoute("/api/auth/change-password")({
   server: {
     handlers: {
-      POST: async ({ request }) => {
+      POST: withAuth(async ({ request, user }) => {
         try {
-          const token = getSessionToken(request);
-          if (!token) {
-            return new Response(JSON.stringify({ ok: false, error: "Not authenticated." }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
-          const session = await verifySession(token);
-          if (!session.ok || !session.user) {
-            return new Response(JSON.stringify({ ok: false, error: "Invalid session." }), {
-              status: 401,
-              headers: { "Content-Type": "application/json" },
-            });
-          }
-
           const ip = request.headers.get("cf-connecting-ip") || "unknown";
           const rl = await checkRateLimit(rateLimitKey(ip, "auth"), "auth");
           if (!rl.allowed) {
@@ -54,10 +37,10 @@ export const Route = createFileRoute("/api/auth/change-password")({
             );
           }
 
-          const db = requireDb<D1Database>();
+          const db = requireDb();
           const row = await db
             .prepare("SELECT password_hash FROM users WHERE id = ?")
-            .bind(session.user.id)
+            .bind(user.id)
             .first<{ password_hash: string }>();
 
           if (!row) {
@@ -79,7 +62,7 @@ export const Route = createFileRoute("/api/auth/change-password")({
           const passwordHash = await hashPassword(body.newPassword, salt);
           await db
             .prepare("UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?")
-            .bind(passwordHash, Math.floor(Date.now() / 1000), session.user.id)
+            .bind(passwordHash, Math.floor(Date.now() / 1000), user.id)
             .run();
 
           return new Response(JSON.stringify({ ok: true }), {
@@ -93,7 +76,7 @@ export const Route = createFileRoute("/api/auth/change-password")({
             headers: { "Content-Type": "application/json" },
           });
         }
-      },
+      }),
     },
   },
 });

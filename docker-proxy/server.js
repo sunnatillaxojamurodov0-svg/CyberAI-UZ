@@ -92,9 +92,12 @@ try {
     const url = new URL(dockerHost);
     docker = new Docker({ host: url.hostname, port: parseInt(url.port) });
     console.log(`✓ Connected to Docker daemon via TCP: ${dockerHost}`);
-  } else {
+  } else if (process.platform === "win32") {
     docker = new Docker({ socketPath: "//./pipe/docker_engine" });
     console.log("✓ Connected to Docker daemon via named pipe");
+  } else {
+    docker = new Docker({ socketPath: "/var/run/docker.sock" });
+    console.log("✓ Connected to Docker daemon via Unix socket");
   }
 } catch (err) {
   console.error("✗ Failed to connect to Docker:", err.message);

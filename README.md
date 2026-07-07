@@ -1,190 +1,62 @@
-# CyberAI — Autonomous Defense for the Synthetic Era
+# CyberAI — Cybersecurity Learning Platform
 
-Sovereign AI cybersecurity platform for high-stakes infrastructure. Predictive threat intelligence, conversational defense, and autonomous remediation.
+> Real cybersecurity training with real tools, real terminals, and real challenges.
 
-## Features
+## What is CyberAI?
 
-- **VAEL AI Assistant** — Advanced cybersecurity AI with multiple skill modes
-- **CTF Challenges** — Interactive capture-the-flag challenges with scoring
-- **Kali Linux Sandbox** — Browser-based terminal for hands-on practice
-- **Leaderboard** — Community rankings and competition
-- **Real-time Chat** — AI-powered conversational defense
-- **Admin Panel** — Challenge management and moderation
-- **2FA/MFA** — TOTP-based two-factor authentication
-- **Dynamic Flags** — Per-user unique CTF flags
+CyberAI is a cybersecurity learning platform that provides:
+
+- **Real Kali Linux terminals** — Not simulations, actual containers
+- **70+ CTF challenges** — From beginner to insane difficulty
+- **AI assistant (VAEL)** — Helps you learn without spoiling
+- **Live leaderboard** — Compete with other hackers
+- **Profile system** — Track your progress and achievements
+
+## Tech Stack
+
+- **Frontend**: React, TypeScript, Tailwind CSS, xterm.js
+- **Backend**: Node.js, Express, PostgreSQL, Redis
+- **Sandbox**: Docker containers with Kali Linux
+- **AI**: OpenRouter API (Gemini, Claude, GPT)
+- **Infrastructure**: Oracle Cloud Free Tier ($0/month)
 
 ## Quick Start
 
-### Prerequisites
-
-- Node.js 18+
-- npm or bun
-- Cloudflare account (for deployment)
-
-### Installation
-
 ```bash
-# Clone the repository
-git clone https://github.com/your-username/cyberai.git
-cd cyberai
+# Clone
+git clone https://github.com/yourusername/cyberai-uz.git
+cd cyberai-uz
 
-# Install dependencies
+# Install
 npm install
 
-# Copy environment variables
-cp .env.example .dev.vars
-
-# Start development server
+# Run
 npm run dev
 ```
 
-### Environment Variables
+## Documentation
 
-See [docs/environment-variables.md](docs/environment-variables.md) for complete reference.
-
-```bash
-# Required
-OPENROUTER_API_KEY="sk-or-v1-xxxx"
-GITHUB_CLIENT_ID="your-client-id"
-GITHUB_CLIENT_SECRET="your-client-secret"
-GOOGLE_CLIENT_ID="your-client-id"
-GOOGLE_CLIENT_SECRET="your-client-secret"
-
-# Optional
-RESEND_API_KEY="re_xxxxxxxx"
-STRIPE_SECRET_KEY="sk_test_xxxxxxxx"
-```
-
-## Usage
-
-### Development
-
-```bash
-npm run dev          # Start dev server
-npm run test         # Run unit tests
-npm run test:e2e     # Run E2E tests
-npm run test:load    # Run load tests
-```
-
-### Production
-
-```bash
-npm run build        # Build for production
-npm run preview      # Preview production build
-```
-
-### Database
-
-```bash
-npm run db:generate  # Generate migrations
-npm run db:migrate   # Run migrations
-npm run db:seed      # Seed test data
-npm run db:status    # Check migration status
-```
-
-## Deployment
-
-### Cloudflare Workers
-
-```bash
-# Login to Cloudflare
-wrangler login
-
-# Deploy to staging
-npx wrangler deploy --config wrangler.staging.jsonc
-
-# Deploy to production
-npx wrangler deploy
-
-# Set secrets
-wrangler secret put OPENROUTER_API_KEY
-wrangler secret put GITHUB_CLIENT_ID
-# ... etc
-```
-
-### Docker (Kali Sandbox)
-
-```bash
-cd docker-proxy
-docker-compose up -d
-```
-
-See [docs/deployment.md](docs/deployment.md) for detailed instructions.
+| Document                                | Description            |
+| --------------------------------------- | ---------------------- |
+| [Master Spec](docs/00_MASTER_SPEC.md)   | Source of truth        |
+| [Plan](docs/02_PLAN.md)                 | Implementation roadmap |
+| [Architecture](docs/03_ARCHITECTURE.md) | System design          |
+| [API](docs/05_API.md)                   | REST + WebSocket API   |
+| [Database](docs/06_DATABASE.md)         | Schema and migrations  |
+| [Sandbox](docs/07_SANDBOX.md)           | Container lifecycle    |
+| [Security](docs/09_SECURITY.md)         | Threat model           |
+| [Deployment](docs/10_DEPLOYMENT.md)     | Oracle Cloud setup     |
 
 ## Architecture
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        Cloudflare                           │
-├─────────────────────────────────────────────────────────────┤
-│  Workers (Edge)  │  D1 (SQLite)  │  KV (Cache)  │  R2 (Files)│
-├─────────────────────────────────────────────────────────────┤
-│  Queues          │  Vectorize    │  Analytics   │  AI        │
-└─────────────────────────────────────────────────────────────┘
-         │                    │                    │
-         ▼                    ▼                    ▼
-┌─────────────────────────────────────────────────────────────┐
-│                    Application Layer                         │
-├─────────────────────────────────────────────────────────────┤
-│  TanStack Start (SSR)  │  React 19  │  TailwindCSS 4       │
-├─────────────────────────────────────────────────────────────┤
-│  Auth (2FA, OAuth)  │  AI (OpenRouter)  │  Payments (Stripe)│
-└─────────────────────────────────────────────────────────────┘
+Browser ←WebSocket→ Backend ←WebSocket→ Sandbox Service ←Docker→ Kali Container
 ```
-
-## Project Structure
-
-```
-cyberai/
-├── src/
-│   ├── routes/          # Pages and API endpoints
-│   ├── components/      # UI components
-│   ├── lib/             # Utilities and services
-│   ├── durable-objects/ # WebSocket sessions
-│   ├── workflows/       # Cloudflare Workflows
-│   └── queues/          # Queue processors
-├── drizzle/             # Database schema
-├── migrations/          # SQL migrations
-├── docker-proxy/        # Kali sandbox proxy
-├── tests/               # Unit tests
-├── e2e/                 # End-to-end tests
-└── scripts/             # Build and utility scripts
-```
-
-## Tech Stack
-
-| Layer      | Technology                                 |
-| ---------- | ------------------------------------------ |
-| Frontend   | React 19 + TanStack Router + TailwindCSS 4 |
-| Backend    | TanStack Start (SSR) + Cloudflare Workers  |
-| Database   | Cloudflare D1 (SQLite)                     |
-| Storage    | Cloudflare R2, KV                          |
-| AI         | OpenRouter (GPT, Claude, Llama)            |
-| Auth       | Custom (GitHub, Google OAuth, 2FA)         |
-| Payments   | Stripe                                     |
-| Realtime   | Durable Objects (WebSocket)                |
-| Queue      | Cloudflare Queues                          |
-| Container  | Docker Proxy (Kali sandbox)                |
-| Monitoring | Sentry + Analytics Engine                  |
-
-## API
-
-See [docs/api.md](docs/api.md) for complete API reference.
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-## Changelog
-
-See [CHANGELOG.md](CHANGELOG.md) for version history.
+See [Contributing Guide](docs/20_CONTRIBUTING.md).
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
-## Support
-
-- Documentation: [docs/](docs/)
-- Issues: [GitHub Issues](https://github.com/your-username/cyberai/issues)
-- Email: support@cyberaiuz.workers.dev
+MIT
