@@ -19,7 +19,7 @@ export const Route = createFileRoute("/api/admin/pin/verify")({
           const db = requireDb();
           const record = await db
             .prepare("SELECT pin_hash FROM admin_pins WHERE user_id = ?")
-            .bind(auth.user.id)
+            .bind(user.id)
             .first<{ pin_hash: string }>();
 
           // If no PIN is set, allow access (first-time setup)
